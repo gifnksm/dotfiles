@@ -7,6 +7,31 @@
 (prefer-coding-system 'utf-8-unix)
 (set-default-coding-systems 'utf-8-unix)
 
+(cond
+ ((eq window-system 'ns)
+  (setq default-input-method "MacOSX")
+  (mac-set-input-method-parameter "com.justsystems.inputmethod.atok25.Japanese" 'title "漢")
+  (mac-set-input-method-parameter "com.justsystems.inputmethod.atok25.Japanese" 'cursor-type 'box)
+  (mac-set-input-method-parameter "com.justsystems.inputmethod.atok25.Japanese" 'cursor-color "blue")
+  (mac-set-input-method-parameter "com.justsystems.inputmethod.atok25.Roman" 'title "A")
+  (mac-set-input-method-parameter "com.justsystems.inputmethod.atok25.Roman" 'cursor-type 'box)
+  (mac-set-input-method-parameter "com.justsystems.inputmethod.atok25.Roman" 'cursor-color "white")
+  (mac-set-input-method-parameter "com.apple.keylayout.US" 'title "A")
+  (mac-set-input-method-parameter "com.apple.keylayout.US" 'cursor-type 'box)
+  (mac-set-input-method-parameter "com.apple.keylayout.US" 'cursor-type "white")
+
+  (define-key global-map [C-s-268632070] 'ns-toggle-fullscreen)
+  (set-face-attribute 'default nil :family "menlo" :weight 'normal :height 120)
+  (set-fontset-font (frame-parameter nil 'font)
+                    'japanese-jisx0208 (font-spec :family "Hiragino Kaku Gothic ProN" :size 13) nil 'append)
+  (set-fontset-font (frame-parameter nil 'font)
+                    'japanese-jisx0212 (font-spec :family "Hiragino Kaku Gothic ProN" :size 13) nil 'append))
+ ((eq window-system 'x)
+  (set-face-attribute 'default nil :family "M+1MN" :weight 'normal :height 105)))
+
+(when window-system
+  (set-frame-parameter nil 'alpha '(85 70 70 70)))
+
 ;;; path config
 (add-to-list 'custom-theme-load-path (concat user-emacs-directory "themes"))
 (add-to-list 'load-path (concat user-emacs-directory "site-lisp"))
@@ -35,9 +60,6 @@
                        popwin pos-tip recentf-ext sequential-command undo-tree undohist zlc))
 
 (setq  recentf-save-file (concat user-emacs-directory "recentf"))
-
-(when window-system
-  (set-face-attribute 'default nil :family "M+1MN" :weight 'normal :height 105))
 
 ;;; completion
 (setq completion-ignore-case t)
@@ -124,7 +146,7 @@
 (global-linum-mode t)
 (set-fill-column 100)
 (require 'whitespace)
-(setq whitespace-style '(face trailing lines-tail
+(setq whitespace-style '(face trailing lines-tail tabs tab-mark
                               space-before-tab space-after-tab))
 ;; (global-whitespace-mode 1)
 
@@ -144,6 +166,7 @@
   (subword-mode 1)
   (setq c-default-style "bsd")
   (setq c-basic-offset 4)
+  ;; (add-to-list 'ac-sources 'ac-source-clang)
   ;; (add-to-list 'ac-sources 'ac-source-clang-complete)
   )
 (add-hook 'c-mode-common-hook 'c-mode-common-hook-fn)
@@ -186,9 +209,9 @@
   (add-to-list 'auto-mode-alist '("\\.ts" . typescript-mode))
   (add-to-list 'ac-modes 'typescript-mode)
   (defun typescript-mode-hook-fn ()
-    (subword-mode 1))
+    (subword-mode 1)
+    (whitespace-mode 1))
   (add-hook 'typescript-mode-hook 'typescript-mode-hook-fn))
-
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
