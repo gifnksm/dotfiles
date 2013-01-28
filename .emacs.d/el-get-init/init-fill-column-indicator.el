@@ -1,0 +1,1 @@
+(require 'fill-column-indicator)

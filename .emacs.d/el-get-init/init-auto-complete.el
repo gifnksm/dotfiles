@@ -1,0 +1,5 @@
+(require 'auto-complete)
+(require 'auto-complete-config)
+(require 'auto-complete-clang)
+(ac-config-default)
+(global-auto-complete-mode t)
