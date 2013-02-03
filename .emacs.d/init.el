@@ -37,6 +37,8 @@
 (add-to-list 'load-path (concat user-emacs-directory "site-lisp"))
 (add-to-list 'load-path (concat user-emacs-directory "el-get/el-get"))
 
+(require 'my-utils)
+
 ;; el-get
 (unless (require 'el-get nil 'noerror)
   (with-current-buffer
@@ -57,7 +59,8 @@
 (el-get 'sync '(el-get anything auto-complete auto-complete-clang auto-complete-emacs-lisp d-mode
                        descbinds-anything direx el-get fill-column-indicator flex-autopair
                        haskell-mode hlinum js2-mode key-combo linum-ex markdown-mode pkgbuild-mode
-                       popwin pos-tip recentf-ext sequential-command undo-tree undohist zlc))
+                       popwin pos-tip recentf-ext sequential-command undo-tree undohist zlc smartrep
+                       region-bindings-mode multiple-cursors expand-region))
 
 (setq  recentf-save-file (concat user-emacs-directory "recentf"))
 
@@ -91,45 +94,16 @@
 (savehist-mode 1)
 
 ;;; key config
-(global-set-key [(control shift h)] help-map)
-(global-set-key "\M-?" 'help-for-help)
-;; 1つ前の文字を削除
-(global-set-key "\C-h" 'backward-delete-char-untabify)
-(global-set-key [(control shift k)] 'backward-kill-line)
-;; C-x oの逆向きにフレームを移動
-(global-set-key "\C-xp" 'previous-multiframe-window)
-(global-set-key "\C-x\C-b" 'electric-buffer-list)
-(global-set-key [?\C-<] 'previous-buffer)
-(global-set-key [?\C->] 'next-buffer)
+(define-many-keys global-map
+  `(("C-S-h" . ,help-map)
+    ("M-?" . help-for-help)
+    ("C-h" . backward-delete-char-untabify)
+    ("C-S-k" . backward-kill-line)
+    ("C-x p" . previous-multiframe-window) ; C-x o の逆向きに Window を移動
+    ("C-x C-b" . electric-buffer-list)))
 
-(define-key read-expression-map (kbd "TAB") 'lisp-complete-symbol)
-
-;; カーソル位置から行頭までにある文字を削除
-(defun backward-kill-line (arg)
-  "Kill chars backward until encountering the end of a line."
-  (interactive "p")
-  (kill-line 0))
-
-;; リージョンを選択していないときに行をキルするコマンド
-(defadvice kill-region (around kill-line-or-kill-region activate)
-  (if (and (interactive-p) transient-mark-mode (not mark-active))
-      (kill-whole-line)
-    ad-do-it))
-
-;; リージョンを選択していないときに行をコピーするコマンド
-(defadvice kill-ring-save (around kill-line-save-or-kill-ring-save activate)
-  (if (and (interactive-p) transient-mark-mode (not mark-active))
-      (copy-line 1)
-    ad-do-it))
-
-;; http://dev.ariel-networks.com/Members/matsuyama/tokyo-emacs-02
-;; http://www.emacswiki.org/emacs/CopyingWholeLines
-(defun copy-line (arg)
-  "Copy lines (as many as prefix argument) in the kill ring"
-  (interactive "p")
-  (kill-ring-save (line-beginning-position)
-                  (line-beginning-position (+ 1 arg)))
-  (message "%d line%s copied" arg (if (= 1 arg) "" "s")))
+(define-many-keys read-expression-map
+  '(("TAB" . lisp-complete-symbol)))
 
 ;;; builtin modes (installed in system path)
 (require 'uniquify)
@@ -137,6 +111,7 @@
       uniquify-ignore-buffers-re "*[^*]+*")
 (require 'generic-x)
 (require 'wdired)
+(setq wdired-allow-to-change-permissions t)
 (define-key dired-mode-map "r" 'wdired-change-to-wdired-mode)
 (require 'dired-x)
 (require 'hl-line)
@@ -149,6 +124,19 @@
 (setq whitespace-style '(face trailing lines-tail tabs tab-mark
                               space-before-tab space-after-tab))
 ;; (global-whitespace-mode 1)
+
+(defvar hs-fringe-mark 'right-arrow
+  "*隠れた行の fringe に表示する bitmap 名。
+`fringe-bitmaps' 内に設定されているシンボルから選ぶ。")
+(defun hs-mark-fringe (ovr)
+  "`hs-toggle-hiding' で隠された行の OVR を編集して fringe にマークを付ける。"
+  (when (eq 'code (overlay-get ovr 'hs))
+    (let ((hiding-text "...")
+          (fringe-anchor (make-string 1 ?x)))
+      (put-text-property 0 1 'display (list 'left-fringe hs-fringe-mark) fringe-anchor)
+      (overlay-put ovr 'before-string fringe-anchor)
+      (overlay-put ovr 'display hiding-text))))
+(setq hs-set-up-overlay 'hs-mark-fringe)
 
 (require 'saveplace)
 (setq-default save-place t)
@@ -172,10 +160,11 @@
 (add-hook 'c-mode-common-hook 'c-mode-common-hook-fn)
 
 (defun view-mode-hook-fn ()
-  (define-key view-mode-map "h" 'backward-char)
-  (define-key view-mode-map "j" 'next-line)
-  (define-key view-mode-map "k" 'previous-line)
-  (define-key view-mode-map "l" 'forward-char))
+  (define-many-keys view-mode-map
+    '(("h" . backward-char)
+      ("j" . next-line)
+      ("k" . previous-line)
+      ("l" . forward-char))))
 (add-hook 'view-mode-hook 'view-mode-hook-fn)
 
 (when (require 'mozc nil t)

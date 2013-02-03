@@ -1,7 +1,10 @@
 (require 'anything-config)
-(define-key global-map (kbd "C-;") 'anything)
+(define-many-keys global-map
+  '(("C-;" . anything)
+    ("C-M-y" . anything-show-kill-ring)))
 (custom-set-variables '(anything-command-map-prefix-key "C-:"))
-(define-key global-map (kbd "C-M-y") 'anything-show-kill-ring)
+
 (el-get 'sync 'popwin)
-(setq anything-samewindow nil)
-(push '("*anything*" :height 20) popwin:special-display-config)
+(when (featurep 'popwin)
+  (setq anything-samewindow nil)
+  (push '("*anything*" :height 20) popwin:special-display-config))
