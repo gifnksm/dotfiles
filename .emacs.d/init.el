@@ -60,7 +60,7 @@
                        descbinds-anything direx el-get fill-column-indicator flex-autopair
                        haskell-mode hlinum js2-mode key-combo linum-ex markdown-mode pkgbuild-mode
                        popwin pos-tip recentf-ext sequential-command undo-tree undohist zlc smartrep
-                       region-bindings-mode multiple-cursors expand-region))
+                       region-bindings-mode multiple-cursors expand-region revive revive-plus))
 
 (setq  recentf-save-file (concat user-emacs-directory "recentf"))
 
@@ -92,6 +92,7 @@
 
 (setq history-length 10000)
 (savehist-mode 1)
+(desktop-save-mode 1)
 
 ;;; key config
 (define-many-keys global-map

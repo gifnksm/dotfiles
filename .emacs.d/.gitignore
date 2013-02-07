@@ -8,3 +8,7 @@ history
 places
 recentf
 undohist
+.emacs.desktop
+.emacs.desktop.lock
+last-wconf
+
