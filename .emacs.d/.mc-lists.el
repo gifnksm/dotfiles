@@ -3,6 +3,7 @@
 
 (setq mc/cmds-to-run-for-all
       '(
+        LaTeX-environment
         backward-sexp
         forward-sexp
         kill-region
@@ -10,4 +11,5 @@
 
 (setq mc/cmds-to-run-once
       '(
+        TeX-next-error
         ))

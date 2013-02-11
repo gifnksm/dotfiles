@@ -39,6 +39,16 @@
 
 (require 'my-utils)
 
+(defun add-to-exec-path (path)
+  (setenv "PATH" (concat path ":" (getenv "PATH")))
+  (add-to-list 'exec-path path))
+
+(cond
+ ((equal (system-name) "MacBook-Pro.local")
+  (add-to-exec-path "/usr/texbin")
+  (add-to-exec-path "/usr/local/bin")))
+
+
 ;; el-get
 (unless (require 'el-get nil 'noerror)
   (with-current-buffer
@@ -60,13 +70,13 @@
                        descbinds-anything direx el-get fill-column-indicator flex-autopair
                        haskell-mode hlinum js2-mode key-combo linum-ex markdown-mode pkgbuild-mode
                        popwin pos-tip recentf-ext sequential-command undo-tree undohist zlc smartrep
-                       region-bindings-mode multiple-cursors expand-region revive revive-plus))
+                       region-bindings-mode multiple-cursors expand-region revive revive-plus auctex auto-complete-latex))
 
 (setq  recentf-save-file (concat user-emacs-directory "recentf"))
 
 ;;; completion
-(setq completion-ignore-case t)
 (setq read-file-name-completion-ignore-case t)
+(setq read-buffer-completion-ignore-case t)
 
 ;;; user interface config
 (setq-default indicate-empty-lines t)
