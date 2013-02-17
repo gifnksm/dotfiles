@@ -70,13 +70,25 @@
                        descbinds-anything direx el-get fill-column-indicator flex-autopair
                        haskell-mode hlinum js2-mode key-combo linum-ex markdown-mode pkgbuild-mode
                        popwin pos-tip recentf-ext sequential-command undo-tree undohist zlc smartrep
-                       region-bindings-mode multiple-cursors expand-region revive revive-plus auctex auto-complete-latex))
+                       region-bindings-mode multiple-cursors expand-region revive revive-plus auctex
+                       auto-complete-latex))
 
 (setq  recentf-save-file (concat user-emacs-directory "recentf"))
 
 ;;; completion
 (setq read-file-name-completion-ignore-case t)
 (setq read-buffer-completion-ignore-case t)
+;; http://shakenbu.org/yanagi/d/?date=20120109#p01
+;; find-fileで*Completions*バッファに`../'と`./'を出さない
+(defun find-file-read-args (prompt mustmatch)
+  (list (read-file-name prompt nil default-directory mustmatch nil
+                        (lambda (name)
+                          (and (file-exists-p name)
+                               (not (member name '("../" "./"))))
+                          ))
+        t))
+
+
 
 ;;; user interface config
 (setq-default indicate-empty-lines t)
