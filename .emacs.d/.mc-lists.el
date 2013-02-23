@@ -7,6 +7,7 @@
         backward-sexp
         forward-sexp
         kill-region
+        seq-end
         ))
 
 (setq mc/cmds-to-run-once

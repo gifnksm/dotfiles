@@ -68,10 +68,10 @@
 
 (el-get 'sync '(el-get anything auto-complete auto-complete-clang auto-complete-emacs-lisp d-mode
                        descbinds-anything direx el-get fill-column-indicator flex-autopair
-                       haskell-mode hlinum js2-mode key-combo linum-ex markdown-mode pkgbuild-mode
+                       haskell-mode hlinum key-combo linum-ex markdown-mode pkgbuild-mode
                        popwin pos-tip recentf-ext sequential-command undo-tree undohist zlc smartrep
                        region-bindings-mode multiple-cursors expand-region revive revive-plus auctex
-                       auto-complete-latex))
+                       auto-complete-latex js2-mode))
 
 (setq  recentf-save-file (concat user-emacs-directory "recentf"))
 
@@ -224,6 +224,8 @@
     (subword-mode 1)
     (whitespace-mode 1))
   (add-hook 'typescript-mode-hook 'typescript-mode-hook-fn))
+
+(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
