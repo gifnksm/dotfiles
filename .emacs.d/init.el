@@ -71,7 +71,7 @@
                        haskell-mode hlinum key-combo linum-ex markdown-mode pkgbuild-mode
                        popwin pos-tip recentf-ext sequential-command undo-tree undohist zlc smartrep
                        region-bindings-mode multiple-cursors expand-region revive revive-plus auctex
-                       auto-complete-latex js2-mode))
+                       auto-complete-latex js2-mode scss-mode))
 
 (setq  recentf-save-file (concat user-emacs-directory "recentf"))
 
@@ -189,6 +189,10 @@
       ("k" . previous-line)
       ("l" . forward-char))))
 (add-hook 'view-mode-hook 'view-mode-hook-fn)
+
+(defun doc-view-mode-hook-fn ()
+  (linum-mode -1))
+(add-hook 'doc-view-mode-hook 'doc-view-mode-hook-fn)
 
 (when (require 'mozc nil t)
   (require 'ccc)

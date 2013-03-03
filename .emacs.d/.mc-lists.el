@@ -4,6 +4,7 @@
 (setq mc/cmds-to-run-for-all
       '(
         LaTeX-environment
+        TeX-font
         backward-sexp
         forward-sexp
         kill-region
