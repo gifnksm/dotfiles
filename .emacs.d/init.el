@@ -20,7 +20,7 @@
   (mac-set-input-method-parameter "com.apple.keylayout.US" 'cursor-type 'box)
   (mac-set-input-method-parameter "com.apple.keylayout.US" 'cursor-type "white")
 
-  (define-key global-map [C-s-268632070] 'ns-toggle-fullscreen)
+  (define-key global-map [C-s-268632070] 'toggle-fullscreen)
   (set-face-attribute 'default nil :family "menlo" :weight 'normal :height 125)
   (set-fontset-font (frame-parameter nil 'font)
                     'japanese-jisx0208 (font-spec :family "Hiragino Kaku Gothic ProN" :size 13) nil 'append)
@@ -38,6 +38,13 @@
 (add-to-list 'load-path (concat user-emacs-directory "el-get/el-get"))
 
 (require 'my-utils)
+
+(defun toggle-fullscreen ()
+  "Toggle full screen"
+  (interactive)
+  (set-frame-parameter
+   nil 'fullscreen
+   (when (not (frame-parameter nil 'fullscreen)) 'fullboth)))
 
 (defun add-to-exec-path (path)
   (setenv "PATH" (concat path ":" (getenv "PATH")))
