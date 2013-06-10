@@ -6,12 +6,15 @@
         LaTeX-environment
         TeX-font
         backward-sexp
+        c-electric-delete-forward
         forward-sexp
         kill-region
         seq-end
+        seq-home
         ))
 
 (setq mc/cmds-to-run-once
       '(
         TeX-next-error
+        toggle-input-method
         ))

@@ -73,12 +73,26 @@
 (setq el-get-user-package-directory
       (concat user-emacs-directory "el-get-init"))
 
-(el-get 'sync '(el-get anything auto-complete auto-complete-clang auto-complete-emacs-lisp d-mode
-                       descbinds-anything direx el-get fill-column-indicator flex-autopair
-                       haskell-mode hlinum key-combo linum-ex markdown-mode pkgbuild-mode
-                       popwin pos-tip recentf-ext sequential-command undo-tree undohist zlc smartrep
-                       region-bindings-mode multiple-cursors expand-region revive revive-plus auctex
-                       auto-complete-latex js2-mode scss-mode))
+(el-get 'sync '(el-get
+                anything descbinds-anything
+
+                auto-complete auto-complete-clang auto-complete-emacs-lisp
+                auto-complete-latex
+
+                direx
+                fill-column-indicator
+                flex-autopair
+
+                auctex
+                d-mode
+                haskell-mode
+                markdown-mode pkgbuild-mode
+                js2-mode scss-mode
+
+                hlinum linum-ex
+                popwin pos-tip recentf-ext sequential-command undo-tree undohist smartrep
+                region-bindings-mode multiple-cursors expand-region revive revive-plus
+                key-combo zlc))
 
 (setq  recentf-save-file (concat user-emacs-directory "recentf"))
 
@@ -177,13 +191,19 @@
 (setq-default flyspell-mode nil)
 (setq ispell-dictionary "american")
 
+(setq c-default-style "k&r")
 (defun c-mode-common-hook-fn ()
+  (setq c-basic-offset 4)
+  (subword-mode 1)
+  (fci-mode 1)
+  (setq fill-column 120)
+
+  (c-toggle-hungry-state 1)
+  (c-toggle-auto-hungry-state 1)
   (c-toggle-electric-state 1)
   (c-toggle-auto-newline 1)
   (c-toggle-auto-state 1)
-  (subword-mode 1)
-  (setq c-default-style "bsd")
-  (setq c-basic-offset 4)
+
   ;; (add-to-list 'ac-sources 'ac-source-clang)
   ;; (add-to-list 'ac-sources 'ac-source-clang-complete)
   )
@@ -220,7 +240,7 @@
 
 (when (require 'rust-mode nil t)
   (defun rust-mode-hook-fn ()
-    (setq fill-column 78)
+    (setq fill-column 100)
     (subword-mode 1)
     (setq indent-tabs-mode nil)
     (setq c-basic-offset 4)

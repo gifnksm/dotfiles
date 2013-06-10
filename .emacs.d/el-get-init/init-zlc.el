@@ -1,4 +1,5 @@
 (require 'zlc)
+(zlc-mode t)
 (define-many-keys minibuffer-local-map
   '(("C-S-n" . zlc-select-next-vertical)
     ("C-S-p" . zlc-select-previous-vertical)
