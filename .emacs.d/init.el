@@ -2,12 +2,22 @@
 (unless (server-running-p)
   (server-start))
 
+(require 'url)
+
+(when (getenv "HTTP_PROXY")
+  (add-to-list 'url-proxy-services `("http" . ,(getenv "HTTP_PROXY"))))
+(when (getenv "HTTPS_PROXY")
+  (add-to-list 'url-proxy-services `("https" . ,(getenv "HTTPS_PROXY"))))
+
 ;;; encoding config
 (set-language-environment "Japanese")
 (prefer-coding-system 'utf-8-unix)
 (set-default-coding-systems 'utf-8-unix)
 
 (cond
+ ((equal (system-name) "paris")
+   (set-face-attribute 'default nil :family "Monospace" :weight 'normal :height 90))
+
  ((eq window-system 'ns)
   (setq default-input-method "MacOSX")
   (mac-set-input-method-parameter "com.justsystems.inputmethod.atok25.Japanese" 'title "漢")
@@ -26,6 +36,7 @@
                     'japanese-jisx0208 (font-spec :family "Hiragino Kaku Gothic ProN" :size 13) nil 'append)
   (set-fontset-font (frame-parameter nil 'font)
                     'japanese-jisx0212 (font-spec :family "Hiragino Kaku Gothic ProN" :size 13) nil 'append))
+
  ((eq window-system 'x)
   (set-face-attribute 'default nil :family "M+1MN" :weight 'normal :height 105)))
 
@@ -64,6 +75,7 @@
     (let (el-get-master-branch)
       (goto-char (point-max))
       (eval-print-last-sexp))))
+
 (add-to-list 'package-archives
              '("marmalade" . "http://marmalade-repo.org/packages/"))
 (add-to-list 'package-archives
@@ -83,17 +95,25 @@
                 fill-column-indicator
                 flex-autopair
 
-                auctex
                 d-mode
-                haskell-mode
                 markdown-mode pkgbuild-mode
                 js2-mode scss-mode
 
                 gtags
                 hlinum linum-ex
-                popwin pos-tip recentf-ext sequential-command undo-tree undohist smartrep
-                region-bindings-mode multiple-cursors expand-region revive revive-plus
+                popwin pos-tip
+		sequential-command
+		undo-tree undohist smartrep
+                region-bindings-mode multiple-cursors expand-region
+		revive revive-plus
                 key-combo zlc))
+
+(unless (equal (system-name) "paris")
+  (el-get 'sync '(haskell-mode recentf-ext)))
+(when (executable-find "hg")
+  (el-get 'sync '(auto-complete-latex)))
+(when (executable-find "pdftex")
+  (el-get 'sync '(auctex)))
 
 (setq  recentf-save-file (concat user-emacs-directory "recentf"))
 
