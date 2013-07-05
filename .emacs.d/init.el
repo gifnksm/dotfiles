@@ -87,6 +87,7 @@
 
 (el-get 'sync '(el-get
                 anything
+		cl-lib
 		descbinds-anything
 
                 auto-complete auto-complete-clang auto-complete-emacs-lisp
@@ -104,7 +105,7 @@
                 popwin pos-tip
 		sequential-command
 		undo-tree undohist smartrep
-                region-bindings-mode multiple-cursors expand-region
+                ;; region-bindings-mode multiple-cursors expand-region
 		revive revive-plus
                 key-combo zlc))
 
@@ -135,7 +136,7 @@
 ;;; user interface config
 (setq-default indicate-empty-lines t)
 (setq-default indent-tabs-mode nil)
-(setq visible-bell t)
+(setq visible-bell nil)
 (line-number-mode t)              ;モードラインに表示
 (column-number-mode t)            ;列番号をモードラインに表示
 (show-paren-mode t)               ;括弧の対応付け
@@ -184,9 +185,11 @@
 (require 'linum)
 (setq linum-format "%5d ")
 (global-linum-mode t)
-(set-fill-column 100)
+;; (setq fill-column 100)
+;; (set-fill-column 100)
 (require 'whitespace)
-(setq whitespace-style '(face trailing lines-tail tabs tab-mark
+(setq whitespace-line-column nil
+      whitespace-style '(face trailing lines-tail tabs tab-mark
                               space-before-tab space-after-tab))
 ;; (global-whitespace-mode 1)
 
@@ -216,8 +219,10 @@
 (defun c-mode-common-hook-fn ()
   (setq c-basic-offset 4)
   (subword-mode 1)
-  (fci-mode 1)
   (setq fill-column 120)
+  (setq fci-rule-column 120)
+  (fci-mode 1)
+  (whitespace-mode 1)
   (gtags-mode)
 
   (c-toggle-hungry-state 1)
