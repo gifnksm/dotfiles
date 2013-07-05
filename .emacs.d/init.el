@@ -74,10 +74,10 @@
       (concat user-emacs-directory "el-get-init"))
 
 (el-get 'sync '(el-get
-                anything descbinds-anything
+                anything
+		descbinds-anything
 
                 auto-complete auto-complete-clang auto-complete-emacs-lisp
-                auto-complete-latex
 
                 direx
                 fill-column-indicator
@@ -89,6 +89,7 @@
                 markdown-mode pkgbuild-mode
                 js2-mode scss-mode
 
+                gtags
                 hlinum linum-ex
                 popwin pos-tip recentf-ext sequential-command undo-tree undohist smartrep
                 region-bindings-mode multiple-cursors expand-region revive revive-plus
@@ -197,6 +198,7 @@
   (subword-mode 1)
   (fci-mode 1)
   (setq fill-column 120)
+  (gtags-mode)
 
   (c-toggle-hungry-state 1)
   (c-toggle-auto-hungry-state 1)
