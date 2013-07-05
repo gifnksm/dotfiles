@@ -16,7 +16,7 @@
 
 (cond
  ((equal (system-name) "paris")
-   (set-face-attribute 'default nil :family "Monospace" :weight 'normal :height 90))
+  (set-face-attribute 'default nil :family "Monospace" :weight 'normal :height 90))
 
  ((eq window-system 'ns)
   (setq default-input-method "MacOSX")
