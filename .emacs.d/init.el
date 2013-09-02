@@ -270,6 +270,7 @@
     (setq fill-column 100)
     (subword-mode 1)
     (setq indent-tabs-mode nil)
+    (setq rust-indent-offset 4)
     (setq c-basic-offset 4)
     (setq comment-style 'multi-line)
     (fci-mode 1))
