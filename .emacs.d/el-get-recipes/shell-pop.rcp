@@ -1,0 +1,5 @@
+(:name shell-pop
+       :description "shell-pop.el helps you to use shell easily on Emacs. Only one key action to work."
+       :type github
+       :pkgname "kyagi/shell-pop-el"
+       :autoloads nil)

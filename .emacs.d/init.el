@@ -91,8 +91,9 @@
 
                 hlinum linum-ex
                 popwin pos-tip recentf-ext sequential-command undo-tree undohist smartrep
-                region-bindings-mode multiple-cursors expand-region revive revive-plus
-                key-combo zlc))
+                ;; region-bindings-mode multiple-cursors expand-region
+                revive revive-plus
+                key-combo zlc shell-pop))
 
 (setq  recentf-save-file (concat user-emacs-directory "recentf"))
 
@@ -167,7 +168,7 @@
 (require 'whitespace)
 (setq whitespace-style '(face trailing lines-tail tabs tab-mark
                               space-before-tab space-after-tab))
-;; (global-whitespace-mode 1)
+(global-whitespace-mode 1)
 
 (defvar hs-fringe-mark 'right-arrow
   "*隠れた行の fringe に表示する bitmap 名。
@@ -243,10 +244,12 @@
     (setq fill-column 100)
     (subword-mode 1)
     (setq indent-tabs-mode nil)
+    (setq default-tab-width 4)
     (setq rust-indent-offset 4)
     (setq c-basic-offset 4)
     (setq comment-style 'multi-line)
-    (fci-mode 1))
+    (fci-mode 1)
+    (define-key mode-specific-map "c" 'compile))
   (add-hook 'rust-mode-hook 'rust-mode-hook-fn))
 
 (when (require 'typescript nil t)
@@ -266,7 +269,8 @@
  ;; If there is more than one, they won't work right.
  '(anything-command-map-prefix-key "C-:")
  '(custom-enabled-themes (quote (tango-2)))
- '(custom-safe-themes (quote ("e9a1226ffed627ec58294d77c62aa9561ec5f42309a1f7a2423c6227e34e3581" default))))
+ '(custom-safe-themes (quote ("e9a1226ffed627ec58294d77c62aa9561ec5f42309a1f7a2423c6227e34e3581" default)))
+ '(shell-pop-universal-key "C-S-q"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
