@@ -164,7 +164,8 @@
     ("C-h" . backward-delete-char-untabify)
     ("C-S-k" . backward-kill-line)
     ("C-x p" . previous-multiframe-window) ; C-x o の逆向きに Window を移動
-    ("C-x C-b" . electric-buffer-list)))
+    ("C-x C-b" . electric-buffer-list)
+    ("C-x j" . skk-mode)))
 
 (define-many-keys read-expression-map
   '(("TAB" . lisp-complete-symbol)))
@@ -294,7 +295,14 @@
  '(anything-command-map-prefix-key "C-:")
  '(custom-enabled-themes (quote (tango-2)))
  '(custom-safe-themes (quote ("e9a1226ffed627ec58294d77c62aa9561ec5f42309a1f7a2423c6227e34e3581" default)))
- '(shell-pop-universal-key "C-S-q"))
+ '(shell-pop-universal-key "C-S-q")
+ '(skk-check-okurigana-on-touroku (quote ask))
+ '(skk-show-annotation t)
+ '(skk-show-inline (quote vertical))
+ '(skk-show-tooltip t)
+ '(skk-kakutei-key (kbd "C-S-j"))
+ '(skk-use-color-cursor t)
+ '(skk-user-directory "~/.emacs.d/ddskk"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
