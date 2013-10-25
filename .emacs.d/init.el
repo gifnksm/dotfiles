@@ -234,6 +234,7 @@
   ;; (add-to-list 'ac-sources 'ac-source-clang-complete)
   )
 (add-hook 'c-mode-common-hook 'c-mode-common-hook-fn)
+(add-hook 'after-save-hook 'update-gtags)
 
 (defun view-mode-hook-fn ()
   (define-many-keys view-mode-map
