@@ -1,0 +1,28 @@
+escape 
+zombie 
+bind w windowlist -b
+
+defscrollback 100000
+defutf8 on
+defkanji utf-8
+defencoding utf-8
+defbce "on"
+term xterm-256color
+
+hardstatus alwayslastline "%{= wk} %-w%{=bu dc}%n %t%{-}%+w %= %{=b wb}%y/%m/%d %{=b wb}%c"
+
+startup_message off
+autodetach on
+shelltitle "$ |zsh"
+shell /bin/zsh
+
+bind -c REGION 2 split
+bind -c REGION 1 only
+bind -c REGION 0 remove
+bind -c REGION o focus
+bind -c REGION \^ resize
+bind x command -c REGION
+
+# http://d.hatena.ne.jp/ousttrue/20080511/
+termcapinfo xterm-256color 'is=\E[r\E[m\E[2J\E[H\E[?7h\E[?1;4;6l'
+
