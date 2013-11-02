@@ -5,16 +5,18 @@ bind w windowlist -b
 defscrollback 100000
 defutf8 on
 defkanji utf-8
+encoding utf-8 utf-8
 defencoding utf-8
-defbce "on"
+defbce on
 term xterm-256color
 
-hardstatus alwayslastline "%{= wk} %-w%{=bu dc}%n %t%{-}%+w %= %{=b wb}%y/%m/%d %{=b wb}%c"
+caption always " %{=r dd}%-Lw%40L>%?%F%{=b dR}%:[%? %n%f %t %?%F%{-}%:]%?%+Lw %=$USER@$HOSTNAME[$LANG] "
+hardstatus alwayslastline " %?%h%:%t%? %25L>(screen #%n on %H) %=%{b km}%l %{= dd}[%Y/%m/%d %02c:%s] "
+bell_msg "Bell in window "
 
 startup_message off
 autodetach on
-shelltitle "$ |zsh"
-shell /bin/zsh
+vbell off
 
 bind -c REGION 2 split
 bind -c REGION 1 only
@@ -23,6 +25,7 @@ bind -c REGION o focus
 bind -c REGION \^ resize
 bind x command -c REGION
 
-# http://d.hatena.ne.jp/ousttrue/20080511/
+# http://d.hatena.ne.jp/ousttrue/20080511/1210494446
 termcapinfo xterm-256color 'is=\E[r\E[m\E[2J\E[H\E[?7h\E[?1;4;6l'
+
 
