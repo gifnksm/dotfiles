@@ -5,9 +5,13 @@
 (require 'url)
 
 (when (getenv "HTTP_PROXY")
-  (add-to-list 'url-proxy-services `("http" . ,(getenv "HTTP_PROXY"))))
+  (setenv "HTTP_PROXY" (replace-regexp-in-string "^http://" "" (getenv "HTTP_PROXY")))
+  (add-to-list 'url-proxy-services
+               `("http" . ,(replace-regexp-in-string "^http://" "" (getenv "HTTP_PROXY")))))
 (when (getenv "HTTPS_PROXY")
-  (add-to-list 'url-proxy-services `("https" . ,(getenv "HTTPS_PROXY"))))
+  (setenv "HTTPS_PROXY" (replace-regexp-in-string "^https://" "" (getenv "HTTP_PROXY")))
+  (add-to-list 'url-proxy-services
+               `("https" . ,(replace-regexp-in-string "^https://" "" (getenv "HTTPS_PROXY")))))
 
 ;;; encoding config
 (set-language-environment "Japanese")
@@ -85,34 +89,47 @@
 (setq el-get-user-package-directory
       (concat user-emacs-directory "el-get-init"))
 
-(el-get 'sync '(el-get
-                anything
-		cl-lib
-		descbinds-anything
+;; Misc
+(el-get 'sync '(el-get))
+(el-get 'sync '(cl-lib))
 
-                auto-complete auto-complete-clang auto-complete-emacs-lisp
+;;; Utilities
+(el-get 'sync '(anything))
+(el-get 'sync '(descbinds-anything))
+(el-get 'sync '(direx popwin shell-pop))
+(el-get 'sync '(zlc))
+(el-get 'sync '(pos-tip))
 
-                direx
-                fill-column-indicator
-                flex-autopair
+(el-get 'sync '(undo-tree undohist))
+(el-get 'sync '(revive revive-plus))
+(el-get 'sync '(recentf-ext))
 
-                d-mode
-                markdown-mode pkgbuild-mode
-                js2-mode scss-mode
+;;; Input
+(el-get 'sync '(flex-autopair))
+(el-get 'sync '(auto-complete auto-complete-clang auto-complete-emacs-lisp))
+(el-get 'sync '(sequential-command smartrep))
+(el-get 'sync '(key-combo))
 
-                gtags
-                hlinum linum-ex
-                popwin pos-tip recentf-ext sequential-command undo-tree undohist smartrep
-                ;; region-bindings-mode multiple-cursors expand-region
-                revive revive-plus
-                key-combo zlc shell-pop))
+;;; Visual
+(el-get 'sync '(fill-column-indicator))
+(el-get 'sync '(hlinum linum-ex))
 
-(unless (equal (system-name) "paris")
-  (el-get 'sync '(haskell-mode recentf-ext)))
-(when (executable-find "hg")
-  (el-get 'sync '(auto-complete-latex)))
-(when (executable-find "pdftex")
-  (el-get 'sync '(auctex)))
+;;; Languages
+(el-get 'sync '(d-mode))
+(el-get 'sync '(haskell-mode))
+(el-get 'sync '(gtags))
+(el-get 'sync '(doxymacs))
+
+;;; Web
+(el-get 'sync '(js2-mode))
+(el-get 'sync '(scss-mode))
+
+;;; Documents
+(el-get 'sync '(auctex auto-complete-latex))
+(el-get 'sync '(markdown-mode))
+
+;;; System
+(el-get 'sync '(pkgbuild-mode))
 
 (setq  recentf-save-file (concat user-emacs-directory "recentf"))
 
@@ -218,6 +235,7 @@
 (defun c-mode-common-hook-fn ()
   (setq c-basic-offset 4)
   (subword-mode 1)
+  (setq whitespace-line-column 120)
   (setq fill-column 120)
   (setq fci-rule-column 120)
   (fci-mode 1)
@@ -298,10 +316,10 @@
  '(custom-safe-themes (quote ("e9a1226ffed627ec58294d77c62aa9561ec5f42309a1f7a2423c6227e34e3581" default)))
  '(shell-pop-universal-key "C-S-q")
  '(skk-check-okurigana-on-touroku (quote ask))
+ '(skk-kakutei-key (kbd "C-S-j"))
  '(skk-show-annotation t)
  '(skk-show-inline (quote vertical))
  '(skk-show-tooltip t)
- '(skk-kakutei-key (kbd "C-S-j"))
  '(skk-use-color-cursor t)
  '(skk-user-directory "~/.emacs.d/ddskk"))
 (custom-set-faces
