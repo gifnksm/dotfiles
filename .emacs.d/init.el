@@ -44,15 +44,24 @@
   (mac-set-input-method-parameter "com.apple.keylayout.US" 'cursor-type "white")
 
   (define-key global-map [C-s-268632070] 'toggle-fullscreen)
-  (set-face-attribute 'default nil :family "menlo" :weight 'normal :height 125)
-  (set-fontset-font (frame-parameter nil 'font)
-                    'japanese-jisx0208 (font-spec :family "Hiragino Kaku Gothic ProN" :size 13) nil 'append)
-  (set-fontset-font (frame-parameter nil 'font)
-                    'japanese-jisx0212 (font-spec :family "Hiragino Kaku Gothic ProN" :size 13) nil 'append))
+
+  (create-fontset-from-ascii-font "Menlo-14:weight=normal:slant=normal" nil "menlokakugo")
+  (set-fontset-font "fontset-menlokakugo" 'unicode (font-spec :family "Hiragino Kaku Gothic ProN" :size 16) nil 'append)
+  (add-to-list 'default-frame-alist '(font . "fontset-menlokakugo")))
 
  ((eq window-system 'x)
   (my-set-font 120 "Inconsolata" "Ricty")))
 
+;; Sample texts
+;;  !"#$%&'()*+,-./
+;; 0123456789:;<=>?
+;; @ABCDEFGHIJKLMNO
+;; PQRSTUVWXYZ[\]^_
+;; `abcdefghijklmno
+;; pqrstuvwxyz{|}~
+;; にほんご
+;; ニホンゴ
+;; 日本語
 
 (when window-system
   (set-frame-parameter nil 'alpha '(85 70 70 70)))
