@@ -18,10 +18,19 @@
 (prefer-coding-system 'utf-8-unix)
 (set-default-coding-systems 'utf-8-unix)
 
-(cond
- ((equal (system-name) "paris")
-  (set-face-attribute 'default nil :family "Monospace" :weight 'normal :height 90))
+(defun my-set-font (height ascii-font jp-font)
+  (let ((ascii-fontspec (font-spec :family ascii-font))
+        (jp-fontspec    (font-spec :family jp-font)))
+    (set-face-attribute 'default nil :family ascii-font :height height)
+    (set-fontset-font nil 'japanese-jisx0213.2004-1 jp-fontspec)
+    (set-fontset-font nil 'japanese-jisx0213-2      jp-fontspec)
+    (set-fontset-font nil 'japanese-jisx0212        jp-fontspec)
+    (set-fontset-font nil 'japanese-jisx0208        jp-fontspec)
+    (set-fontset-font nil 'katakana-jisx0201        jp-fontspec)
+    (set-fontset-font nil '(#x0080 . #x024F) ascii-fontspec)
+    (set-fontset-font nil '(#x0370 . #x03FF) ascii-fontspec)))
 
+(cond
  ((eq window-system 'ns)
   (setq default-input-method "MacOSX")
   (mac-set-input-method-parameter "com.justsystems.inputmethod.atok25.Japanese" 'title "漢")
@@ -42,7 +51,8 @@
                     'japanese-jisx0212 (font-spec :family "Hiragino Kaku Gothic ProN" :size 13) nil 'append))
 
  ((eq window-system 'x)
-  (set-face-attribute 'default nil :family "M+1MN" :weight 'normal :height 105)))
+  (my-set-font 120 "Inconsolata" "Ricty")))
+
 
 (when window-system
   (set-frame-parameter nil 'alpha '(85 70 70 70)))
@@ -160,7 +170,7 @@
 (delete-selection-mode t)
 
 ;;; misc config
-(setq make-backup-files nil)		;バックアップファイルを作成しない
+(setq make-backup-files nil)            ;バックアップファイルを作成しない
 (setq backup-inhibited t)
 (setq delete-auto-save-files t)         ;終了時にバックアップファイルを消す
 

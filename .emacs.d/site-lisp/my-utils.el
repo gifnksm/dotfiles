@@ -10,13 +10,13 @@
 
 ;; リージョンを選択していないときに行をキルするコマンド
 (defadvice kill-region (around kill-line-or-kill-region activate)
-  (if (and (interactive-p) transient-mark-mode (not mark-active))
+  (if (and (called-interactively-p 'interactive) transient-mark-mode (not mark-active))
       (kill-whole-line)
     ad-do-it))
 
 ;; リージョンを選択していないときに行をコピーするコマンド
 (defadvice kill-ring-save (around kill-line-save-or-kill-ring-save activate)
-  (if (and (interactive-p) transient-mark-mode (not mark-active))
+  (if (and (called-interactively-p 'interactive) transient-mark-mode (not mark-active))
       (copy-line 1)
     ad-do-it))
 
