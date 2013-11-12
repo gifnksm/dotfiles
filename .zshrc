@@ -9,10 +9,12 @@ compinit
 # autoload predict-on
 # predict-on
 
-autoload -U colors
+autoload colors
 colors
 
-setopt autocd appendhistory extendedglob notify
+# source ~/.zprofile
+
+setopt auto_cd appendhistory extendedglob notify
 setopt prompt_subst
 setopt nobeep
 setopt long_list_jobs
@@ -43,12 +45,19 @@ setopt noflowcontrol
 setopt list_packed
 setopt rec_exact
 
+# source ~/.zsh/auto-fu.zsh
+# function zle-line-init() {
+#   auto-fu-init
+# }
+# zle -N zle-line-init
+# zstyle ':auto-fu:var' postdisplay $''
+
 case $(uname) in
     Darwin)
         eval `gdircolors`
         ;;
     Linux)
-        eval `diroclors`
+        eval `dircolors`
         ;;
 esac
 export ZLS_COLORS=$LS_COLORS
@@ -70,8 +79,9 @@ zstyle ':completion:*:options' desctiption 'yes'
 zstyle ':completion:*' keep-prefix
 zstyle ':completion:*' group-name ''
 
-autoload -Uz vcs_info
+[ -f ~/.git-completion.sh ] && source ~/.git-completion.sh
 
+autoload -Uz vcs_info
 zstyle ':vcs_info:*' enable git svn hg bzr
 zstyle ':vcs_info:*' formats '(%s)-[%b]'
 zstyle ':vcs_info:*' actionformats '(%s)-[%b|%a]'
@@ -80,11 +90,11 @@ zstyle ':vcs_info:bzr:*' use-simple true
 
 autoload -Uz is-at-least
 if is-at-least 4.3.10; then
-    zstyle ':vcs_info:git:*' check-for-changes true
-    zstyle ':vcs_info:git:*' stagedstr "+"
-    zstyle ':vcs_info:git:*' unstagedstr "-"
-    zstyle ':vcs_info:git:*' formats '(%s)-[%b] %c%u'
-    zstyle ':vcs_info:git:*' actionformats '(%s)-[%b|%a] %c%u'
+  zstyle ':vcs_info:git:*' check-for-changes true
+  zstyle ':vcs_info:git:*' stagedstr "+"
+  zstyle ':vcs_info:git:*' unstagedstr "-"
+  zstyle ':vcs_info:git:*' formats '(%s)-[%b] %c%u'
+  zstyle ':vcs_info:git:*' actionformats '(%s)-[%b|%a] %c%u'
 fi
 
 function _update_vcs_info_msg() {
@@ -97,22 +107,51 @@ autoload -Uz add-zsh-hook
 add-zsh-hook precmd _update_vcs_info_msg
 RPROMPT="%1(v|%F{green}%1v%f|)"
 
-set_prompt() {
-    local host_color
-    case "$HOST" in
-        minuano) host_color="cyan"   ;;
-        paris)   host_color="yellow" ;;
-        pnem-00) host_color="red"    ;;
-    esac
-
-    PROMPT="
-%{$fg[green]%}%n@%{$fg[$host_color]%}%m %{$fg[yellow]%}[%~]%{$reset_color%}
+PROMPT="
+%{$fg[green]%}(%n@%m)[%h] %{$fg[yellow]%}%~%{${reset_color}%}
 %(!.#.$) "
-}
-
-set_prompt
 PROMPT2="%{${fg[green]}%}%_> %{${reset_color}%}"
 SPROMPT="%{${fg[yellow]}%}correct: %R -> %r [nyae]? %{${reset_color}%}"
+
+# function ssh-start() {
+#   ssh-agent -s > "${HOME}/.ssh/agent-env"
+#   . "${HOME}/.ssh/agent-env"
+#   ssh-add
+# }
+#
+# if [ -e "${HOME}/.ssh/agent-env" ]; then
+#   isAliveAgent=`ps -ef | grep "/ssh-agent" | grep -v grep | wc -l`
+#   if [ $isAliveAgent = 1 ]; then
+#     echo "ssh-agent is alive"
+#     . "${HOME}/.ssh/agent-env"
+#   else
+#     echo "ssh-agent is not alive"
+#   fi
+# fi
+#
+#
+# function ssh_screen(){
+#   eval server=\${$#}
+#   screen -t $server ssh "$@"
+# }
+# if [ -n "${WINDOW}" ]; then
+#   alias ssh=ssh_screen
+#   local -a host; host=`/bin/hostname`
+#   preexec() {
+#     # see [zsh-workers:13180]
+#     # http://www.zsh.org/mla/workers/2000/msg03993.html
+#     emulate -L zsh
+#     local -a cmd; cmd=(${(z)2})
+#     echo -n "ESCk$host:$cmd[1]:tESC\\"
+#   }
+# fi
+
+# case "$TERM" in
+#   dumb | emacs)
+#     PROMPT="%m:%~> "
+#     unsetopt zle
+#   ;;
+# esac
 
 # コマンドラインスタックを表示させる
 show_buffer_stack() {
@@ -126,7 +165,21 @@ bindkey "^[q" show_buffer_stack
 limit coredumpsize unlimited
 ulimit -c unlimited
 
+# GNU screenのattach時に環境変数を自動的に引き継ぐ - 貳佰伍拾陸夜日記
+# http://d.hatena.ne.jp/tarao/20101025/1287971794
+typeset -ga preexec_functions
+[ -f ~/.zsh/screen.zsh ] && source ~/.zsh/screen.zsh
+[ -f ~/.zsh/screen-attach.zsh ] && source ~/.zsh/screen-attach.zsh
+[ -f ~/.zsh/screen-alias.zsh ]  && source ~/.zsh/screen-alias.zsh
+
+function ta() {
+  if $(tmux has-session 2> /dev/null); then
+    tmux attach
+  else
+    tmux
+  fi
+}
+
 [ -f ~/.zsh/alias.zsh ] && source ~/.zsh/alias.zsh
 [ -f ~/.zsh/ssh.zsh   ] && source ~/.zsh/ssh.zsh
 [ -f ~/.zsh/local.zsh ] && source ~/.zsh/local.zsh
-
