@@ -1,7 +1,6 @@
 HISTFILE=~/.zsh/history
-HISTSIZE=5000
-SAVEHIST=10000
-setopt appendhistory autocd extendedglob
+HISTSIZE=100000
+SAVEHIST=100000
 bindkey -e
 
 autoload -Uz compinit
@@ -13,6 +12,7 @@ compinit
 autoload -U colors
 colors
 
+setopt autocd appendhistory extendedglob notify
 setopt prompt_subst
 setopt nobeep
 setopt long_list_jobs
@@ -40,16 +40,34 @@ setopt share_history
 setopt correct
 setopt noflowcontrol
 
-zstyle ':completion:*:default' menu select=1
-eval `dircolors`
+setopt list_packed
+setopt rec_exact
+
+case $(uname) in
+    Darwin)
+        eval `gdircolors`
+        ;;
+    Linux)
+        eval `diroclors`
+        ;;
+esac
 export ZLS_COLORS=$LS_COLORS
-zstyle ':completion:*default' list-colors ${(s.:.)LS_COLORS}
+zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
+
+zstyle ':completion:*:default' menu select=1
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 
 zstyle ':completion:*' verbose yes
-zstyle ':completion:*:descriptions' format '%B%d%b'
-zstyle ':completion:*:messages' format '%d'
-zstyle ':completion:*:warnings' format 'No matches for: %d'
+zstyle ':completion:*' completer _oldlist _complete _match _ignored \
+    _approximate _list _history
+zstyle ':completion:*:descriptions' format \
+    "%F{yellow}%B%d%b%f"
+zstyle ':completion:*:messages' format \
+    "%F{yellow}%d%f"
+zstyle ':completion:*:warnings' format \
+    "%F{red}No matches for: %F{yellow}%d%f"
+zstyle ':completion:*:options' desctiption 'yes'
+zstyle ':completion:*' keep-prefix
 zstyle ':completion:*' group-name ''
 
 autoload -Uz vcs_info
@@ -96,8 +114,19 @@ set_prompt
 PROMPT2="%{${fg[green]}%}%_> %{${reset_color}%}"
 SPROMPT="%{${fg[yellow]}%}correct: %R -> %r [nyae]? %{${reset_color}%}"
 
+# コマンドラインスタックを表示させる
+show_buffer_stack() {
+  POSTDISPLAY="
+stack: $LBUFFER"
+  zle push-line-or-edit
+}
+zle -N show_buffer_stack
+bindkey "^[q" show_buffer_stack
+
+limit coredumpsize unlimited
 ulimit -c unlimited
 
 [ -f ~/.zsh/alias.zsh ] && source ~/.zsh/alias.zsh
 [ -f ~/.zsh/ssh.zsh   ] && source ~/.zsh/ssh.zsh
 [ -f ~/.zsh/local.zsh ] && source ~/.zsh/local.zsh
+

@@ -1,26 +1,32 @@
-alias updrc="source $HOME/.zshrc"
-alias j="jobs -l -d"
+case $(uname) in
+    Linux)
+        alias ls='ls -h --color=auto'
+        ;;
+    Darwin)
+        alias ls="ls -Gh"
+        ;;
+esac
+alias l.='ls -d .*'
+alias la="ls -a"
+alias lf="ls -F"
+alias ll="ls -l"
 
-alias ls='ls -h --color=auto'
-alias l.='ls -d .* --color=auto'
-alias ll='ls -l --color=auto'
-alias la="ls -1"
+alias rm="rm -i"
+alias cp="cp -i"
+alias mv="mv -i"
+alias du="du -h"
+alias df="df -h"
+
 alias grep='grep --color=auto'
+alias where="command -v"
 
+alias updrc="source $HOME/.zshrc"
 alias etags_all="find -L -name \"*.[ch]\" -print | etags -"
-
-if [ -f /usr/share/vim/vim72/macros/less.sh ]; then
-    alias vless="/usr/share/vim/vim72/macros/less.sh"
-elif [ -f /usr/share/vim/vim70/macros/less.sh ]; then
-    alias vless="/usr/share/vim/vim70/macros/less.sh"
-elif [ -f /usr/share/vim/vim63/macros/less.sh ]; then
-    alias vless="/usr/share/vim/vim63/macros/less.sh"
-fi
+alias j=z
+alias vless=$(echo /usr/share/vim/vim*/macros/less.sh)
 
 alias screen="screen -U"
 alias history="history -E"
-alias du="du -h"
-alias df="df -h"
 alias sc="screen -D -RR"
 alias ta="tmux attach"
 
