@@ -1,5 +1,0 @@
-let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =3
-let g:netrw_dirhist_1='/usr/home/nksm/dev/euler/.git'
-let g:netrw_dirhist_2='/home/nksm/repos/academy/.git'
-let g:netrw_dirhist_3='/home/nksm/.vim'
