@@ -29,7 +29,6 @@ alias vless=$(echo /usr/share/vim/vim*/macros/less.sh)
 alias screen="screen -U"
 alias history="history -E"
 alias sc="screen -D -RR"
-alias ta="tmux attach"
 
 alias -g L='| less -r'
 alias -g V="| vless"
