@@ -33,15 +33,23 @@
 (cond
  ((eq window-system 'ns)
   (setq default-input-method "MacOSX")
-  (mac-set-input-method-parameter "com.justsystems.inputmethod.atok25.Japanese" 'title "漢")
-  (mac-set-input-method-parameter "com.justsystems.inputmethod.atok25.Japanese" 'cursor-type 'box)
-  (mac-set-input-method-parameter "com.justsystems.inputmethod.atok25.Japanese" 'cursor-color "blue")
-  (mac-set-input-method-parameter "com.justsystems.inputmethod.atok25.Roman" 'title "A")
-  (mac-set-input-method-parameter "com.justsystems.inputmethod.atok25.Roman" 'cursor-type 'box)
-  (mac-set-input-method-parameter "com.justsystems.inputmethod.atok25.Roman" 'cursor-color "white")
-  (mac-set-input-method-parameter "com.apple.keylayout.US" 'title "A")
-  (mac-set-input-method-parameter "com.apple.keylayout.US" 'cursor-type 'box)
-  (mac-set-input-method-parameter "com.apple.keylayout.US" 'cursor-type "white")
+  (mac-set-input-method-parameter "com.justsystems.inputmethod.atok26.Roman" 'title "A")
+  (mac-set-input-method-parameter "com.justsystems.inputmethod.atok26.Japanese" 'title "あ")
+  (mac-set-input-method-parameter "com.justsystems.inputmethod.atok26.Japanese.Katakana" 'title "ア")
+  (mac-set-input-method-parameter "com.justsystems.inputmethod.atok26.Japanese.FullWidthRoman" 'title "英")
+  (mac-set-input-method-parameter "com.justsystems.inputmethod.atok26.Japanese.HalfWidthEiji" 'title "半英")
+  (dolist (param mac-input-method-parameters)
+    (let ((name (car param)))
+       (cond
+        ((string-match "Japanese\\(\\.base\\)?\\'" name) ;; ひらがなの日本語入力
+         (mac-set-input-method-parameter name 'cursor-color "blue"))
+        ((string-match "Japanese" name) ;; カナなどの日本語入力
+         (mac-set-input-method-parameter name 'cursor-color "red"))
+        ((string-match "Roman" name) ;; 英字
+         (mac-set-input-method-parameter name 'cursor-color "white"))
+        (t ;; その他
+         (mac-set-input-method-parameter name 'cursor-color "yellow")))))
+  (mac-set-input-method-parameter "com.apple.keylayout.US" 'cursor-color "white")
 
   (define-key global-map [C-s-268632070] 'toggle-fullscreen)
 
