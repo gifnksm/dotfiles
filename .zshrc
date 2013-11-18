@@ -182,4 +182,6 @@ function ta() {
 
 [ -f ~/.zsh/alias.zsh ] && source ~/.zsh/alias.zsh
 [ -f ~/.zsh/ssh.zsh   ] && source ~/.zsh/ssh.zsh
+[ -f ~/.zsh/tmux.zsh  ] && source ~/.zsh/tmux.zsh
 [ -f ~/.zsh/local.zsh ] && source ~/.zsh/local.zsh
+
