@@ -18,7 +18,7 @@ function ssh_with_key() {
     /usr/bin/ssh $@
 }
 
-eval $(keychain --nogui --eval --agents ssh -q)
+eval $(keychain --nogui --eval --agents ssh --timeout 30 -q)
 
 if [ -n "$STY" ]; then
     alias ssh=ssh_screen
