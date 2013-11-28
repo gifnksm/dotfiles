@@ -126,6 +126,7 @@
 (el-get 'sync '(direx popwin shell-pop))
 (el-get 'sync '(zlc))
 (el-get 'sync '(pos-tip))
+(el-get 'sync '(keychain-environment))
 
 (el-get 'sync '(undo-tree undohist))
 (el-get 'sync '(revive revive-plus))
