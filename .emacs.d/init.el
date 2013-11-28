@@ -5,13 +5,13 @@
 (require 'url)
 
 (when (getenv "HTTP_PROXY")
-  (setenv "HTTP_PROXY" (replace-regexp-in-string "^http://" "" (getenv "HTTP_PROXY")))
+  (setenv "HTTP_PROXY" (replace-regexp-in-string "^http://\\([^@]*@\\)?\\|/$" "" (getenv "HTTP_PROXY")))
   (add-to-list 'url-proxy-services
-               `("http" . ,(replace-regexp-in-string "^http://" "" (getenv "HTTP_PROXY")))))
+               `("http" . ,(replace-regexp-in-string "^http://\\([^@]*@\\)?\\|/$" "" (getenv "HTTP_PROXY")))))
 (when (getenv "HTTPS_PROXY")
-  (setenv "HTTPS_PROXY" (replace-regexp-in-string "^https://" "" (getenv "HTTP_PROXY")))
+  (setenv "HTTPS_PROXY" (replace-regexp-in-string "^http://\\([^@]*@\\)?\\|/$" "" (getenv "HTTP_PROXY")))
   (add-to-list 'url-proxy-services
-               `("https" . ,(replace-regexp-in-string "^https://" "" (getenv "HTTPS_PROXY")))))
+               `("https" . ,(replace-regexp-in-string "^http://\\([^@]*@\\)?\\|/$" "" (getenv "HTTPS_PROXY")))))
 
 ;;; encoding config
 (set-language-environment "Japanese")
