@@ -7,6 +7,10 @@ function ssh_screen() {
     ssh_add_key
     screen -t "$cmd" /usr/bin/ssh "$cmd"
 }
+function pssh_screen() {
+    local cmd="${argv}"
+    screen -t "$cmd" pssh "$cmd"
+}
 
 function ssh_tmux() {
     local cmd="${argv}"
@@ -14,6 +18,13 @@ function ssh_tmux() {
     tmux -q \
         set set-remain-on-exit on \; \
         new-window -n "${cmd}" "TERM=xterm-256color /usr/bin/ssh $cmd" \; \
+        set set-remain-on-exit off
+}
+function pssh_tmux() {
+    local cmd="${argv}"
+    tmux -q \
+        set set-remain-on-exit on \; \
+        new-window -n "${cmd}" "TERM=xterm-256color pssh $cmd" \; \
         set set-remain-on-exit off
 }
 
@@ -26,8 +37,10 @@ eval $(keychain --nogui --eval --agents ssh --timeout 30 -q)
 
 if [ -n "$STY" ]; then
     alias ssh=ssh_screen
+    alias pssh=pssh_screen
 elif [ -n "$TMUX" ]; then
     alias ssh=ssh_tmux
+    alias pssh=pssh_tmux
 else
     alias ssh=ssh_with_key
 fi

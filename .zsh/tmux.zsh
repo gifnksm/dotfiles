@@ -7,4 +7,3 @@ if [ -n "${TMUX}" ]; then
     autoload -Uz add-zsh-hook
     add-zsh-hook preexec _update_tmux_env
 fi
-

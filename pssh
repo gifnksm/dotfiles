@@ -1,0 +1,54 @@
+#!/bin/zsh
+
+OPT_LOGIN=""
+OPT_HOST=""
+OPT_CMD=""
+
+function print_usage() {
+    echo "Usage: $0 [-l login] [login@]host [command...]"
+    exit 1
+}
+
+while getopts "l:" OPT
+do
+    case "${OPT}" in
+        l) OPT_LOGIN="${OPTARG}" ;;
+        *) print_usage ;;
+    esac
+done
+
+if [ "${OPTIND}" -gt $# ]; then
+    print_usage
+fi
+for I in $(seq 2 "${OPTIND}"); do
+    shift
+done
+
+OPT_HOST="${argv[1]}"
+shift
+OPT_CMD="${argv[@]}"
+
+case "${OPT_HOST}" in
+    *@*)
+        OPT_LOGIN=$(echo "${OPT_HOST}" | cut -d @ -f 1)
+        OPT_HOST=$(echo "${OPT_HOST}" | cut -d @ -f 2)
+        ;;
+esac
+
+PASSWORD=$(grep "${OPT_LOGIN}@${OPT_HOST} " ~/.ssh/passwd_list | awk '{print $2}' | head -1)
+if ! [ -z "${OPT_LOGIN}" ]; then
+    SSH_HOSTNAME="${OPT_LOGIN}@${OPT_HOST}"
+else
+    SSH_HOSTNAME="${OPT_HOST}"
+fi
+if ! [ -z "${PASSWORD}" ]; then
+    expect -c "
+set timeout 10
+spawn /usr/bin/ssh -o \"PreferredAuthentications=password\" ${SSH_HOSTNAME} ${OPT_CMD}
+expect password:
+send \"${PASSWORD}\n\"
+interact
+"
+else
+    /usr/bin/ssh ${SSH_HOSTNAME} ${OPT_CMD}
+fi
