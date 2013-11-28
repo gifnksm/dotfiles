@@ -3,17 +3,17 @@ function ssh_add_key() {
 }
 
 function ssh_screen() {
-    eval local server=\${$#}
+    local cmd="${argv}"
     ssh_add_key
-    screen -t $server /usr/bin/ssh "$@"
+    screen -t "$cmd" /usr/bin/ssh "$cmd"
 }
 
 function ssh_tmux() {
-    eval local server=\${$#}
+    local cmd="${argv}"
     ssh_add_key
     tmux -q \
         set set-remain-on-exit on \; \
-        new-window -n "${server}" "TERM=xterm-256color /usr/bin/ssh $@" \; \
+        new-window -n "${cmd}" "TERM=xterm-256color /usr/bin/ssh $cmd" \; \
         set set-remain-on-exit off
 }
 
