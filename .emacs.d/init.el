@@ -259,6 +259,8 @@
 (setq-default flyspell-mode nil)
 (setq ispell-dictionary "american")
 
+(add-to-list 'auto-mode-alist '("\\.zsh" . sh-mode))
+
 (setq c-default-style "k&r")
 (defun c-mode-common-hook-fn ()
   (setq c-basic-offset 4)
