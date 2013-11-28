@@ -113,46 +113,6 @@ PROMPT="
 PROMPT2="%{${fg[green]}%}%_> %{${reset_color}%}"
 SPROMPT="%{${fg[yellow]}%}correct: %R -> %r [nyae]? %{${reset_color}%}"
 
-# function ssh-start() {
-#   ssh-agent -s > "${HOME}/.ssh/agent-env"
-#   . "${HOME}/.ssh/agent-env"
-#   ssh-add
-# }
-#
-# if [ -e "${HOME}/.ssh/agent-env" ]; then
-#   isAliveAgent=`ps -ef | grep "/ssh-agent" | grep -v grep | wc -l`
-#   if [ $isAliveAgent = 1 ]; then
-#     echo "ssh-agent is alive"
-#     . "${HOME}/.ssh/agent-env"
-#   else
-#     echo "ssh-agent is not alive"
-#   fi
-# fi
-#
-#
-# function ssh_screen(){
-#   eval server=\${$#}
-#   screen -t $server ssh "$@"
-# }
-# if [ -n "${WINDOW}" ]; then
-#   alias ssh=ssh_screen
-#   local -a host; host=`/bin/hostname`
-#   preexec() {
-#     # see [zsh-workers:13180]
-#     # http://www.zsh.org/mla/workers/2000/msg03993.html
-#     emulate -L zsh
-#     local -a cmd; cmd=(${(z)2})
-#     echo -n "ESCk$host:$cmd[1]:tESC\\"
-#   }
-# fi
-
-# case "$TERM" in
-#   dumb | emacs)
-#     PROMPT="%m:%~> "
-#     unsetopt zle
-#   ;;
-# esac
-
 # コマンドラインスタックを表示させる
 show_buffer_stack() {
   POSTDISPLAY="
