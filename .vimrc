@@ -106,8 +106,10 @@ set rtp+=~/.vim/bundle/vundle/
 call vundle#rc()
 
 Bundle 'gmarik/vundle'
-Bundle 'https://github.com/Shougo/vimshell.git'
-Bundle 'https://github.com/Shougo/vimproc'
+if v:version >= 702
+  Bundle 'https://github.com/Shougo/vimshell.git'
+  Bundle 'https://github.com/Shougo/vimproc'
+endif
 
 filetype plugin indent on
 
