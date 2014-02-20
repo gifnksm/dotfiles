@@ -175,17 +175,25 @@
         t))
 
 
+;;; Edit
+(setq-default indent-tabs-mode nil)
+(delete-selection-mode t)
 
 ;;; user interface config
+;; モードライン
+(line-number-mode t)              ;行番号表示
+(column-number-mode t)            ;列番号
+(which-function-mode t)           ;関数名
+;; 表示系
 (setq-default indicate-empty-lines t)
-(setq-default indent-tabs-mode nil)
 (setq visible-bell nil)
-(line-number-mode t)              ;モードラインに表示
-(column-number-mode t)            ;列番号をモードラインに表示
-(show-paren-mode t)               ;括弧の対応付け
-
+(show-paren-mode t)
+;; GUI
+(tool-bar-mode -1)
 (setq mouse-drag-copy-region t)
-(delete-selection-mode t)
+;; Others
+(setq inhibit-startup-message t)
+(setq inhibit-startup-screen t)
 
 ;;; misc config
 (setq make-backup-files nil)            ;バックアップファイルを作成しない
@@ -194,9 +202,6 @@
 
 (setq view-read-only t)           ;読み込み専用にした時view-modeにする
 (temp-buffer-resize-mode t) ; C-hv とか ファイル名補完時のウィンドウを自動的にリサイズする
-(setq inhibit-startup-message t)
-(setq inhibit-startup-screen t)
-(tool-bar-mode -1)
 
 (setq history-length 10000)
 (savehist-mode 1)
