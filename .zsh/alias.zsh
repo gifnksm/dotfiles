@@ -24,6 +24,7 @@ alias updrc="source $HOME/.zshrc"
 alias etags_all="find -L -name \"*.[ch]\" -print | etags -"
 alias j=z
 alias vim="vim -X"
+alias view="vim -R"
 alias vless=$(echo /usr/share/vim/vim*/macros/less.sh)
 
 alias screen="screen -U"
