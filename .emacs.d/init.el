@@ -259,7 +259,10 @@
 (setq-default save-place t)
 (setq save-place-file "~/.emacs.d/places")
 
-(add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
+(defun after-change-major-mode-hook-fn ()
+  (unless (eq major-mode 'rust-mode)
+    (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p nil t)))
+(add-hook 'after-change-major-mode-hook 'after-change-major-mode-hook-fn)
 
 (setq-default flyspell-mode nil)
 (setq ispell-dictionary "american")
