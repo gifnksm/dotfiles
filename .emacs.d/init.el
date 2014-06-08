@@ -96,7 +96,7 @@
  ((equal (system-name) "MacBook-Pro.local")
   (add-to-exec-path "/usr/texbin")
   (add-to-exec-path "/usr/local/bin")))
-
+(add-to-exec-path "/usr/share/gtags/script/")
 
 ;; el-get
 (unless (require 'el-get nil 'noerror)
@@ -121,8 +121,11 @@
 (el-get 'sync '(cl-lib))
 
 ;;; Utilities
-(el-get 'sync '(anything))
-(el-get 'sync '(descbinds-anything))
+(el-get 'sync '(helm))
+(el-get 'sync '(helm-gtags))
+(el-get 'sync '(helm-descbinds))
+;; (el-get 'sync '(anything))
+;; (el-get 'sync '(descbinds-anything))
 (el-get 'sync '(direx popwin shell-pop))
 (el-get 'sync '(zlc))
 (el-get 'sync '(pos-tip))
@@ -259,6 +262,9 @@
 (setq-default save-place t)
 (setq save-place-file "~/.emacs.d/places")
 
+(require 'tramp)
+(add-to-list 'tramp-remote-path 'tramp-own-remote-path) ;リモートで設定される PATH を利用する
+
 (defun after-change-major-mode-hook-fn ()
   (unless (eq major-mode 'rust-mode)
     (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p nil t)))
@@ -278,7 +284,8 @@
   (setq fci-rule-column 120)
   (fci-mode 1)
   (whitespace-mode 1)
-  (gtags-mode)
+  (helm-gtags-mode)
+  ;; (gtags-mode)
 
   (c-toggle-hungry-state 1)
   (c-toggle-auto-hungry-state 1)
@@ -290,7 +297,7 @@
   ;; (add-to-list 'ac-sources 'ac-source-clang-complete)
   )
 (add-hook 'c-mode-common-hook 'c-mode-common-hook-fn)
-(add-hook 'after-save-hook 'update-gtags)
+;; (add-hook 'after-save-hook 'update-gtags)
 
 (defun view-mode-hook-fn ()
   (define-many-keys view-mode-map
