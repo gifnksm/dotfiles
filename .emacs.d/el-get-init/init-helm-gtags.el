@@ -1,4 +1,5 @@
 (require 'helm-gtags)
+(setq helm-gtags-ignore-case t)
 (setq helm-gtags-auto-update t)
 (define-many-keys helm-gtags-mode-map
   '(("C-]" . helm-gtags-find-tag-from-here)

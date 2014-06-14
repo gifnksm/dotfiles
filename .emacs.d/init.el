@@ -15,6 +15,7 @@
 
 ;;; encoding config
 (set-language-environment "Japanese")
+(setenv "LANG" "ja_JP.UTF-8")
 (prefer-coding-system 'utf-8-unix)
 (set-default-coding-systems 'utf-8-unix)
 
@@ -99,6 +100,7 @@
 (add-to-exec-path "/usr/share/gtags/script/")
 
 ;; el-get
+(setq el-get-dir "~/.emacs.d/el-get/")
 (unless (require 'el-get nil 'noerror)
   (with-current-buffer
       (url-retrieve-synchronously
@@ -237,6 +239,7 @@
 (require 'linum)
 (setq linum-format "%5d ")
 (global-linum-mode t)
+(hlinum-activate)
 ;; (setq fill-column 100)
 ;; (set-fill-column 100)
 (require 'whitespace)

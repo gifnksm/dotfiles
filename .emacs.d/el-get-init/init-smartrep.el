@@ -1,3 +1,5 @@
+(require 'smartrep)
+
 (smartrep-define-key global-map "C-c"
   '(("{" . 'shrink-window-horizontally)
     ("}" . 'enlarge-window-horizontally)
