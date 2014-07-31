@@ -1,0 +1,5 @@
+(:name codic
+       :description "Codic for Emacs. This package Emacs port of Codic.vim"
+       :type github
+       :pkgname "syohex/emacs-codic"
+       :autoloads nil)

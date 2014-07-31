@@ -136,6 +136,7 @@
 (el-get 'sync '(undo-tree undohist))
 (el-get 'sync '(revive revive-plus))
 (el-get 'sync '(recentf-ext))
+(el-get 'sync '(codic))
 
 ;;; Input
 (el-get 'sync '(flex-autopair))
