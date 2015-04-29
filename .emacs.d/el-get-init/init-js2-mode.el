@@ -3,3 +3,5 @@
   (whitespace-mode 1)
   (setq js2-basic-offset 2))
 (add-hook 'js2-mode-hook 'js2-mode-hook-fn)
+(add-to-list 'interpreter-mode-alist '("node" . js2-mode))
+(setq js2-skip-preprocessor-directives t)

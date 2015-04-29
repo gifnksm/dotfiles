@@ -157,6 +157,9 @@
 ;;; Web
 (el-get 'sync '(js2-mode))
 (el-get 'sync '(scss-mode))
+(el-get 'sync '(json-mode))             ;required by tss
+(el-get 'sync '(js-doc))
+(el-get 'sync '(tss))
 
 ;;; Documents
 (el-get 'sync '(auctex auto-complete-latex))
@@ -344,14 +347,6 @@
     (fci-mode 1)
     (define-key mode-specific-map "c" 'compile))
   (add-hook 'rust-mode-hook 'rust-mode-hook-fn))
-
-(when (require 'typescript nil t)
-  (add-to-list 'auto-mode-alist '("\\.ts" . typescript-mode))
-  (add-to-list 'ac-modes 'typescript-mode)
-  (defun typescript-mode-hook-fn ()
-    (subword-mode 1)
-    (whitespace-mode 1))
-  (add-hook 'typescript-mode-hook 'typescript-mode-hook-fn))
 
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
 
