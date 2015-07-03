@@ -40,3 +40,8 @@ alias -g W='| wc'
 alias -g S='| sed'
 alias -g A='| awk'
 alias -g W='| wc'
+
+alias sd='svn diff --diff-cmd=colordiff'
+alias sl='svn log --stop-on-copy'
+normsd() { svn diff --diff-cmd diff -x -q $@ | sed -n '/.c$/s/^Index: //p' | sort | xargs svn diff $@ }
+
