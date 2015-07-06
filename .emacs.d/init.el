@@ -3,15 +3,20 @@
   (server-start))
 
 (require 'url)
+(require 'url-http)
 
-(when (getenv "HTTP_PROXY")
-  (setenv "HTTP_PROXY" (replace-regexp-in-string "^http://\\([^@]*@\\)?\\|/$" "" (getenv "HTTP_PROXY")))
-  (add-to-list 'url-proxy-services
-               `("http" . ,(replace-regexp-in-string "^http://\\([^@]*@\\)?\\|/$" "" (getenv "HTTP_PROXY")))))
-(when (getenv "HTTPS_PROXY")
-  (setenv "HTTPS_PROXY" (replace-regexp-in-string "^http://\\([^@]*@\\)?\\|/$" "" (getenv "HTTP_PROXY")))
-  (add-to-list 'url-proxy-services
-               `("https" . ,(replace-regexp-in-string "^http://\\([^@]*@\\)?\\|/$" "" (getenv "HTTPS_PROXY")))))
+(defun parse-proxy-env (protocol envname)
+  (when (getenv envname)
+    (let* ((url (getenv envname))
+           (auth-info (replace-regexp-in-string "^\\(http://\\)\\([^@]*\\)@.*$" "\\2" url))
+           (hostport (replace-regexp-in-string "^http://\\([^@]*@\\)?\\|/$" "" url)))
+      (setenv envname hostport)
+      (add-to-list 'url-proxy-services `(,protocol . ,hostport))
+      (unless (string= auth-info "")
+        (add-to-list 'url-http-proxy-basic-auth-storage `(,hostport ("Proxy" . ,(base64-encode-string auth-info))))))))
+
+(parse-proxy-env "http" "HTTP_PROXY")
+(parse-proxy-env "https" "HTTPS_PROXY")
 
 ;;; encoding config
 (set-language-environment "Japanese")
