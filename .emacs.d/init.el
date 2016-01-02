@@ -113,6 +113,7 @@
 (el-get 'sync '(helm))
 (el-get 'sync '(helm-gtags))
 (el-get 'sync '(helm-descbinds))
+(el-get 'sync '(helm-projectile))
 ;; (el-get 'sync '(anything))
 ;; (el-get 'sync '(descbinds-anything))
 (el-get 'sync '(direx popwin shell-pop))
