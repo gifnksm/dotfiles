@@ -1,1 +1,6 @@
 .netrwhist
+.emacs.d/tramp
+.emacs.d/url
+.vim/bundle/vimproc
+.vim/bundle/vimshell
+
