@@ -147,7 +147,7 @@ function ta() {
 
 
 # added by travis gem
-[ -f /home/nksm/.travis/travis.sh ] && source /home/nksm/.travis/travis.sh
+[ -f $HOME/.travis/travis.sh ] && source $HOME/.travis/travis.sh
 
 # OPAM configuration
-. /home/nksm/.opam/opam-init/init.zsh > /dev/null 2> /dev/null || true
+. $HOME/.opam/opam-init/init.zsh > /dev/null 2> /dev/null || true
