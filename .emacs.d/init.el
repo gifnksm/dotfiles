@@ -39,24 +39,6 @@
 (cond
  ((eq window-system 'ns)
   (setq default-input-method "MacOSX")
-  (mac-set-input-method-parameter "com.justsystems.inputmethod.atok26.Roman" 'title "A")
-  (mac-set-input-method-parameter "com.justsystems.inputmethod.atok26.Japanese" 'title "あ")
-  (mac-set-input-method-parameter "com.justsystems.inputmethod.atok26.Japanese.Katakana" 'title "ア")
-  (mac-set-input-method-parameter "com.justsystems.inputmethod.atok26.Japanese.FullWidthRoman" 'title "英")
-  (mac-set-input-method-parameter "com.justsystems.inputmethod.atok26.Japanese.HalfWidthEiji" 'title "半英")
-  (dolist (param mac-input-method-parameters)
-    (let ((name (car param)))
-       (cond
-        ((string-match "Japanese\\(\\.base\\)?\\'" name) ;; ひらがなの日本語入力
-         (mac-set-input-method-parameter name 'cursor-color "blue"))
-        ((string-match "Japanese" name) ;; カナなどの日本語入力
-         (mac-set-input-method-parameter name 'cursor-color "red"))
-        ((string-match "Roman" name) ;; 英字
-         (mac-set-input-method-parameter name 'cursor-color "white"))
-        (t ;; その他
-         (mac-set-input-method-parameter name 'cursor-color "yellow")))))
-  (mac-set-input-method-parameter "com.apple.keylayout.US" 'cursor-color "white")
-
   (define-key global-map [C-s-268632070] 'toggle-fullscreen)
 
   (create-fontset-from-ascii-font "Menlo-14:weight=normal:slant=normal" nil "menlokakugo")
