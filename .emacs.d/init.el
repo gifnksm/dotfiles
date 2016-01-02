@@ -124,6 +124,7 @@
 (el-get 'sync '(revive revive-plus))
 (el-get 'sync '(recentf-ext))
 (el-get 'sync '(codic))
+(el-get 'sync '(wgrep))
 
 ;;; Input
 (el-get 'sync '(flex-autopair))
