@@ -140,7 +140,6 @@
 
 ;;; Languages
 (el-get 'sync '(d-mode))
-(el-get 'sync '(haskell-mode))
 (el-get 'sync '(gtags))
 (el-get 'sync '(doxymacs))
 (el-get 'sync '(rust-mode))
