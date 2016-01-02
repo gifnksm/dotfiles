@@ -1,1 +1,1 @@
-(setq rustfmt-bin "/Users/nksm/.multirust/toolchains/stable/cargo/bin/rustfmt")
+(setq rustfmt-bin "~/.multirust/toolchains/stable/cargo/bin/rustfmt")
