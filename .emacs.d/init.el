@@ -145,6 +145,8 @@
 (el-get 'sync '(rust-mode))
 (el-get 'sync '(racer))
 (el-get 'sync '(rustfmt))
+(el-get 'sync '(graphviz-dot-mode))
+(el-get 'sync '(tuareg-mode))
 
 ;;; Web
 (el-get 'sync '(js2-mode))
@@ -154,8 +156,11 @@
 (el-get 'sync '(tss))
 
 ;;; Documents
-(el-get 'sync '(auctex auto-complete-latex))
+(el-get 'sync '(auctex))
+(el-get 'sync '(auto-complete-latex))
 (el-get 'sync '(markdown-mode))
+(el-get 'sync '(yaml-mode))
+(el-get 'sync '(toml-mode))
 
 ;;; System
 (el-get 'sync '(pkgbuild-mode))
