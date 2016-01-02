@@ -145,3 +145,9 @@ function ta() {
 [ -f ~/.zsh/tmux.zsh  ] && source ~/.zsh/tmux.zsh
 [ -f ~/.zsh/local.zsh ] && source ~/.zsh/local.zsh
 
+
+# added by travis gem
+[ -f /home/nksm/.travis/travis.sh ] && source /home/nksm/.travis/travis.sh
+
+# OPAM configuration
+. /home/nksm/.opam/opam-init/init.zsh > /dev/null 2> /dev/null || true
