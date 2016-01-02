@@ -128,6 +128,7 @@
 ;;; Input
 (el-get 'sync '(flex-autopair))
 (el-get 'sync '(auto-complete auto-complete-clang auto-complete-emacs-lisp))
+(el-get 'sync '(company-mode))
 (el-get 'sync '(sequential-command smartrep))
 (el-get 'sync '(key-combo))
 
