@@ -142,6 +142,9 @@
 (el-get 'sync '(haskell-mode))
 (el-get 'sync '(gtags))
 (el-get 'sync '(doxymacs))
+(el-get 'sync '(rust-mode))
+(el-get 'sync '(racer))
+(el-get 'sync '(rustfmt))
 
 ;;; Web
 (el-get 'sync '(js2-mode))
@@ -342,8 +345,14 @@
     (setq c-basic-offset 4)
     (setq comment-style 'multi-line)
     (fci-mode 1)
-    (define-key mode-specific-map "c" 'compile))
+    (define-key mode-specific-map "c" 'compile)
+    (define-key rust-mode-map (kbd "TAB") 'company-indent-or-complete-common)
+    (define-key rust-mode-map (kbd "C-c C-f") #'rustfmt-format-buffer))
   (add-hook 'rust-mode-hook 'rust-mode-hook-fn))
+(add-hook 'rust-mode-hook #'racer-mode)
+(add-hook 'racer-mode-hook #'eldoc-mode)
+(add-hook 'racer-mode-hook #'company-mode)
+(add-hook 'rust-mode-hook #'rustfmt-enable-on-save)
 
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
 
