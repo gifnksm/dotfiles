@@ -82,8 +82,8 @@
 
 (cond
  ((equal (system-name) "MacBook-Pro.local")
-  (add-to-exec-path "/usr/texbin")
-  (add-to-exec-path "/usr/local/bin")))
+  (add-to-exec-path "/usr/texbin")))
+(add-to-exec-path "/usr/local/bin")
 (add-to-exec-path "/usr/share/gtags/script/")
 
 ;; el-get
@@ -147,6 +147,8 @@
 (el-get 'sync '(rustfmt))
 (el-get 'sync '(graphviz-dot-mode))
 (el-get 'sync '(tuareg-mode))
+(el-get 'sync '(flycheck))
+(el-get 'sync '(flycheck-rust))
 
 ;;; Web
 (el-get 'sync '(js2-mode))
@@ -360,6 +362,7 @@
 (add-hook 'racer-mode-hook #'eldoc-mode)
 (add-hook 'racer-mode-hook #'company-mode)
 (add-hook 'rust-mode-hook #'rustfmt-enable-on-save)
+(add-hook 'flycheck-mode-hook #'flycheck-rust-setup)
 
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
 
