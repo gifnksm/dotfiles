@@ -1,4 +1,4 @@
-(setq racer-cmd "~/.multirust/toolchains/stable/cargo/bin/racer")
+(setq racer-cmd "~/.cargo/bin/racer")
 (cond ((file-exists-p "~/work/repos")
        (setq racer-rust-src-path "~/work/repos/rust-lang/rust/src"))
       ((file-exists-p "~/repos")

@@ -144,7 +144,6 @@
 (el-get 'sync '(doxymacs))
 (el-get 'sync '(rust-mode))
 (el-get 'sync '(racer))
-(el-get 'sync '(rustfmt))
 (el-get 'sync '(graphviz-dot-mode))
 (el-get 'sync '(tuareg-mode))
 (el-get 'sync '(flycheck))
@@ -355,13 +354,11 @@
     (fci-mode 1)
     (hl-line-mode 1)
     (define-key mode-specific-map "c" 'compile)
-    (define-key rust-mode-map (kbd "TAB") 'company-indent-or-complete-common)
-    (define-key rust-mode-map (kbd "C-c C-f") #'rustfmt-format-buffer))
+    (define-key rust-mode-map (kbd "TAB") 'company-indent-or-complete-common))
   (add-hook 'rust-mode-hook #'rust-mode-hook-fn))
 (add-hook 'rust-mode-hook #'racer-mode)
 (add-hook 'racer-mode-hook #'eldoc-mode)
 (add-hook 'racer-mode-hook #'company-mode)
-(add-hook 'rust-mode-hook #'rustfmt-enable-on-save)
 (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)
 
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
@@ -373,7 +370,11 @@
  ;; If there is more than one, they won't work right.
  '(anything-command-map-prefix-key "C-:")
  '(custom-enabled-themes (quote (tango-2)))
- '(custom-safe-themes (quote ("e9a1226ffed627ec58294d77c62aa9561ec5f42309a1f7a2423c6227e34e3581" default)))
+ '(custom-safe-themes
+   (quote
+    ("e9a1226ffed627ec58294d77c62aa9561ec5f42309a1f7a2423c6227e34e3581" default)))
+ '(rust-format-on-save t)
+ '(rust-rustfmt-bin "~/.cargo/bin/rustfmt")
  '(shell-pop-universal-key "C-S-q")
  '(skk-check-okurigana-on-touroku (quote ask))
  '(skk-kakutei-key (kbd "C-S-j"))
