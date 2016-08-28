@@ -82,7 +82,7 @@
 
 (cond
  ((equal (system-name) "MacBook-Pro.local")
-  (add-to-exec-path "/usr/texbin")))
+  (add-to-exec-path "/Library/TeX/texbin")))
 (add-to-exec-path "/usr/local/bin")
 (add-to-exec-path "/usr/share/gtags/script/")
 
