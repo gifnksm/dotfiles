@@ -140,6 +140,20 @@ function ta() {
   fi
 }
 
+if which pbcopy > /dev/null 2>&1; then
+  kill-line() { zle .kill-line ; echo -n $CUTBUFFER | pbcopy }
+  zle -N kill-line # bound on C-k
+
+  backward-kill-word() { zle .backward-kill-word ; echo -n $CUTBUFFER | pbcopy }
+  zle -N backward-kill-word # bound on C-w
+
+  copy-region-as-kill() { zle .copy-region-as-kill; echo -n $CUTBUFFER | pbcopy }
+  zle -N copy-region-as-kill # bound on M-w
+fi
+
+#  yank() { LBUFFER=$LBUFFER$(pbpaste) }
+#  zle -N yank # bound on C-y
+
 [ -f ~/.zsh/alias.zsh ] && source ~/.zsh/alias.zsh
 [ -f ~/.zsh/ssh.zsh   ] && source ~/.zsh/ssh.zsh
 [ -f ~/.zsh/tmux.zsh  ] && source ~/.zsh/tmux.zsh
