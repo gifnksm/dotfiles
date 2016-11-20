@@ -1,3 +1,10 @@
+
+;; Added by Package.el.  This must come before configurations of
+;; installed packages.  Don't delete this line.  If you don't want it,
+;; just comment it out by adding a semicolon to the start of the line.
+;; You may delete these explanatory comments.
+;; (package-initialize)
+
 (require 'server)
 (unless (server-running-p)
   (server-start))
@@ -108,6 +115,7 @@
 ;; Misc
 (el-get 'sync '(el-get))
 (el-get 'sync '(cl-lib))
+(el-get 'sync '(f))
 
 ;;; Utilities
 (el-get 'sync '(helm))
@@ -143,7 +151,7 @@
 (el-get 'sync '(gtags))
 (el-get 'sync '(doxymacs))
 (el-get 'sync '(rust-mode))
-(el-get 'sync '(racer))
+(el-get 'sync '(emacs-racer))
 (el-get 'sync '(graphviz-dot-mode))
 (el-get 'sync '(tuareg-mode))
 (el-get 'sync '(flycheck))
