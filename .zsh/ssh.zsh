@@ -16,16 +16,18 @@ function ssh_tmux() {
     local cmd="${argv}"
     ssh_add_key
     tmux -q \
-        set set-remain-on-exit on \; \
-        new-window -n "${cmd}" "TERM=xterm-256color /usr/bin/ssh $cmd" \; \
-        set set-remain-on-exit off
+        set-hook window-linked 'set remain-on-exit on' \; \
+        new-window -n "${cmd}" "TERM=xterm-256color /usr/bin/ssh $cmd"
+    tmux -q \
+        set-hook -u window-linked
 }
 function pssh_tmux() {
     local cmd="${argv}"
     tmux -q \
-        set set-remain-on-exit on \; \
-        new-window -n "${cmd}" "TERM=xterm-256color pssh $cmd" \; \
-        set set-remain-on-exit off
+        set-hook window-linked 'set remain-on-exit on' \; \
+        new-window -n "${cmd}" "TERM=xterm-256color pssh $cmd"
+    tmux -q \
+        set-hook -u window-linked
 }
 
 function ssh_with_key() {
