@@ -21,7 +21,7 @@ alias grep='grep --color=auto'
 alias where="command -v"
 
 alias updrc="source $HOME/.zshrc"
-alias etags_all="find -L -name \"*.[ch]\" -print | etags -"
+alias etags_all="find -L -name \"*.[ch]\" -print | xargs etags"
 alias j=z
 alias vim="vim -X"
 alias view="vim -R"
@@ -44,4 +44,10 @@ alias -g W='| wc'
 alias sd='svn diff --diff-cmd=colordiff'
 alias sl='svn log --stop-on-copy'
 normsd() { svn diff --diff-cmd diff -x -q $@ | sed -n '/.c$/s/^Index: //p' | sort | xargs svn diff $@ }
+
+rgl() {
+  ~/.cargo/bin/rg -p "$@" | less -XFR
+}
+alias rg=rgl
+
 
