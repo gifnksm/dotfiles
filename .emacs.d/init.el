@@ -144,7 +144,6 @@
 
 ;;; Visual
 (el-get 'sync '(fill-column-indicator))
-(el-get 'sync '(hlinum linum-ex))
 
 ;;; Languages
 (el-get 'sync '(d-mode))
@@ -254,12 +253,8 @@
 ;; (cancel-timer global-hl-line-timer)
 ;; (global-hl-line-mode 1)
 
-(require 'linum)
-(setq linum-format "%5d ")
-(global-linum-mode t)
-;; (hlinum-activate)
-;; (setq fill-column 100)
-;; (set-fill-column 100)
+(add-hook 'prog-mode-hook #'display-line-numbers-mode)
+(add-hook 'text-mode-hook #'display-line-numbers-mode)
 (require 'whitespace)
 (setq whitespace-line-column nil
       whitespace-style '(face trailing lines-tail tabs tab-mark
@@ -327,10 +322,6 @@
       ("k" . previous-line)
       ("l" . forward-char))))
 (add-hook 'view-mode-hook 'view-mode-hook-fn)
-
-(defun doc-view-mode-hook-fn ()
-  (linum-mode -1))
-(add-hook 'doc-view-mode-hook 'doc-view-mode-hook-fn)
 
 (when (require 'mozc nil t)
   (require 'ccc)
