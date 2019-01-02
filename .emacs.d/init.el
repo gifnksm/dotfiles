@@ -116,6 +116,7 @@
 (el-get 'sync '(el-get))
 (el-get 'sync '(cl-lib))
 (el-get 'sync '(f))
+(el-get 'sync '(projectile))
 
 ;;; Utilities
 (el-get 'sync '(helm))
