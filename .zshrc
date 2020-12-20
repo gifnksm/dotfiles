@@ -126,6 +126,7 @@ fi
 [ -f ~/.zsh/alias.zsh ] && source ~/.zsh/alias.zsh
 [ -f ~/.zsh/ssh.zsh   ] && source ~/.zsh/ssh.zsh
 [ -f ~/.zsh/tmux.zsh  ] && source ~/.zsh/tmux.zsh
+[ -f ~/.zsh/fzf.zsh   ] && source ~/.zsh/fzf.zsh
 [ -f ~/.zsh/local.zsh ] && source ~/.zsh/local.zsh
 
 
