@@ -1,11 +1,32 @@
 alias __fzfcmd=sk
 
-function __fzf-is-in-git-repo() {
-  git rev-parse HEAD > /dev/null 2>&1
+function __fzf-exec() {
+  if zle; then
+    BUFFER="$@"
+    zle accept-line
+  else
+    $@
+  fi
 }
 
-function __fzf-cd-repositories() {
-  local selected=$(rhq list | __fzfcmd --prompt='REPOS> ' --query="$LBUFFER")
+function __fzf-message() {
+  if zle; then
+    zle -M "zsh: $1"
+  else
+    echo "zsh: $1" >&2
+  fi
+}
+
+function __fzf-is-in-git-repo() {
+  if ! git rev-parse HEAD > /dev/null 2>&1; then
+    __fzf-message "not a git repository"
+    return 1
+  fi
+  return 0
+}
+
+function __fzf-cd-repository() {
+  local selected=$(rhq list | __fzfcmd --prompt='CHANGE DIRECTORY> ' --query="$LBUFFER")
   if [[ -n $selected ]]; then
     BUFFER="cd \"${selected}\""
     zle accept-line
@@ -13,49 +34,70 @@ function __fzf-cd-repositories() {
   zle clear-screen
 }
 
-function __fzf-select-git-branch() {
+function __fzf-select-git-ref() {
+  local fzf_target="${1}"
+  local fzf_prompt="${2}"
+  local fzf_query="${3}"
+  [[ "${fzf_target}" =~ "\*" ]] && fzf_target+="btc"
+  (
+    [[ "${fzf_target}" =~ "b" ]] && git branch --color=always -a -vv | sed 's/^../B /';
+    [[ "${fzf_target}" =~ "t" ]] && git tag    --color=always --sort -version:refname | sed 's/^/T /';
+    [[ "${fzf_target}" =~ "c" ]] && git log    --color=always --date=short --format="%C(auto)%h %C(blue)%C(bold)%cd %C(green)%<(20)%an %C(auto)%d %C(reset)%s" | sed 's/^/C /';
+  ) |
+    __fzfcmd --prompt="${fzf_prompt}> " --query="${fzf_query}" --ansi --preview='git show --color=always {2} | delta' --exit-0 |
+    awk '{print $2}'
+}
+
+function __fzf-input-git-ref-common() {
   __fzf-is-in-git-repo || return 1
-  git branch -a -vv --color=always |
-    sed 's/^..//' |
-    __fzfcmd --prompt='BRANCH> ' --query="${1:-}" --ansi --preview='git show --color=always {1}' |
-    awk '{print $1}'
+  local fzf_target="${1}"
+  local fzf_prompt="${2}"
+  LBUFFER+="$(__fzf-select-git-ref "${fzf_target}" "${fzf_prompt}" "")"
 }
 
-function __fzf-select-git-tag() {
+function __fzf-git-checkout-common() {
   __fzf-is-in-git-repo || return 1
-  git tag --color=always --sort -version:refname |
-    __fzfcmd --prompt='TAG> ' --query="${1:-}" --ansi --preview='git show --color=always {}'
-}
-
-function __fzf-input-git-branch() { LBUFFER+="$(__fzf-select-git-branch)" }
-function __fzf-git-switch-branch() {
-  local query="${LBUFFER}"
-  local selected="$(__fzf-select-git-branch "${query}" | sed 's#^remotes/[^/]*/##')"
+  local fzf_target="${1}"
+  local fzf_prompt="${2}"
+  local selected="$(__fzf-select-git-ref "${fzf_target}" "${fzf_prompt}" "${LBUFFER}" | sed 's#^remotes/[^/]*/##')"
   if [[ -n "${selected}" ]]; then
-    BUFFER="git checkout \"${selected}\""
-    zle accept-line
+    __fzf-exec git checkout "${selected}"
+  else
+    __fzf-message "no refs selected"
   fi
-  zle clear-screen
 }
 
-function __fzf-input-git-tag() { LBUFFER+="$(__fzf-select-git-tag)" }
-function __fzf-git-switch-tag() {
-  local query="${LBUFFER}"
-  local selected="$(__fzf-select-git-tag "${query}")"
+function __fzf-input-git-ref()    { __fzf-input-git-ref-common "*" "INPUT GIT REF" }
+function __fzf-input-git-branch() { __fzf-input-git-ref-common "b" "INPUT GIT BRANCH" }
+function __fzf-input-git-tag()    { __fzf-input-git-ref-common "t" "INPUT GIT TAG" }
+function __fzf-input-git-commit() { __fzf-input-git-ref-common "c" "INPUT GIT COMMIT" }
+function __fzf-git-checkout()     { __fzf-git-checkout-common  "*" "GIT CHECKOUT" }
+function __fzf-git-switch()       { __fzf-git-checkout-common  "b" "GIT SWITCH" }
+
+function __fzf-git-add() {
+  __fzf-is-in-git-repo || return 1
+  local selected="$(git status --porcelain |
+    sed -n '/^.[^ ]/s/^.//p' |
+    sk --multi --ansi --tac --preview 'git diff {2} | delta' |
+    sed 's/^..//'
+  )"
   if [[ -n "${selected}" ]]; then
-    BUFFER="git checkout \"${selected}\""
-    zle accept-line
+    __fzf-exec git add $@ ${selected}
+  else
+    __fzf-message "no files selected"
   fi
-  zle clear-screen
 }
 
-zle -N __fzf-cd-repositories
-bindkey '^g' __fzf-cd-repositories
-zle -N __fzf-input-git-branch
-bindkey '^g^b' __fzf-input-git-branch
-zle -N __fzf-git-switch-branch
-bindkey '^g^s^b' __fzf-git-switch-branch
-zle -N __fzf-input-git-tag
-bindkey '^g^t' __fzf-input-git-tag
-zle -N __fzf-git-switch-tag
-bindkey '^g^s^t' __fzf-git-switch-tag
+while read key fn; do
+  zle -N "${fn}"
+  bindkey "${key}" "${fn}"
+done <<END
+^g      __fzf-cd-repository
+^g^r    __fzf-input-git-ref
+^g^b    __fzf-input-git-branch
+^g^t    __fzf-input-git-tag
+^g^l    __fzf-input-git-commit
+^g^h    __fzf-git-checkout
+^g^s    __fzf-git-switch
+^g^a    __fzf-git-add
+END
