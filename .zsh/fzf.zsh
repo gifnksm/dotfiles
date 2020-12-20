@@ -89,7 +89,7 @@ function __fzf-git-switch()       { __fzf-git-checkout-common  "b" "GIT SWITCH" 
 
 function __fzf-git-add() {
   __fzf-is-in-git-repo || return 1
-  local selected=("${(@f)$(__fzf-select-files-to-be-staged)}")
+  local selected=($(__fzf-select-files-to-be-staged))
   if [[ "${#selected[@]}" -gt 0 ]]; then
     __fzf-exec git add $@ ${selected[@]}
   else
