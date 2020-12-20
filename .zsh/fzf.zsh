@@ -26,7 +26,7 @@ function __fzf-is-in-git-repo() {
 }
 
 function __fzf-cd-repository() {
-  local selected=$(rhq list | __fzfcmd --prompt='CHANGE DIRECTORY> ' --query="$LBUFFER")
+  local selected=$(rhq list | __fzfcmd --query="$LBUFFER" --exit-0 --prompt='CHANGE DIRECTORY> ')
   if [[ -n $selected ]]; then
     BUFFER="cd \"${selected}\""
     zle accept-line
@@ -44,8 +44,15 @@ function __fzf-select-git-ref() {
     [[ "${fzf_target}" =~ "t" ]] && git tag    --color=always --sort -version:refname | sed 's/^/T /';
     [[ "${fzf_target}" =~ "c" ]] && git log    --color=always --date=short --format="%C(auto)%h %C(blue)%C(bold)%cd %C(green)%<(20)%an %C(auto)%d %C(reset)%s" | sed 's/^/C /';
   ) |
-    __fzfcmd --prompt="${fzf_prompt}> " --query="${fzf_query}" --ansi --preview='git show --color=always {2} | delta' --exit-0 |
+    __fzfcmd --prompt="${fzf_prompt}> " --query="${fzf_query}" --ansi --exit-0 --preview='git show --color=always {2} | delta' |
     awk '{print $2}'
+}
+
+function __fzf-select-files-to-be-staged() {
+  git status --porcelain |
+    sed -n '/^.[^ ]/s/^.//p' |
+    sk --multi --ansi --tac --exit-0 --preview 'git diff {2} | delta' |
+    sed 's/^..//'
 }
 
 function __fzf-input-git-ref-common() {
@@ -76,13 +83,9 @@ function __fzf-git-switch()       { __fzf-git-checkout-common  "b" "GIT SWITCH" 
 
 function __fzf-git-add() {
   __fzf-is-in-git-repo || return 1
-  local selected="$(git status --porcelain |
-    sed -n '/^.[^ ]/s/^.//p' |
-    sk --multi --ansi --tac --preview 'git diff {2} | delta' |
-    sed 's/^..//'
-  )"
-  if [[ -n "${selected}" ]]; then
-    __fzf-exec git add $@ ${selected}
+  local selected=("${(@f)$(__fzf-select-files-to-be-staged)}")
+  if [[ "${#selected[@]}" -gt 0 ]]; then
+    __fzf-exec git add $@ ${selected[@]}
   else
     __fzf-message "no files selected"
   fi
