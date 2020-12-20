@@ -100,16 +100,5 @@ let &pastetoggle = "\e[201~"
 exec "set <F13>=\e[200~"
 inoremap <F13> <C-o>:set paste<CR>
 
-set nocompatible
-filetype off
-set rtp+=~/.vim/bundle/vundle/
-call vundle#rc()
-
-Bundle 'gmarik/vundle'
-if v:version >= 702
-  Bundle 'https://github.com/Shougo/vimshell.git'
-  Bundle 'https://github.com/Shougo/vimproc'
-endif
-
 filetype plugin indent on
 
