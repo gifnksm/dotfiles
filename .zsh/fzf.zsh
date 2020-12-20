@@ -1,4 +1,10 @@
-alias __fzfcmd=sk
+if which sk > /dev/null 2>&1; then
+  alias __fzfcmd=sk
+elif which fzf > /dev/null 2>&1; then
+  alias __fzfcmd=fzf
+else
+  echo "warning: sk or fzf are not installed" >&2
+fi
 
 function __fzf-exec() {
   if zle; then
