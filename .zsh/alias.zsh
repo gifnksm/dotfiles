@@ -46,7 +46,7 @@ alias sl='svn log --stop-on-copy'
 normsd() { svn diff --diff-cmd diff -x -q $@ | sed -n '/.c$/s/^Index: //p' | sort | xargs svn diff $@ }
 
 rgl() {
-  ~/.cargo/bin/rg -p "$@" | less -XFR
+  rg -p "$@" | less -XFR
 }
 alias rg=rgl
 
