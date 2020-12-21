@@ -2,16 +2,6 @@ function ssh_add_key() {
   ssh-add -l > /dev/null || ssh-add -t 1800 $@
 }
 
-function ssh_screen() {
-    local cmd="${argv}"
-    ssh_add_key
-    screen -t "$cmd" /usr/bin/ssh "$cmd"
-}
-function pssh_screen() {
-    local cmd="${argv}"
-    screen -t "$cmd" pssh "$cmd"
-}
-
 function ssh_tmux() {
     local cmd="${argv}"
     ssh_add_key
@@ -37,10 +27,7 @@ function ssh_with_key() {
 
 which keychain > /dev/null 2>&1 && eval $(keychain --nogui --eval --agents ssh --timeout 30 -q)
 
-if [ -n "$STY" ]; then
-    alias ssh=ssh_screen
-    alias pssh=pssh_screen
-elif [ -n "$TMUX" ]; then
+if [ -n "$TMUX" ]; then
     alias ssh=ssh_tmux
     alias pssh=pssh_tmux
 else

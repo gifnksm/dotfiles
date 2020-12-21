@@ -89,17 +89,12 @@ stack: $LBUFFER"
   zle push-line-or-edit
 }
 zle -N show_buffer_stack
+bindkey "^q" show_buffer_stack
 bindkey "^[q" show_buffer_stack
+bindkey "^[Q" show_buffer_stack
 
 limit coredumpsize unlimited
 ulimit -c unlimited
-
-# GNU screenのattach時に環境変数を自動的に引き継ぐ - 貳佰伍拾陸夜日記
-# http://d.hatena.ne.jp/tarao/20101025/1287971794
-typeset -ga preexec_functions
-[ -f ~/.zsh/screen.zsh ] && source ~/.zsh/screen.zsh
-[ -f ~/.zsh/screen-attach.zsh ] && source ~/.zsh/screen-attach.zsh
-[ -f ~/.zsh/screen-alias.zsh ]  && source ~/.zsh/screen-alias.zsh
 
 function ta() {
   if $(tmux has-session 2> /dev/null); then
@@ -108,20 +103,6 @@ function ta() {
     tmux
   fi
 }
-
-if which pbcopy > /dev/null 2>&1; then
-  kill-line() { zle .kill-line ; echo -n $CUTBUFFER | pbcopy }
-  zle -N kill-line # bound on C-k
-
-  backward-kill-word() { zle .backward-kill-word ; echo -n $CUTBUFFER | pbcopy }
-  zle -N backward-kill-word # bound on C-w
-
-  copy-region-as-kill() { zle .copy-region-as-kill; echo -n $CUTBUFFER | pbcopy }
-  zle -N copy-region-as-kill # bound on M-w
-fi
-
-#  yank() { LBUFFER=$LBUFFER$(pbpaste) }
-#  zle -N yank # bound on C-y
 
 [ -f ~/.zsh/alias.zsh ] && source ~/.zsh/alias.zsh
 [ -f ~/.zsh/ssh.zsh   ] && source ~/.zsh/ssh.zsh
