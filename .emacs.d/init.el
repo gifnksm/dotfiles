@@ -339,28 +339,6 @@
   (add-hook 'input-method-activate-hook 'mozc-change-cursor-color)
   (add-hook 'input-method-inactivate-hook 'mozc-change-cursor-color))
 
-(when (require 'rust-mode nil t)
-  (defun rust-mode-hook-fn ()
-    (setq fill-column 80)
-    (setq whitespace-line-column 80)
-    (subword-mode 1)
-    (setq indent-tabs-mode nil)
-    (setq default-tab-width 4)
-    (setq rust-indent-offset 4)
-    (setq c-basic-offset 4)
-    (setq comment-style 'multi-line)
-    (fci-mode 1)
-    (hl-line-mode 1)
-    (define-key mode-specific-map "c" 'compile)
-    (define-key rust-mode-map (kbd "TAB") 'company-indent-or-complete-common))
-  (add-hook 'rust-mode-hook #'rust-mode-hook-fn))
-(add-hook 'rust-mode-hook #'racer-mode)
-(add-hook 'racer-mode-hook #'eldoc-mode)
-(add-hook 'racer-mode-hook #'company-mode)
-(add-hook 'flycheck-mode-hook #'flycheck-rust-setup)
-
-(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
-
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
