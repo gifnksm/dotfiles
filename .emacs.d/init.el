@@ -132,6 +132,7 @@
 (el-get 'sync '(cl-lib))
 (el-get 'sync '(f))
 (el-get 'sync '(projectile))
+(el-get 'sync '(magit))
 
 ;;; Utilities
 (el-get 'sync '(helm))
