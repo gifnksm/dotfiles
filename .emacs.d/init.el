@@ -138,8 +138,6 @@
 (el-get 'sync '(helm-gtags))
 (el-get 'sync '(helm-descbinds))
 (el-get 'sync '(helm-projectile))
-;; (el-get 'sync '(anything))
-;; (el-get 'sync '(descbinds-anything))
 (el-get 'sync '(direx popwin shell-pop))
 (el-get 'sync '(zlc))
 (el-get 'sync '(pos-tip))
@@ -148,12 +146,11 @@
 (el-get 'sync '(undo-tree undohist))
 (el-get 'sync '(revive revive-plus))
 (el-get 'sync '(recentf-ext))
-(el-get 'sync '(codic))
 (el-get 'sync '(wgrep))
 
 ;;; Input
 (el-get 'sync '(flex-autopair))
-(el-get 'sync '(auto-complete auto-complete-clang auto-complete-emacs-lisp))
+(el-get 'sync '(auto-complete auto-complete-clang))
 (el-get 'sync '(company-mode))
 (el-get 'sync '(sequential-command smartrep))
 (el-get 'sync '(key-combo))
@@ -162,26 +159,12 @@
 (el-get 'sync '(fill-column-indicator))
 
 ;;; Languages
-(el-get 'sync '(d-mode))
 (el-get 'sync '(gtags))
 (el-get 'sync '(doxymacs))
-(el-get 'sync '(rust-mode))
-(el-get 'sync '(emacs-racer))
 (el-get 'sync '(graphviz-dot-mode))
-(el-get 'sync '(tuareg-mode))
 (el-get 'sync '(flycheck))
-(el-get 'sync '(flycheck-rust))
-
-;;; Web
-(el-get 'sync '(js2-mode))
-(el-get 'sync '(scss-mode))
-(el-get 'sync '(json-mode))             ;required by tss
-(el-get 'sync '(js-doc))
-(el-get 'sync '(tss))
 
 ;;; Documents
-(el-get 'sync '(auctex))
-(el-get 'sync '(auto-complete-latex))
 (el-get 'sync '(markdown-mode))
 (el-get 'sync '(yaml-mode))
 (el-get 'sync '(toml-mode))
@@ -189,7 +172,7 @@
 ;;; System
 (el-get 'sync '(pkgbuild-mode))
 
-(setq  recentf-save-file (concat user-emacs-directory "recentf"))
+(setq recentf-save-file (concat user-emacs-directory "recentf"))
 
 ;;; completion
 (setq read-file-name-completion-ignore-case t)
@@ -384,17 +367,17 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(anything-command-map-prefix-key "C-:")
- '(custom-enabled-themes (quote (tango-2)))
+ '(custom-enabled-themes '(tango-2))
  '(custom-safe-themes
-   (quote
-    ("e9a1226ffed627ec58294d77c62aa9561ec5f42309a1f7a2423c6227e34e3581" default)))
+   '("e9a1226ffed627ec58294d77c62aa9561ec5f42309a1f7a2423c6227e34e3581" default))
+ '(package-selected-packages '(sequential-command key-combo))
  '(rust-format-on-save t)
  '(rust-rustfmt-bin "~/.cargo/bin/rustfmt")
  '(shell-pop-universal-key "C-S-q")
- '(skk-check-okurigana-on-touroku (quote ask))
+ '(skk-check-okurigana-on-touroku 'ask)
  '(skk-kakutei-key (kbd "C-S-j"))
  '(skk-show-annotation t)
- '(skk-show-inline (quote vertical))
+ '(skk-show-inline 'vertical)
  '(skk-show-tooltip t)
  '(skk-use-color-cursor t)
  '(skk-user-directory "~/.emacs.d/ddskk"))
