@@ -103,6 +103,7 @@ while read key fn; do
   bindkey "${key}" "${fn}"
 done <<END
 ^g      __fzf-cd-repository
+^g^g    __fzf-cd-repository
 ^g^r    __fzf-input-git-ref
 ^g^b    __fzf-input-git-branch
 ^g^t    __fzf-input-git-tag
