@@ -15,7 +15,7 @@
 (defun parse-proxy-env (protocol envname)
   (when (getenv envname)
     (let* ((url (getenv envname))
-           (auth-info (replace-regexp-in-string "^\\(https?://\\)\\([^@]*\\)@.*$" "\\2" url))
+           (auth-info (replace-regexp-in-string "^https?://\\([^@]*\\)@.*$" "\\1" url))
            (hostport (replace-regexp-in-string "^https?://\\([^@]*@\\)?\\|/$" "" url)))
       (setenv envname hostport)
       (add-to-list 'url-proxy-services `(,protocol . ,hostport))
