@@ -103,10 +103,6 @@
       (goto-char (point-max))
       (eval-print-last-sexp))))
 
-(add-to-list 'package-archives
-             '("marmalade" . "http://marmalade-repo.org/packages/"))
-(add-to-list 'package-archives
-             '("melpa" . "http://melpa.milkbox.net/packages/"))
 (add-to-list 'el-get-recipe-path
              (concat user-emacs-directory "el-get-recipes"))
 (setq el-get-user-package-directory
