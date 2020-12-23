@@ -258,6 +258,23 @@
            (whitespace-style . '(face trailing lines-tail tabs tab-mark
                                       space-before-tab space-after-tab))))
 
+(leaf xt-mouse
+  :doc "support the mouse when emacs run in an xterm"
+  :tag "builtin"
+  :added "2020-12-23"
+  :global-minor-mode xterm-mouse-mode)
+
+(leaf prescient
+  :doc "Better sorting and filtering"
+  :req "emacs-25.1"
+  :tag "extensions" "emacs>=25.1"
+  :added "2020-12-23"
+  :url "https://github.com/raxod502/prescient.el"
+  :emacs>= 25.1
+  :ensure t
+  :custom ((prescient-aggressive-file-save . t))
+  :global-minor-mode prescient-persist-mode)
+
 (leaf ivy
   :doc "Incremental Vertical completYon"
   :req "emacs-24.5"
@@ -283,7 +300,17 @@
     :after ivy
     ;; :bind ("C-s" . swiper)
     )
-
+  (leaf ivy-prescient
+    :doc "prescient.el + Ivy"
+    :req "emacs-25.1" "prescient-5.0" "ivy-0.11.0"
+    :tag "extensions" "emacs>=25.1"
+    :added "2020-12-23"
+    :url "https://github.com/raxod502/prescient.el"
+    :emacs>= 25.1
+    :ensure t
+    :after prescient ivy
+    :custom ((ivy-prescient-retain-classic-highlighting . t))
+    :global-minor-mode t)
   (leaf counsel
     :doc "Various completion functions using Ivy"
     :req "emacs-24.5" "swiper-0.13.0"
@@ -298,48 +325,26 @@
            ("C-x C-r" . counsel-recentf))
     :custom `((counsel-yank-pop-separator . "\n----------\n")
               (counsel-find-file-ignore-regexp . ,(rx-to-string '(or "./" "../") 'no-group)))
-    :global-minor-mode t))
-
-(leaf prescient
-  :doc "Better sorting and filtering"
-  :req "emacs-25.1"
-  :tag "extensions" "emacs>=25.1"
-  :added "2020-12-23"
-  :url "https://github.com/raxod502/prescient.el"
-  :emacs>= 25.1
-  :ensure t
-  :custom ((prescient-aggressive-file-save . t))
-  :global-minor-mode prescient-persist-mode)
-
-(leaf ivy-prescient
-  :doc "prescient.el + Ivy"
-  :req "emacs-25.1" "prescient-5.0" "ivy-0.11.0"
-  :tag "extensions" "emacs>=25.1"
-  :added "2020-12-23"
-  :url "https://github.com/raxod502/prescient.el"
-  :emacs>= 25.1
-  :ensure t
-  :after prescient ivy
-  :custom ((ivy-prescient-retain-classic-highlighting . t))
-  :global-minor-mode t)
-
-(leaf counsel-gtags
-  :doc "ivy for GNU global"
-  :req "emacs-25.1" "counsel-0.8.0" "seq-1.0"
-  :tag "emacs>=25.1"
-  :added "2020-12-23"
-  :url "https://github.com/FelipeLema/emacs-counsel-gtags"
-  :emacs>= 25.1
-  :ensure t
-  :after counsel
-  :hook (c-mode-hook c++-mode-hook dired-mode-hook)
-  :bind '(counsel-gtags-mode-map
-          ("C-c f" . counsel-gtags-find-file)
-          ("C-c s" . counsel-gtags-find-symbol)
-          ("C-c r" . counsel-gtags-find-reference)
-          ("C-c d" . counsel-gtags-find-definition)
-          ("M-." . counsel-gtags-find-definition)
-          ("M-*" . counsel-gtags-go-backward)))
+    :global-minor-mode t
+    :config
+    (leaf counsel-gtags
+      :doc "ivy for GNU global"
+      :req "emacs-25.1" "counsel-0.8.0" "seq-1.0"
+      :tag "emacs>=25.1"
+      :added "2020-12-23"
+      :url "https://github.com/FelipeLema/emacs-counsel-gtags"
+      :emacs>= 25.1
+      :ensure t
+      :after counsel
+      :hook (c-mode-hook c++-mode-hook dired-mode-hook)
+      :bind '(counsel-gtags-mode-map
+              ("C-c f" . counsel-gtags-find-file)
+              ("C-c s" . counsel-gtags-find-symbol)
+              ("C-c r" . counsel-gtags-find-reference)
+              ("C-c d" . counsel-gtags-find-definition)
+              ("M-." . counsel-gtags-find-definition)
+              ("M-*" . counsel-gtags-go-backward)))
+    ))
 
 (leaf projectile
   :doc "Manage and navigate projects in Emacs easily"
@@ -406,6 +411,15 @@
            (company-transformers . '(company-sort-by-occurrence)))
   :global-minor-mode global-company-mode
   :config
+  (leaf company-prescient
+    :doc "prescient.el + Company"
+    :req "emacs-25.1" "prescient-5.0" "company-0.9.6"
+    :tag "extensions" "emacs>=25.1"
+    :added "2020-12-23"
+    :url "https://github.com/raxod502/prescient.el"
+    :emacs>= 25.1
+    :ensure t
+    :after prescient company)
   (leaf company-c-headers
     :doc "Company mode backend for C/C++ header files"
     :req "emacs-24.1" "company-0.8"
@@ -446,15 +460,15 @@
  '(enable-recursive-minibuffers t)
  '(history-delete-duplicates t)
  '(history-length 10000)
- '(imenu-list-position 'left t)
- '(imenu-list-size 30 t)
+ '(imenu-list-position 'left)
+ '(imenu-list-size 30)
  '(indent-tabs-mode nil)
  '(package-archives
    '(("gnu" . "https://elpa.gnu.org/packages/")
      ("melpa" . "https://melpa.org/packages/")
      ("org" . "https://orgmode.org/elpa/")))
  '(package-selected-packages
-   '(counsel-gtags magit counsel-projectile tango-2-theme undo-tree ripgrep company-c-headers company flycheck recentf-ext projectile ivy-prescient prescient counsel swiper leaf-tree leaf-convert ivy hydra el-get blackout))
+   '(company-prescient counsel-gtags magit counsel-projectile tango-2-theme undo-tree ripgrep company-c-headers company flycheck recentf-ext projectile ivy-prescient prescient counsel swiper leaf-tree leaf-convert ivy hydra el-get blackout))
  '(text-quoting-style 'straight)
  '(truncate-lines t))
 (custom-set-faces
