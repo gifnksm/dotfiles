@@ -266,6 +266,12 @@
            ("r" . wdired-change-to-wdired-mode))
     :custom ((wdired-allow-to-change-permissions . t))))
 
+(leaf display-line-numbers
+  :doc "interface for display-line-numbers"
+  :tag "builtin"
+  :added "2020-12-24"
+  :global-minor-mode global-display-line-numbers-mode)
+
 (leaf hl-line
   :doc "highlight the current line"
   :tag "builtin"
