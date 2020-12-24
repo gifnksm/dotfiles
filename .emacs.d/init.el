@@ -104,7 +104,6 @@
 
 (leaf my-utils
   :doc "My utilities."
-  :tag "out-of-MELPA"
   :added "2020-12-23"
   :require t
   :bind ("C-S-k" . backward-kill-line))
@@ -144,7 +143,9 @@
             (history-delete-duplicates . t)
             (text-quoting-style . 'straight)
             (truncate-lines . t)
-            (indent-tabs-mode . nil)))
+            (indent-tabs-mode . nil)
+            (menu-bar-mode .  nil)
+            (tool-bar-mode . nil)))
 
 (leaf cus-edit
   :doc "tools for customizing Emacs and Lisp packages"
@@ -299,12 +300,6 @@
   :tag "builtin"
   :added "2020-12-23"
   :global-minor-mode xterm-mouse-mode)
-
-(leaf tool-bar
-  :doc "setting up the tool bar"
-  :tag "builtin" "frames" "mouse"
-  :added "2020-12-24"
-  :custom (tool-bar-mode . nil))
 
 (leaf cc-mode
   :doc "user customization variables for CC Mode"
@@ -558,7 +553,7 @@
   :added "2020-12-23"
   :url "http://www.dr-qubit.org/emacs.php"
   :ensure t
-  :global-minor-mode t)
+  :global-minor-mode global-undo-tree-mode)
 
 (leaf magit
   :doc "A Git porcelain inside Emacs."
@@ -575,7 +570,10 @@
   :added "2020-12-24"
   :url "https://github.com/Lindydancer/highlight-doxygen"
   :ensure t
-  :global-minor-mode highlight-doxygen-global-mode)
+  :global-minor-mode highlight-doxygen-global-mode
+  :custom-face (highlight-doxygen-comment
+                . '((((background light)) :inherit font-lock-doc-face :background "grey95")
+                    (((background dark))  :inherit font-lock-doc-face :background "grey15"))))
 
 (provide 'init)
 
