@@ -1,47 +1,52 @@
-(defun define-many-keys (key-map key-table)
-  (loop for (key . cmd) in key-table
-        do (define-key key-map (read-kbd-macro key) cmd)))
+;;; my-utils.el --- My utilities. -*- lexical-binding: t; -*-
 
-;; カーソル位置から行頭までにある文字を削除
+;; Copyright (C) 2020  NAKASHIMA, Makoto
+
+;; Author: NAKASHIMA, Makoto <makoto.nksm@gmail.com>
+
+;; This program is free software: you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; My utilities.
+
+;;; Code:
+
 (defun backward-kill-line (arg)
-  "Kill chars backward until encountering the end of a line."
+  "Kill ARG lines backward."
   (interactive "p")
-  (kill-line 0))
+  (kill-line (- 1 arg)))
 
-;; リージョンを選択していないときに行をキルするコマンド
 (defadvice kill-region (around kill-line-or-kill-region activate)
+  "If no region marked, kill the current line."
   (if (and (called-interactively-p 'interactive) transient-mark-mode (not mark-active))
       (kill-whole-line)
     ad-do-it))
 
-;; リージョンを選択していないときに行をコピーするコマンド
 (defadvice kill-ring-save (around kill-line-save-or-kill-ring-save activate)
+  "If no region marked, copy the current line."
   (if (and (called-interactively-p 'interactive) transient-mark-mode (not mark-active))
       (copy-line 1)
     ad-do-it))
 
-;; http://dev.ariel-networks.com/Members/matsuyama/tokyo-emacs-02
-;; http://www.emacswiki.org/emacs/CopyingWholeLines
 (defun copy-line (arg)
-  "Copy lines (as many as prefix argument) in the kill ring"
+  "Copy ARG lines in the kill ring."
   (interactive "p")
   (kill-ring-save (line-beginning-position)
                   (line-beginning-position (+ 1 arg)))
   (message "%d line%s copied" arg (if (= 1 arg) "" "s")))
 
-;; http://qiita.com/yewton@github/items/d9e686d2f2a092321e34
-(defun update-gtags (&optional prefix)
-  (interactive "P")
-  (let ((rootdir (gtags-get-rootpath))
-        (args (if prefix "-v" "-iv")))
-    (when rootdir
-      (let* ((default-directory rootdir)
-             (buffer (get-buffer-create "*update GTAGS*")))
-        (with-current-buffer buffer
-          (erase-buffer)
-          (let ((result (process-file "gtags" nil buffer nil args)))
-            (if (= 0 result)
-                (message "GTAGS successfully updated.")
-              (message "update GTAGS error with exit status %d" result))))))))
-
 (provide 'my-utils)
+
+;;; my-utils.el ends here

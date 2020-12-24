@@ -1,29 +1,43 @@
+;;; init.el --- My init.el  -*- lexical-binding: t; -*-
 
-;; Added by Package.el.  This must come before configurations of
-;; installed packages.  Don't delete this line.  If you don't want it,
-;; just comment it out by adding a semicolon to the start of the line.
-;; You may delete these explanatory comments.
-;; (package-initialize)
+;; Copyright (C) 2020  NAKASHIMA, Makoto
 
-(require 'server)
-(unless (server-running-p)
-  (server-start))
+;; Author: NAKASHIMA, Makoto <makoto.nksm@gmail.com>
+
+;; This program is free software: you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; My init.el.
+
+;;; Code:
 
 (require 'url)
 (require 'url-http)
 
-(defun parse-proxy-env (protocol envname)
-  (when (getenv envname)
-    (let* ((url (getenv envname))
-           (auth-info (replace-regexp-in-string "^https?://\\([^@]*\\)@.*$" "\\1" url))
-           (hostport (replace-regexp-in-string "^https?://\\([^@]*@\\)?\\|/$" "" url)))
-      (setenv envname hostport)
-      (add-to-list 'url-proxy-services `(,protocol . ,hostport))
-      (unless (string= auth-info "")
-        (add-to-list 'url-http-proxy-basic-auth-storage `(,hostport ("Proxy" . ,(base64-encode-string auth-info))))))))
-
-(parse-proxy-env "http" "HTTP_PROXY")
-(parse-proxy-env "https" "HTTPS_PROXY")
+;; proxy settings
+(let ((parse-proxy-env
+       (lambda (protocol envname)
+         (when (getenv envname)
+           (let* ((url (getenv envname))
+                  (auth-info (replace-regexp-in-string "^https?://\\([^@]*\\)@.*$" "\\1" url))
+                  (hostport (replace-regexp-in-string "^https?://\\([^@]*@\\)?\\|/$" "" url)))
+             (setenv envname hostport)
+             (add-to-list 'url-proxy-services `(,protocol . ,hostport))
+             (unless (string= auth-info "")
+               (add-to-list 'url-http-proxy-basic-auth-storage `(,hostport ("Proxy" . ,(base64-encode-string auth-info))))))))))
+  (funcall parse-proxy-env "http" "HTTP_PROXY"))
 
 ;; workarond for emacs <= 27's bug
 ;; https://stackoverflow.com/a/64722682
@@ -44,325 +58,544 @@
                                                     url-https-default-port)
                                                 (url-host url-current-object))))))
 
-;;; encoding config
-(set-language-environment "Japanese")
-(setenv "LANG" "ja_JP.UTF-8")
-(prefer-coding-system 'utf-8-unix)
-(set-default-coding-systems 'utf-8-unix)
+;; this enables this running method
+;;   emacs -q -l ~/.debug.emacs.d/init.el
+(eval-and-compile
+  (when (or load-file-name byte-compile-current-file)
+    (setq user-emacs-directory
+          (expand-file-name
+           (file-name-directory (or load-file-name byte-compile-current-file))))))
 
-(defun my-set-font (height ascii-font jp-font)
-  (let ((ascii-fontspec (font-spec :family ascii-font))
-        (jp-fontspec    (font-spec :family jp-font)))
-    (set-face-attribute 'default nil :family ascii-font :height height)
-    (set-fontset-font nil 'japanese-jisx0213.2004-1 jp-fontspec)
-    (set-fontset-font nil 'japanese-jisx0213-2      jp-fontspec)
-    (set-fontset-font nil 'japanese-jisx0212        jp-fontspec)
-    (set-fontset-font nil 'japanese-jisx0208        jp-fontspec)
-    (set-fontset-font nil 'katakana-jisx0201        jp-fontspec)
-    (set-fontset-font nil '(#x0080 . #x024F) ascii-fontspec)
-    (set-fontset-font nil '(#x0370 . #x03FF) ascii-fontspec)))
-
-(cond
- ((eq window-system 'ns)
-  (setq default-input-method "MacOSX")
-  (define-key global-map [C-s-268632070] 'toggle-fullscreen)
-
-  (create-fontset-from-ascii-font "Menlo-14:weight=normal:slant=normal" nil "menlokakugo")
-  (set-fontset-font "fontset-menlokakugo" 'unicode (font-spec :family "Hiragino Kaku Gothic ProN" :size 16) nil 'append)
-  (add-to-list 'default-frame-alist '(font . "fontset-menlokakugo")))
-
- ((eq window-system 'x)
-  (my-set-font 120 "Inconsolata" "Ricty")))
-
-;; Sample texts
-;;  !"#$%&'()*+,-./
-;; 0123456789:;<=>?
-;; @ABCDEFGHIJKLMNO
-;; PQRSTUVWXYZ[\]^_
-;; `abcdefghijklmno
-;; pqrstuvwxyz{|}~
-;; にほんご
-;; ニホンゴ
-;; 日本語
-
-(when window-system
-  (set-frame-parameter nil 'alpha '(85 70 70 70)))
-
-;;; path config
-(add-to-list 'custom-theme-load-path (concat user-emacs-directory "themes"))
+;; load path
 (add-to-list 'load-path (concat user-emacs-directory "site-lisp"))
-(add-to-list 'load-path (concat user-emacs-directory "el-get/el-get"))
 
-(require 'my-utils)
+;; install leaf
+(eval-and-compile
+  (customize-set-variable
+   'package-archives '(("gnu"   . "https://elpa.gnu.org/packages/")
+                       ("melpa" . "https://melpa.org/packages/")
+                       ("org"   . "https://orgmode.org/elpa/")))
+  (package-initialize)
+  (unless (package-installed-p 'leaf)
+    (package-refresh-contents)
+    (package-install 'leaf))
 
-(defun toggle-fullscreen ()
-  "Toggle full screen"
-  (interactive)
-  (set-frame-parameter
-   nil 'fullscreen
-   (when (not (frame-parameter nil 'fullscreen)) 'fullboth)))
+  (leaf leaf-keywords
+    :ensure t
+    :init
+    ;; optional packages if you want to use :hydra, :el-get, :blackout,,,
+    (leaf hydra :ensure t)
+    (leaf el-get :ensure t)
+    (leaf blackout :ensure t)
 
-(defun add-to-exec-path (path)
-  (setenv "PATH" (concat path ":" (getenv "PATH")))
-  (add-to-list 'exec-path path))
+    :config
+    ;; initialize leaf-keywords.el
+    (leaf-keywords-init)))
 
-(cond
- ((equal (system-name) "MacBook-Pro.local")
-  (add-to-exec-path "/Library/TeX/texbin")))
-(add-to-exec-path "/usr/local/bin")
-(add-to-exec-path "/usr/share/gtags/script/")
+;; ここにいっぱい設定を書く
 
-;; el-get
-(setq el-get-dir "~/.emacs.d/el-get/")
-(unless (require 'el-get nil 'noerror)
-  (with-current-buffer
-      (url-retrieve-synchronously
-       "https://raw.github.com/dimitri/el-get/master/el-get-install.el")
-    (let (el-get-master-branch)
-      (goto-char (point-max))
-      (eval-print-last-sexp))))
+(leaf leaf
+  :config
+  (leaf leaf-convert :ensure t)
+  (leaf leaf-tree
+    :ensure t
+    :custom ((imenu-list-size . 30)
+             (imenu-list-position . 'left))))
 
-(add-to-list 'el-get-recipe-path
-             (concat user-emacs-directory "el-get-recipes"))
-(setq el-get-user-package-directory
-      (concat user-emacs-directory "el-get-init"))
+(leaf my-utils
+  :doc "My utilities."
+  :tag "out-of-MELPA"
+  :added "2020-12-23"
+  :require t
+  :bind ("C-S-k" . backward-kill-line))
 
-;; Misc
-(el-get 'sync '(el-get))
-(el-get 'sync '(cl-lib))
-(el-get 'sync '(f))
-(el-get 'sync '(projectile))
-(el-get 'sync '(magit))
+(leaf mule-cmds
+  :doc "commands for multilingual environment"
+  :tag "builtin" "i18n" "mule"
+  :added "2020-12-24"
+  :config
+  (set-language-environment "Japanese")
+  (setenv "LANG" "ja_JP.UTF-8")
+  (prefer-coding-system 'utf-8-unix)
+  (set-default-coding-systems 'utf-8-unix))
 
-;;; Utilities
-(el-get 'sync '(helm))
-(el-get 'sync '(helm-gtags))
-(el-get 'sync '(helm-descbinds))
-(el-get 'sync '(helm-projectile))
-(el-get 'sync '(direx popwin shell-pop))
-(el-get 'sync '(zlc))
-(el-get 'sync '(pos-tip))
-(el-get 'sync '(keychain-environment))
+(let ((my-set-font
+       (lambda (height ascii-font jp-font)
+         (let ((ascii-fontspec (font-spec :family ascii-font))
+               (jp-fontspec    (font-spec :family jp-font)))
+           (set-face-attribute 'default nil :family ascii-font :height height)
+           (set-fontset-font nil 'japanese-jisx0213.2004-1 jp-fontspec)
+           (set-fontset-font nil 'japanese-jisx0213-2      jp-fontspec)
+           (set-fontset-font nil 'japanese-jisx0212        jp-fontspec)
+           (set-fontset-font nil 'japanese-jisx0208        jp-fontspec)
+           (set-fontset-font nil 'katakana-jisx0201        jp-fontspec)
+           (set-fontset-font nil '(#x0080 . #x024F) ascii-fontspec)
+           (set-fontset-font nil '(#x0370 . #x03FF) ascii-fontspec)))))
+  (cond
+   ((member "Ricty" (font-family-list)) (funcall my-set-font 140 "Ricty" "Ricty"))))
 
-(el-get 'sync '(undo-tree undohist))
-(el-get 'sync '(revive revive-plus))
-(el-get 'sync '(recentf-ext))
-(el-get 'sync '(wgrep))
+(leaf cus-start
+  :doc "define customization properties of builtins"
+  :tag "builtin" "internal"
+  :added "2020-12-23"
+  :custom '((create-lockfiles . nil)
+            (enable-recursive-minibuffers . t)
+            (history-length . 10000)
+            (history-delete-duplicates . t)
+            (text-quoting-style . 'straight)
+            (truncate-lines . t)
+            (indent-tabs-mode . nil)))
 
-;;; Input
-(el-get 'sync '(flex-autopair))
-(el-get 'sync '(auto-complete auto-complete-clang))
-(el-get 'sync '(company-mode))
-(el-get 'sync '(sequential-command smartrep))
-(el-get 'sync '(key-combo))
+(leaf tango-2-theme
+  :doc "Tango 2 color theme for GNU Emacs 24"
+  :added "2020-12-23"
+  :ensure t
+  :config (load-theme 'tango-2 t))
 
-;;; Visual
-(el-get 'sync '(fill-column-indicator))
+(leaf simple
+  :doc "basic editing commands for Emacs"
+  :tag "builtin" "internal"
+  :added "2020-12-23"
+  :bind ("C-h" . backward-delete-char-untabify)
+  :custom '((line-number-mode . t)
+            (column-number-mode . t)))
 
-;;; Languages
-(el-get 'sync '(gtags))
-(el-get 'sync '(doxymacs))
-(el-get 'sync '(graphviz-dot-mode))
-(el-get 'sync '(flycheck))
+(leaf frame
+  :doc "multi-frame management independent of window systems"
+  :tag "builtin" "internal"
+  :added "2020-12-23"
+  :bind ("C-x p" . previous-window-any-frame))
 
-;;; Documents
-(el-get 'sync '(markdown-mode))
-(el-get 'sync '(yaml-mode))
-(el-get 'sync '(toml-mode))
+(leaf which-func
+  :doc "print current function in mode line"
+  :tag "builtin"
+  :added "2020-12-23"
+  :custom (which-function-mode . t))
 
-;;; System
-(el-get 'sync '(pkgbuild-mode))
+(leaf savehist
+  :doc "Save minibuffer history"
+  :tag "builtin"
+  :added "2020-12-23"
+  :custom (savehist-mode . t))
 
-(setq recentf-save-file (concat user-emacs-directory "recentf"))
+(leaf startup
+  :doc "process Emacs shell arguments"
+  :tag "builtin" "internal"
+  :added "2020-12-23"
+  :custom '((inhibit-startup-screen . t)))
 
-;;; completion
-(setq read-file-name-completion-ignore-case t)
-(setq read-buffer-completion-ignore-case t)
-;; http://shakenbu.org/yanagi/d/?date=20120109#p01
-;; find-fileで*Completions*バッファに`../'と`./'を出さない
-(defun find-file-read-args (prompt mustmatch)
-  (list (read-file-name prompt nil default-directory mustmatch nil
-                        (lambda (name)
-                          (and (file-exists-p name)
-                               (not (member name '("../" "./"))))
-                          ))
-        t))
+(leaf autorevert
+  :doc "revert buffers when files on disk change"
+  :tag "builtin"
+  :added "2020-12-23"
+  :custom ((auto-revert-internal . 1))
+  :global-minor-mode global-auto-revert-mode)
 
+(leaf delsel
+  :doc "delete selection if you insert"
+  :tag "builtin"
+  :added "2020-12-23"
+  :global-minor-mode delete-selection-mode)
 
-;;; Edit
-(setq-default indent-tabs-mode nil)
-(delete-selection-mode t)
+(leaf paren
+  :doc "highlight matching paren"
+  :tag "builtin"
+  :added "2020-12-23"
+  :custom ((show-paren-delay . 0.1))
+  :global-minor-mode show-paren-mode)
 
-;;; user interface config
-;; モードライン
-(line-number-mode t)              ;行番号表示
-(column-number-mode t)            ;列番号
-(which-function-mode t)           ;関数名
-;; 表示系
-(setq-default indicate-empty-lines t)
-(setq visible-bell nil)
-(show-paren-mode t)
-;; GUI
-(tool-bar-mode -1)
-(setq mouse-drag-copy-region t)
-;; Others
-(setq inhibit-startup-message t)
-(setq inhibit-startup-screen t)
+(leaf files
+  :doc "file input and output commands for Emacs"
+  :tag "builtin"
+  :added "2020-12-23"
+  :custom ((make-backup-files . nil)
+           (backup-inhibited . t)
+           (delete-auto-save-files . t)
+           (view-read-only . t)))
 
-;;; misc config
-(setq make-backup-files nil)            ;バックアップファイルを作成しない
-(setq backup-inhibited t)
-(setq delete-auto-save-files t)         ;終了時にバックアップファイルを消す
+(leaf help
+  :doc "help commands for Emacs"
+  :tag "builtin" "internal" "help"
+  :added "2020-12-23"
+  :custom (temp-buffer-resize-mode . t))
 
-(setq view-read-only t)           ;読み込み専用にした時view-modeにする
-(temp-buffer-resize-mode t) ; C-hv とか ファイル名補完時のウィンドウを自動的にリサイズする
+(leaf recentf
+  :doc "setup a menu of recently opened files"
+  :tag "builtin"
+  :added "2020-12-23"
+  :custom ((recentf-auto-cleanup . 600)
+           (recentf-max-saved-items . 1000))
+  :config
+  (leaf recentf-ext
+    :doc "Recentf extensions"
+    :tag "files" "convenience"
+    :added "2020-12-23"
+    :url "http://www.emacswiki.org/cgi-bin/wiki/download/recentf-ext.el"
+    :require t
+    :ensure t))
 
-(setq history-length 10000)
-(savehist-mode 1)
-(desktop-save-mode 1)
+(leaf desktop
+  :doc "save partial status of Emacs when killed"
+  :tag "builtin"
+  :added "2020-12-23"
+  :custom
+  (desktop-save-mode . t))
 
-;;; key config
-(define-many-keys global-map
-  `(("C-S-h" . ,help-map)
-    ("M-?" . help-for-help)
-    ("C-h" . backward-delete-char-untabify)
-    ("C-S-k" . backward-kill-line)
-    ("C-x p" . previous-multiframe-window) ; C-x o の逆向きに Window を移動
-    ("C-x C-b" . electric-buffer-list)
-    ("C-x j" . skk-mode)))
+(leaf generic-x
+  :doc "A collection of generic modes"
+  :tag "builtin" "font-lock" "comment" "generic"
+  :added "2020-12-23"
+  :require t)
 
-(define-many-keys read-expression-map
-  '(("TAB" . lisp-complete-symbol)))
+(leaf dired
+  :doc "directory-browsing commands"
+  :tag "builtin" "files"
+  :added "2020-12-23"
+  :config
+  (leaf dired-x
+    :doc "extra Dired functionality"
+    :tag "builtin" "files" "extensions" "dired"
+    :added "2020-12-23"
+    :require t)
+  (leaf wdired
+    :doc "Rename files editing their names in dired buffers"
+    :tag "builtin"
+    :added "2020-12-23"
+    :require t
+    :bind (dired-mode-map
+           ("r" . wdired-change-to-wdired-mode))
+    :custom ((wdired-allow-to-change-permissions . t))))
 
-;;; builtin modes (installed in system path)
-(require 'uniquify)
-(setq uniquify-buffer-name-style 'post-forward-angle-brackets
-      uniquify-ignore-buffers-re "*[^*]+*")
-(require 'generic-x)
-(require 'wdired)
-(setq wdired-allow-to-change-permissions t)
-(define-key dired-mode-map "r" 'wdired-change-to-wdired-mode)
-(require 'dired-x)
-(require 'hl-line)
-(defun global-hl-line-timer-function ()
-  (global-hl-line-unhighlight-all)
-  (let ((global-hl-line-mode t))
-    (global-hl-line-highlight)))
-(setq global-hl-line-timer
-      (run-with-idle-timer 0.03 t 'global-hl-line-timer-function))
-;; (cancel-timer global-hl-line-timer)
-;; (global-hl-line-mode 1)
+(leaf hl-line
+  :doc "highlight the current line"
+  :tag "builtin"
+  :added "2020-12-23"
+  :global-minor-mode global-hl-line-mode)
 
-(add-hook 'prog-mode-hook #'display-line-numbers-mode)
-(add-hook 'text-mode-hook #'display-line-numbers-mode)
-(require 'whitespace)
-(setq whitespace-line-column nil
-      whitespace-style '(face trailing lines-tail tabs tab-mark
-                              space-before-tab space-after-tab))
-(global-whitespace-mode 1)
+(leaf whitespace
+  :doc "minor mode to visualize TAB, (HARD) SPACE, NEWLINE"
+  :tag "builtin"
+  :added "2020-12-23"
+  :require t
+  :global-minor-mode t
+  :custom ((whitespace-line-column . nil)
+           (whitespace-style . '(face trailing lines-tail tabs tab-mark
+                                      space-before-tab space-after-tab))))
 
-(defvar hs-fringe-mark 'right-arrow
-  "*隠れた行の fringe に表示する bitmap 名。
-`fringe-bitmaps' 内に設定されているシンボルから選ぶ。")
-(defun hs-mark-fringe (ovr)
-  "`hs-toggle-hiding' で隠された行の OVR を編集して fringe にマークを付ける。"
-  (when (eq 'code (overlay-get ovr 'hs))
-    (let ((hiding-text "...")
-          (fringe-anchor (make-string 1 ?x)))
-      (put-text-property 0 1 'display (list 'left-fringe hs-fringe-mark) fringe-anchor)
-      (overlay-put ovr 'before-string fringe-anchor)
-      (overlay-put ovr 'display hiding-text))))
-(setq hs-set-up-overlay 'hs-mark-fringe)
+(leaf xt-mouse
+  :doc "support the mouse when emacs run in an xterm"
+  :tag "builtin"
+  :added "2020-12-23"
+  :global-minor-mode xterm-mouse-mode)
 
-(require 'saveplace)
-(setq-default save-place t)
-(setq save-place-file "~/.emacs.d/places")
+(leaf tool-bar
+  :doc "setting up the tool bar"
+  :tag "builtin" "frames" "mouse"
+  :added "2020-12-24"
+  :custom (tool-bar-mode . nil))
 
-(require 'tramp)
-(add-to-list 'tramp-remote-path 'tramp-own-remote-path) ;リモートで設定される PATH を利用する
+(leaf cc-mode
+  :doc "user customization variables for CC Mode"
+  :tag "builtin"
+  :added "2020-12-24"
+  :custom (c-default-style . ((java-mode . "java")
+                              (awk-mode .  "awk")
+                              (other . "k&r")))
+  :defvar (c-basic-offset)
+  :defun (c-toggle-auto-hungry-state c-toggle-hungry-state c-toggle-electric-state c-toggle-auto-newline c-toggle-auto-state)
+  :hook (c-mode-common-hook
+         . (lambda ()
+             (setq c-basic-offset 4)
+             (subword-mode t)
+             (setq fill-column 120)
+             (c-toggle-auto-hungry-state 1)
+             (c-toggle-hungry-state 1)
+             (c-toggle-electric-state 1)
+             (c-toggle-auto-newline 1)
+             (c-toggle-auto-state 1)))
+  :config
+  (leaf clang-format
+    :doc "Format code using clang-format"
+    :req "cl-lib-0.3"
+    :tag "c" "tools"
+    :added "2020-12-24"
+    :ensure t
+    :config
+    (leaf clang-format+
+      :doc "Minor mode for automatic clang-format application"
+      :req "emacs-25.1" "clang-format-20180406.1514"
+      :tag "clang-format" "c++" "c" "emacs>=25.1"
+      :added "2020-12-24"
+      :url "https://github.com/SavchenkoValeriy/emacs-clang-format-plus"
+      :emacs>= 25.1
+      :ensure t
+      :after clang-format
+      :hook (c-mode-common-hook . clang-format+-mode))))
 
-(defun after-change-major-mode-hook-fn ()
-  (unless (eq major-mode 'rust-mode)
-    (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p nil t)))
-(add-hook 'after-change-major-mode-hook 'after-change-major-mode-hook-fn)
+;; this conflicts with ivy
+;; (leaf view
+;;   :doc "peruse file or buffer without editing"
+;;   :tag "builtin"
+;;   :added "2020-12-24"
+;;   :bind (("h" . backward-char)
+;;          ("j" . next-line)
+;;          ("k" . previous-line)
+;;          ("l" . forward-char)))
 
-(setq-default flyspell-mode nil)
-(setq ispell-dictionary "american")
+(leaf flex-autopair
+  :doc "Automatically insert pair braces and quotes, insertion conditions & actions are highly customizable."
+  :tag "input" "keyboard"
+  :added "2020-12-24"
+  :url "https://github.com/uk-ar/flex-autopair.el"
+  :ensure t
+  :global-minor-mode t)
 
-(add-to-list 'auto-mode-alist '("\\.zsh" . sh-mode))
+(leaf key-combo
+  :doc "map key sequence to commands"
+  :tag "input" "keyboard"
+  :added "2020-12-24"
+  :url "https://github.com/uk-ar/key-combo"
+  :ensure t
+  :require t
+  :global-minor-mode t
+  :hook ((c-mode-common-hook . (lambda ()
+                                 (key-combo-define-local (kbd "/") '(" / " "// " "//! " "//!< " "//!< [in] " "//!< [out] " "//!< [in,out] ")))))
+  :config
+  ;; overwrite default configurations
+  (setq key-combo-global-default
+        '(("C-a" . (back-to-indentation move-beginning-of-line))))
+  (key-combo-load-default))
 
-(setq c-default-style "k&r")
-(defun c-mode-common-hook-fn ()
-  (setq c-basic-offset 4)
-  (subword-mode 1)
-  (setq whitespace-line-column 120)
-  (setq fill-column 120)
-  (setq fci-rule-column 120)
-  (fci-mode 1)
-  (whitespace-mode 1)
-  (helm-gtags-mode)
-  ;; (gtags-mode)
+(leaf fill-column-indicator
+  :doc "Graphically indicate the fill column"
+  :tag "convenience"
+  :added "2020-12-24"
+  :ensure t
+  :hook (c-mode-common-hook . fci-mode))
 
-  (c-toggle-hungry-state 1)
-  (c-toggle-auto-hungry-state 1)
-  (c-toggle-electric-state 1)
-  (c-toggle-auto-newline 1)
-  (c-toggle-auto-state 1)
+(leaf prescient
+  :doc "Better sorting and filtering"
+  :req "emacs-25.1"
+  :tag "extensions" "emacs>=25.1"
+  :added "2020-12-23"
+  :url "https://github.com/raxod502/prescient.el"
+  :emacs>= 25.1
+  :ensure t
+  :custom ((prescient-aggressive-file-save . t))
+  :global-minor-mode prescient-persist-mode)
 
-  ;; (add-to-list 'ac-sources 'ac-source-clang)
-  ;; (add-to-list 'ac-sources 'ac-source-clang-complete)
-  )
-(add-hook 'c-mode-common-hook 'c-mode-common-hook-fn)
-;; (add-hook 'after-save-hook 'update-gtags)
+(leaf ivy
+  :doc "Incremental Vertical completYon"
+  :req "emacs-24.5"
+  :tag "matching" "emacs>=24.5"
+  :added "2020-12-23"
+  :url "https://github.com/abo-abo/swiper"
+  :emacs>= 24.5
+  :ensure t
+  :leaf-defer nil
+  :custom ((ivy-intial-inputs-alias . nil)
+           (ivy-use-selectable-prompt . t))
+  :global-minor-mode t
+  :bind ("C-M-z" . ivy-resume)
+  :config
+  (leaf swiper
+    :doc "Isearch with an overview. Oh, man!"
+    :req "emacs-24.5" "ivy-0.13.0"
+    :tag "matching" "emacs>=24.5"
+    :added "2020-12-23"
+    :url "https://github.com/abo-abo/swiper"
+    :emacs>= 24.5
+    :ensure t
+    :after ivy
+    ;; :bind ("C-s" . swiper)
+    )
+  (leaf ivy-prescient
+    :doc "prescient.el + Ivy"
+    :req "emacs-25.1" "prescient-5.0" "ivy-0.11.0"
+    :tag "extensions" "emacs>=25.1"
+    :added "2020-12-23"
+    :url "https://github.com/raxod502/prescient.el"
+    :emacs>= 25.1
+    :ensure t
+    :after prescient ivy
+    :custom ((ivy-prescient-retain-classic-highlighting . t))
+    :global-minor-mode t)
+  (leaf counsel
+    :doc "Various completion functions using Ivy"
+    :req "emacs-24.5" "swiper-0.13.0"
+    :tag "tools" "matching" "convenience" "emacs>=24.5"
+    :added "2020-12-23"
+    :url "https://github.com/abo-abo/swiper"
+    :emacs>= 24.5
+    :ensure t
+    :after swiper
+    :blackout t
+    :bind (("C-S-s" . counsel-imenu)
+           ("C-x C-r" . counsel-recentf))
+    :custom `((counsel-yank-pop-separator . "\n----------\n")
+              (counsel-find-file-ignore-regexp . ,(rx-to-string '(or "./" "../") 'no-group)))
+    :global-minor-mode t
+    :config
+    (leaf counsel-gtags
+      :doc "ivy for GNU global"
+      :req "emacs-25.1" "counsel-0.8.0" "seq-1.0"
+      :tag "emacs>=25.1"
+      :added "2020-12-23"
+      :url "https://github.com/FelipeLema/emacs-counsel-gtags"
+      :emacs>= 25.1
+      :ensure t
+      :after counsel
+      :hook (c-mode-hook c++-mode-hook dired-mode-hook)
+      :bind '(counsel-gtags-mode-map
+              ("C-c f" . counsel-gtags-find-file)
+              ("C-c s" . counsel-gtags-find-symbol)
+              ("C-c r" . counsel-gtags-find-reference)
+              ("C-c d" . counsel-gtags-find-definition)
+              ("M-." . counsel-gtags-find-definition)
+              ("M-*" . counsel-gtags-go-backward)))
+    ))
 
-(defun view-mode-hook-fn ()
-  (define-many-keys view-mode-map
-    '(("h" . backward-char)
-      ("j" . next-line)
-      ("k" . previous-line)
-      ("l" . forward-char))))
-(add-hook 'view-mode-hook 'view-mode-hook-fn)
+(leaf projectile
+  :doc "Manage and navigate projects in Emacs easily"
+  :req "emacs-25.1" "pkg-info-0.4"
+  :tag "convenience" "project" "emacs>=25.1"
+  :added "2020-12-23"
+  :url "https://github.com/bbatsov/projectile"
+  :emacs>= 25.1
+  :ensure t
+  :global-minor-mode projectile
+  :bind (projectile-mode-map
+         ("C-c p" . projectile-command-map))
+  :config
+  (leaf ripgrep
+    :doc "Front-end for ripgrep, a command line search tool"
+    :tag "search" "grep" "sift" "ag" "pt" "ack" "ripgrep"
+    :added "2020-12-23"
+    :url "https://github.com/nlamirault/ripgrep.el"
+    :ensure t)
+  (leaf counsel-projectile
+    :doc "Ivy integration for Projectile"
+    :req "counsel-0.13.0" "projectile-2.0.0"
+    :tag "convenience" "project"
+    :added "2020-12-23"
+    :url "https://github.com/ericdanan/counsel-projectile"
+    :ensure t
+    :after counsel projectile
+    :global-minor-mode t))
 
-(when (require 'mozc nil t)
-  (require 'ccc)
-  (setq default-input-method "japanese-mozc")
-  (setq mozc-cand 'overlay)
-  (setq mozc-color "blue")
-  (defun mozc-change-cursor-color ()
-    (if mozc-mode
-        (progn
-          (key-combo-mode 0)
-          (set-buffer-local-cursor-color mozc-color))
-      (progn
-        (key-combo-mode 1)
-        (set-buffer-local-cursor-color nil))))
+(leaf flycheck
+  :doc "On-the-fly syntax checking"
+  :req "dash-2.12.1" "pkg-info-0.4" "let-alist-1.0.4" "seq-1.11" "emacs-24.3"
+  :tag "tools" "languages" "convenience" "emacs>=24.3"
+  :added "2020-12-23"
+  :url "http://www.flycheck.org"
+  :emacs>= 24.3
+  :ensure t
+  :bind '(("M-n" . flycheck-next-error)
+          ("M-p" . flycheck-previous-error))
+  :global-minor-mode global-flycheck-mode)
 
-  (add-hook 'input-method-activate-hook 'mozc-change-cursor-color)
-  (add-hook 'input-method-inactivate-hook 'mozc-change-cursor-color))
+(leaf company
+  :doc "Modular text completion framework"
+  :req "emacs-24.3"
+  :tag "matching" "convenience" "abbrev" "emacs>=24.3"
+  :added "2020-12-23"
+  :url "http://company-mode.github.io/"
+  :emacs>= 24.3
+  :ensure t
+  :blackout t
+  :leaf-defer nil
+  :bind ((company-active-map
+          ("M-n" . nil)
+          ("M-p" . nil)
+          ("C-s" . company-filter-candidates)
+          ("C-n" . company-select-next)
+          ("C-p" . company-select-previous)
+          ("<tab>" . company-complete-selection))
+         (company-search-map
+          ("C-n" . company-select-next)
+          ("C-p" . company-select-previous)))
+  :custom ((company-idle-delay . 0)
+           (company-minimum-prefix-length . 1)
+           (company-transformers . '(company-sort-by-occurrence)))
+  :global-minor-mode global-company-mode
+  :config
+  (leaf company-prescient
+    :doc "prescient.el + Company"
+    :req "emacs-25.1" "prescient-5.0" "company-0.9.6"
+    :tag "extensions" "emacs>=25.1"
+    :added "2020-12-23"
+    :url "https://github.com/raxod502/prescient.el"
+    :emacs>= 25.1
+    :ensure t
+    :after prescient company)
+  (leaf company-c-headers
+    :doc "Company mode backend for C/C++ header files"
+    :req "emacs-24.1" "company-0.8"
+    :tag "company" "development" "emacs>=24.1"
+    :added "2020-12-23"
+    :emacs>= 24.1
+    :ensure t
+    :after company
+    :defvar company-backends
+    :config
+    (add-to-list 'company-backends 'company-c-headers)))
+
+(leaf undo-tree
+  :doc "Treat undo history as a tree"
+  :tag "tree" "history" "redo" "undo" "files" "convenience"
+  :added "2020-12-23"
+  :url "http://www.dr-qubit.org/emacs.php"
+  :ensure t
+  :global-minor-mode t)
+
+(leaf magit
+  :doc "A Git porcelain inside Emacs."
+  :req "emacs-25.1" "async-20200113" "dash-20200524" "git-commit-20200516" "transient-20200601" "with-editor-20200522"
+  :tag "vc" "tools" "git" "emacs>=25.1"
+  :added "2020-12-23"
+  :emacs>= 25.1
+  :ensure t
+  :after git-commit with-editor)
+
+(leaf highlight-doxygen
+  :doc "Highlight Doxygen comments"
+  :tag "faces"
+  :added "2020-12-24"
+  :url "https://github.com/Lindydancer/highlight-doxygen"
+  :ensure t
+  :global-minor-mode highlight-doxygen-global-mode)
+
+(provide 'init)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(anything-command-map-prefix-key "C-:")
- '(custom-enabled-themes '(tango-2))
- '(custom-safe-themes
-   '("e9a1226ffed627ec58294d77c62aa9561ec5f42309a1f7a2423c6227e34e3581" default))
- '(package-selected-packages '(sequential-command key-combo))
- '(rust-format-on-save t)
- '(rust-rustfmt-bin "~/.cargo/bin/rustfmt")
- '(shell-pop-universal-key "C-S-q")
- '(skk-check-okurigana-on-touroku 'ask)
- '(skk-kakutei-key (kbd "C-S-j"))
- '(skk-show-annotation t)
- '(skk-show-inline 'vertical)
- '(skk-show-tooltip t)
- '(skk-use-color-cursor t)
- '(skk-user-directory "~/.emacs.d/ddskk"))
+ '(create-lockfiles nil)
+ '(enable-recursive-minibuffers t)
+ '(history-delete-duplicates t)
+ '(history-length 10000)
+ '(imenu-list-position 'left)
+ '(imenu-list-size 30)
+ '(indent-tabs-mode nil)
+ '(package-archives
+   '(("gnu" . "https://elpa.gnu.org/packages/")
+     ("melpa" . "https://melpa.org/packages/")
+     ("org" . "https://orgmode.org/elpa/")))
+ '(package-selected-packages
+   '(clang-format+ fill-column-indicator highlight-doxygen flex-autopair key-combo :hook sequential-command-config company-prescient counsel-gtags magit counsel-projectile tango-2-theme undo-tree ripgrep company-c-headers company flycheck recentf-ext projectile ivy-prescient prescient counsel swiper leaf-tree leaf-convert ivy hydra el-get blackout))
+ '(text-quoting-style 'straight)
+ '(truncate-lines t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+;; Local Variables:
+;; indent-tabs-mode: nil
+;; End:
+
+;;; init.el ends here
