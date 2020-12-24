@@ -27,18 +27,17 @@
 (require 'url-http)
 
 ;; proxy settings
-(defun parse-proxy-env (protocol envname)
-  (when (getenv envname)
-    (let* ((url (getenv envname))
-           (auth-info (replace-regexp-in-string "^https?://\\([^@]*\\)@.*$" "\\1" url))
-           (hostport (replace-regexp-in-string "^https?://\\([^@]*@\\)?\\|/$" "" url)))
-      (setenv envname hostport)
-      (add-to-list 'url-proxy-services `(,protocol . ,hostport))
-      (unless (string= auth-info "")
-        (add-to-list 'url-http-proxy-basic-auth-storage `(,hostport ("Proxy" . ,(base64-encode-string auth-info))))))))
-
-(parse-proxy-env "http" "HTTP_PROXY")
-(parse-proxy-env "https" "HTTPS_PROXY")
+(let ((parse-proxy-env
+       (lambda (protocol envname)
+         (when (getenv envname)
+           (let* ((url (getenv envname))
+                  (auth-info (replace-regexp-in-string "^https?://\\([^@]*\\)@.*$" "\\1" url))
+                  (hostport (replace-regexp-in-string "^https?://\\([^@]*@\\)?\\|/$" "" url)))
+             (setenv envname hostport)
+             (add-to-list 'url-proxy-services `(,protocol . ,hostport))
+             (unless (string= auth-info "")
+               (add-to-list 'url-http-proxy-basic-auth-storage `(,hostport ("Proxy" . ,(base64-encode-string auth-info))))))))))
+  (funcall parse-proxy-env "http" "HTTP_PROXY"))
 
 ;; workarond for emacs <= 27's bug
 ;; https://stackoverflow.com/a/64722682
@@ -109,6 +108,31 @@
   :added "2020-12-23"
   :require t
   :bind ("C-S-k" . backward-kill-line))
+
+(leaf mule-cmds
+  :doc "commands for multilingual environment"
+  :tag "builtin" "i18n" "mule"
+  :added "2020-12-24"
+  :config
+  (set-language-environment "Japanese")
+  (setenv "LANG" "ja_JP.UTF-8")
+  (prefer-coding-system 'utf-8-unix)
+  (set-default-coding-systems 'utf-8-unix))
+
+(let ((my-set-font
+       (lambda (height ascii-font jp-font)
+         (let ((ascii-fontspec (font-spec :family ascii-font))
+               (jp-fontspec    (font-spec :family jp-font)))
+           (set-face-attribute 'default nil :family ascii-font :height height)
+           (set-fontset-font nil 'japanese-jisx0213.2004-1 jp-fontspec)
+           (set-fontset-font nil 'japanese-jisx0213-2      jp-fontspec)
+           (set-fontset-font nil 'japanese-jisx0212        jp-fontspec)
+           (set-fontset-font nil 'japanese-jisx0208        jp-fontspec)
+           (set-fontset-font nil 'katakana-jisx0201        jp-fontspec)
+           (set-fontset-font nil '(#x0080 . #x024F) ascii-fontspec)
+           (set-fontset-font nil '(#x0370 . #x03FF) ascii-fontspec)))))
+  (cond
+   ((member "Ricty" (font-family-list)) (funcall my-set-font 140 "Ricty" "Ricty"))))
 
 (leaf cus-start
   :doc "define customization properties of builtins"
@@ -263,6 +287,91 @@
   :tag "builtin"
   :added "2020-12-23"
   :global-minor-mode xterm-mouse-mode)
+
+(leaf tool-bar
+  :doc "setting up the tool bar"
+  :tag "builtin" "frames" "mouse"
+  :added "2020-12-24"
+  :custom (tool-bar-mode . nil))
+
+(leaf cc-mode
+  :doc "user customization variables for CC Mode"
+  :tag "builtin"
+  :added "2020-12-24"
+  :custom (c-default-style . ((java-mode . "java")
+                              (awk-mode .  "awk")
+                              (other . "k&r")))
+  :defvar (c-basic-offset)
+  :defun (c-toggle-auto-hungry-state c-toggle-hungry-state c-toggle-electric-state c-toggle-auto-newline c-toggle-auto-state)
+  :hook (c-mode-common-hook
+         . (lambda ()
+             (setq c-basic-offset 4)
+             (subword-mode t)
+             (setq fill-column 120)
+             (c-toggle-auto-hungry-state 1)
+             (c-toggle-hungry-state 1)
+             (c-toggle-electric-state 1)
+             (c-toggle-auto-newline 1)
+             (c-toggle-auto-state 1)))
+  :config
+  (leaf clang-format
+    :doc "Format code using clang-format"
+    :req "cl-lib-0.3"
+    :tag "c" "tools"
+    :added "2020-12-24"
+    :ensure t
+    :config
+    (leaf clang-format+
+      :doc "Minor mode for automatic clang-format application"
+      :req "emacs-25.1" "clang-format-20180406.1514"
+      :tag "clang-format" "c++" "c" "emacs>=25.1"
+      :added "2020-12-24"
+      :url "https://github.com/SavchenkoValeriy/emacs-clang-format-plus"
+      :emacs>= 25.1
+      :ensure t
+      :after clang-format
+      :hook (c-mode-common-hook . clang-format+-mode))))
+
+;; this conflicts with ivy
+;; (leaf view
+;;   :doc "peruse file or buffer without editing"
+;;   :tag "builtin"
+;;   :added "2020-12-24"
+;;   :bind (("h" . backward-char)
+;;          ("j" . next-line)
+;;          ("k" . previous-line)
+;;          ("l" . forward-char)))
+
+(leaf flex-autopair
+  :doc "Automatically insert pair braces and quotes, insertion conditions & actions are highly customizable."
+  :tag "input" "keyboard"
+  :added "2020-12-24"
+  :url "https://github.com/uk-ar/flex-autopair.el"
+  :ensure t
+  :global-minor-mode t)
+
+(leaf key-combo
+  :doc "map key sequence to commands"
+  :tag "input" "keyboard"
+  :added "2020-12-24"
+  :url "https://github.com/uk-ar/key-combo"
+  :ensure t
+  :require t
+  :global-minor-mode t
+  :hook ((c-mode-common-hook . (lambda ()
+                                 (key-combo-define-local (kbd "/") '(" / " "// " "//! " "//!< " "//!< [in] " "//!< [out] " "//!< [in,out] ")))))
+  :config
+  ;; overwrite default configurations
+  (setq key-combo-global-default
+        '(("C-a" . (back-to-indentation move-beginning-of-line))))
+  (key-combo-load-default))
+
+(leaf fill-column-indicator
+  :doc "Graphically indicate the fill column"
+  :tag "convenience"
+  :added "2020-12-24"
+  :ensure t
+  :hook (c-mode-common-hook . fci-mode))
 
 (leaf prescient
   :doc "Better sorting and filtering"
@@ -449,6 +558,14 @@
   :ensure t
   :after git-commit with-editor)
 
+(leaf highlight-doxygen
+  :doc "Highlight Doxygen comments"
+  :tag "faces"
+  :added "2020-12-24"
+  :url "https://github.com/Lindydancer/highlight-doxygen"
+  :ensure t
+  :global-minor-mode highlight-doxygen-global-mode)
+
 (provide 'init)
 
 (custom-set-variables
@@ -468,7 +585,7 @@
      ("melpa" . "https://melpa.org/packages/")
      ("org" . "https://orgmode.org/elpa/")))
  '(package-selected-packages
-   '(company-prescient counsel-gtags magit counsel-projectile tango-2-theme undo-tree ripgrep company-c-headers company flycheck recentf-ext projectile ivy-prescient prescient counsel swiper leaf-tree leaf-convert ivy hydra el-get blackout))
+   '(clang-format+ fill-column-indicator highlight-doxygen flex-autopair key-combo :hook sequential-command-config company-prescient counsel-gtags magit counsel-projectile tango-2-theme undo-tree ripgrep company-c-headers company flycheck recentf-ext projectile ivy-prescient prescient counsel swiper leaf-tree leaf-convert ivy hydra el-get blackout))
  '(text-quoting-style 'straight)
  '(truncate-lines t))
 (custom-set-faces
