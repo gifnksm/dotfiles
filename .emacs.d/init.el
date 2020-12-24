@@ -146,6 +146,12 @@
             (truncate-lines . t)
             (indent-tabs-mode . nil)))
 
+(leaf cus-edit
+  :doc "tools for customizing Emacs and Lisp packages"
+  :tag "builtin" "faces" "help"
+  :added "2020-12-24"
+  :custom `((custom-file . ,(locate-user-emacs-file "custom.el"))))
+
 (leaf tango-2-theme
   :doc "Tango 2 color theme for GNU Emacs 24"
   :added "2020-12-23"
@@ -458,8 +464,7 @@
               ("C-c r" . counsel-gtags-find-reference)
               ("C-c d" . counsel-gtags-find-definition)
               ("M-." . counsel-gtags-find-definition)
-              ("M-*" . counsel-gtags-go-backward)))
-    ))
+              ("M-*" . counsel-gtags-go-backward)))))
 
 (leaf projectile
   :doc "Manage and navigate projects in Emacs easily"
@@ -573,35 +578,5 @@
   :global-minor-mode highlight-doxygen-global-mode)
 
 (provide 'init)
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(create-lockfiles nil)
- '(enable-recursive-minibuffers t)
- '(history-delete-duplicates t)
- '(history-length 10000)
- '(imenu-list-position 'left)
- '(imenu-list-size 30)
- '(indent-tabs-mode nil)
- '(package-archives
-   '(("gnu" . "https://elpa.gnu.org/packages/")
-     ("melpa" . "https://melpa.org/packages/")
-     ("org" . "https://orgmode.org/elpa/")))
- '(package-selected-packages
-   '(clang-format+ fill-column-indicator highlight-doxygen flex-autopair key-combo :hook sequential-command-config company-prescient counsel-gtags magit counsel-projectile tango-2-theme undo-tree ripgrep company-c-headers company flycheck recentf-ext projectile ivy-prescient prescient counsel swiper leaf-tree leaf-convert ivy hydra el-get blackout))
- '(text-quoting-style 'straight)
- '(truncate-lines t))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
-;; Local Variables:
-;; indent-tabs-mode: nil
-;; End:
 
 ;;; init.el ends here
