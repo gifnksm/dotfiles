@@ -35,7 +35,6 @@
                   (hostport (replace-regexp-in-string "^https?://\\([^@]*@\\)?\\|/$" "" url)))
              (add-to-list 'url-proxy-services `(,protocol . ,hostport))
              (unless (string= auth-info "")
-	       (message auth-info)
                (add-to-list 'url-http-proxy-basic-auth-storage `(,hostport ("Proxy" . ,(base64-encode-string auth-info))))))))))
   (funcall parse-proxy-env "http" "HTTP_PROXY")
   (funcall parse-proxy-env "https" "HTTPS_PROXY"))
