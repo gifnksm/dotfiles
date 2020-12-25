@@ -33,11 +33,12 @@
            (let* ((url (getenv envname))
                   (auth-info (replace-regexp-in-string "^https?://\\([^@]*\\)@.*$" "\\1" url))
                   (hostport (replace-regexp-in-string "^https?://\\([^@]*@\\)?\\|/$" "" url)))
-             (setenv envname hostport)
              (add-to-list 'url-proxy-services `(,protocol . ,hostport))
              (unless (string= auth-info "")
+	       (message auth-info)
                (add-to-list 'url-http-proxy-basic-auth-storage `(,hostport ("Proxy" . ,(base64-encode-string auth-info))))))))))
-  (funcall parse-proxy-env "http" "HTTP_PROXY"))
+  (funcall parse-proxy-env "http" "HTTP_PROXY")
+  (funcall parse-proxy-env "https" "HTTPS_PROXY"))
 
 ;; workarond for emacs <= 27's bug
 ;; https://stackoverflow.com/a/64722682
@@ -84,8 +85,8 @@
     :ensure t
     :init
     ;; optional packages if you want to use :hydra, :el-get, :blackout,,,
-    (leaf hydra :ensure t)
-    (leaf el-get :ensure t)
+    ;; (leaf hydra :ensure t)
+    ;; (leaf el-get :ensure t)
     (leaf blackout :ensure t)
 
     :config
@@ -104,6 +105,7 @@
 
 (leaf my-utils
   :doc "My utilities."
+  :tag "out-of-MELPA"
   :added "2020-12-23"
   :require t
   :bind ("C-S-k" . backward-kill-line))
