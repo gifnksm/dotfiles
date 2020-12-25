@@ -535,18 +535,7 @@
     :url "https://github.com/raxod502/prescient.el"
     :emacs>= 25.1
     :ensure t
-    :after prescient company)
-  (leaf company-c-headers
-    :doc "Company mode backend for C/C++ header files"
-    :req "emacs-24.1" "company-0.8"
-    :tag "company" "development" "emacs>=24.1"
-    :added "2020-12-23"
-    :emacs>= 24.1
-    :ensure t
-    :after company
-    :defvar company-backends
-    :config
-    (add-to-list 'company-backends 'company-c-headers)))
+    :after prescient company))
 
 (leaf undo-tree
   :doc "Treat undo history as a tree"
@@ -575,6 +564,56 @@
   :custom-face (highlight-doxygen-comment
                 . '((((background light)) :inherit font-lock-doc-face :background "grey95")
                     (((background dark))  :inherit font-lock-doc-face :background "grey15"))))
+
+(leaf yasnippet
+  :doc "Yet another snippet extension for Emacs"
+  :req "cl-lib-0.5"
+  :tag "emulation" "convenience"
+  :added "2020-12-25"
+  :url "http://github.com/joaotavora/yasnippet"
+  :ensure t
+  :hook (after-init-hook . yas-global-mode)
+  :config
+  (leaf yasnippet-snippets
+    :doc "Collection of yasnippet snippets"
+    :req "yasnippet-0.8.0"
+    :tag "snippets"
+    :added "2020-12-25"
+    :url "https://github.com/AndreaCrotti/yasnippet-snippets"
+    :ensure t
+    :after yasnippet)
+  (leaf ivy-yasnippet
+    :doc "Preview yasnippets with ivy"
+    :req "emacs-24.1" "cl-lib-0.6" "ivy-0.10.0" "yasnippet-0.12.2" "dash-2.14.1"
+    :tag "convenience" "emacs>=24.1"
+    :added "2020-12-25"
+    :url "https://github.com/mkcms/ivy-yasnippet"
+    :emacs>= 24.1
+    :ensure t
+    :after ivy yasnippet
+    :bind (("C-c y" . ivy-yasnippet)
+           ("C-c C-y" . ivy-yasnippet))))
+
+(leaf lsp-mode
+  :doc "LSP mode"
+  :req "emacs-26.1" "dash-2.14.1" "dash-functional-2.14.1" "f-0.20.0" "ht-2.0" "spinner-1.7.3" "markdown-mode-2.3" "lv-0"
+  :tag "languages" "emacs>=26.1"
+  :added "2020-12-25"
+  :url "https://github.com/emacs-lsp/lsp-mode"
+  :emacs>= 26.1
+  :ensure t
+  :after spinner markdown-mode lv
+  :hook (c-mode-hook . lsp)
+  :config
+  (leaf lsp-ui
+    :doc "UI modules for lsp-mode"
+    :req "emacs-26.1" "dash-2.14" "dash-functional-1.2.0" "lsp-mode-6.0" "markdown-mode-2.3"
+    :tag "tools" "languages" "emacs>=26.1"
+    :added "2020-12-25"
+    :url "https://github.com/emacs-lsp/lsp-ui"
+    :emacs>= 26.1
+    :ensure t
+    :after lsp-mode markdown-mode))
 
 (provide 'init)
 
