@@ -602,8 +602,8 @@
   :url "https://github.com/emacs-lsp/lsp-mode"
   :emacs>= 26.1
   :ensure t
-  :after spinner markdown-mode lv
-  :hook (c-mode-hook . lsp)
+  ;; :after spinner markdown-mode lv
+  :hook ((c-mode-hook . lsp-deferred))
   :config
   (leaf lsp-ui
     :doc "UI modules for lsp-mode"
@@ -613,7 +613,8 @@
     :url "https://github.com/emacs-lsp/lsp-ui"
     :emacs>= 26.1
     :ensure t
-    :after lsp-mode markdown-mode))
+    ;; :after lsp-mode markdown-mode
+    ))
 
 (provide 'init)
 
