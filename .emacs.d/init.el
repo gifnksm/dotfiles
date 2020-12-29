@@ -120,9 +120,10 @@
   (set-default-coding-systems 'utf-8-unix))
 
 (let ((my-set-font
-       (lambda (height ascii-font jp-font)
+       (lambda (height ascii-font jp-font emoji-font)
          (let ((ascii-fontspec (font-spec :family ascii-font))
-               (jp-fontspec    (font-spec :family jp-font)))
+               (jp-fontspec    (font-spec :family jp-font))
+               (emoji-fontspec (font-spec :family emoji-font)))
            (set-face-attribute 'default nil :family ascii-font :height height)
            (set-fontset-font nil 'japanese-jisx0213.2004-1 jp-fontspec)
            (set-fontset-font nil 'japanese-jisx0213-2      jp-fontspec)
@@ -130,9 +131,12 @@
            (set-fontset-font nil 'japanese-jisx0208        jp-fontspec)
            (set-fontset-font nil 'katakana-jisx0201        jp-fontspec)
            (set-fontset-font nil '(#x0080 . #x024F) ascii-fontspec)
-           (set-fontset-font nil '(#x0370 . #x03FF) ascii-fontspec)))))
+           (set-fontset-font nil '(#x0370 . #x03FF) ascii-fontspec)
+           (set-fontset-font nil 'symbol emoji-fontspec)))))
   (cond
-   ((member "Ricty" (font-family-list)) (funcall my-set-font 140 "Ricty" "Ricty"))))
+   ((member "CaskaydiaCove Nerd Font Mono" (font-family-list))
+    (funcall my-set-font 120 "CaskaydiaCove Nerd Font Mono" "Ricty" "Noto Color Emoji"))
+   ((member "Ricty" (font-family-list)) (funcall my-set-font 120 "Ricty" "Ricty" "Noto Color Emoji"))))
 
 (leaf cus-start
   :doc "define customization properties of builtins"
