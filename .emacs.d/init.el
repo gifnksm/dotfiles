@@ -487,7 +487,7 @@
     :added "2020-12-23"
     :url "https://github.com/ericdanan/counsel-projectile"
     :ensure t
-    :after counsel projectile
+    ;; :after counsel projectile
     :global-minor-mode t))
 
 (leaf flycheck
