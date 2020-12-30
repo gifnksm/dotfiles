@@ -37,6 +37,7 @@ set_git_configs=(
   interactive.diffFilter "delta --color-only"
   pull.ff only
 )
+
 repo_dir="$(readlink -f "$(dirname "$0")")"
 error() { echo -e "\e[31;1merror\e[m:" "$@" >&2; }
 warn()  { echo -e "\e[33;1mwarning\e[m:" "$@" >&2; }
@@ -98,6 +99,9 @@ set_git_config() {
     info "git config already exists: ${name} = ${cur_value}"
     return
   fi
+
+  git config --global "${name}" "${value}"
+  info "git congit set: ${name} = ${value}"
 }
 
 main() {
