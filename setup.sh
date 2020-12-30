@@ -1,0 +1,126 @@
+#!/bin/bash -eu
+
+make_symlinks=(
+  .colordiffrc
+  .emacs.d
+  .tmux.conf
+  .vim
+  .vimrc
+  .zsh
+  .zshrc
+)
+
+required_commands=(
+  bat
+  cargo-install-update
+  delta
+  emacs
+  keychain
+  rg
+  rhq
+  sk
+  starship
+  tig
+  tmux
+  topgrade
+  zsh
+)
+
+required_git_configs=(
+  user.name
+  user.email
+)
+
+set_git_configs=(
+  core.pager delta
+  core.excludesfile ~/.gitignore
+  interactive.diffFilter "delta --color-only"
+)
+repo_dir="$(readlink -f "$(dirname "$0")")"
+error() { echo -e "\e[31;1merror\e[m:" "$@" >&2; }
+warn()  { echo -e "\e[33;1mwarning\e[m:" "$@" >&2; }
+info()  { echo -e "\e[32;1minfo\e[m:" "$@" >&2; }
+
+make_link() {
+  local rel_target="${1}"
+  local source_dir="${2:-${HOME}}"
+
+  local target="${repo_dir}/${rel_target}"
+  local source="${source_dir}/$(basename "${rel_target}")"
+
+  if [[ -L "${source}" ]]; then
+    local cur_target="$(readlink "${source}")"
+    if [[ "${cur_target}" != "${target}" ]]; then
+      warn "symbolic link already exists, which has different target: ${source} -> ${cur_target}"
+      return
+    fi
+    info "symbolic link already exists, skip: ${source} -> ${cur_target}"
+    return
+  fi
+
+  if [[ -e "${source}" ]]; then
+    warn "file already exists: ${source}"
+    return
+  fi
+
+  ln -sv "${target}" "${source}"
+}
+
+check_installed() {
+  local cmd="${1}"
+  if ! command -v "${cmd}" > /dev/null; then
+    warn "${cmd} is not installed"
+    return
+  fi
+  info "${cmd} is installed: $(command -v "${cmd}")"
+}
+
+check_git_config() {
+  local name="${1}"
+  if ! git config "${name}" > /dev/null; then
+    warn "git config ${name} is not set"
+    return
+  fi
+  info "git config ${name} is set: $(git config "${name}")"
+}
+
+set_git_config() {
+  local name="${1}"
+  local value="${2}"
+
+  if git config --global "${name}" > /dev/null; then
+    local cur_value="$(git config --global "${name}")"
+    if [[ "${cur_value}" != "${value}" ]]; then
+      warn "git config already exists, which has different value: ${name} = ${cur_value}, expected ${value}"
+      return
+    fi
+    info "git config already exists: ${name} = ${cur_value}"
+    return
+  fi
+}
+
+main() {
+  local link
+  for link in "${make_symlinks[@]}"; do
+    make_link "${link}"
+  done
+
+  local cmd
+  for cmd in "${required_commands[@]}"; do
+    check_installed "${cmd}"
+  done
+
+  local name
+  for name in "${required_git_configs[@]}"; do
+    check_git_config "${name}"
+  done
+
+  local i
+  for ((i = 0; i < "${#set_git_configs[@]}"; i+=2)); do
+    local name="${set_git_configs[$i]}"
+    local value="${set_git_configs[$i+1]}"
+    set_git_config "${name}" "${value}"
+  done
+}
+
+main
