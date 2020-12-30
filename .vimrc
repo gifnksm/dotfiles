@@ -24,8 +24,8 @@ colorscheme ir_black
 syntax on
 
 set autoindent
-set backupdir=$HOME/.vimbackup
-set directory=$HOME/.vimbackup
+set backupdir=$HOME/.vim/backup
+set directory=$HOME/.vim/swap
 set expandtab
 set incsearch
 
