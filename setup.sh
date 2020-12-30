@@ -35,6 +35,7 @@ set_git_configs=(
   core.pager delta
   core.excludesfile ~/.gitignore
   interactive.diffFilter "delta --color-only"
+  pull.ff only
 )
 repo_dir="$(readlink -f "$(dirname "$0")")"
 error() { echo -e "\e[31;1merror\e[m:" "$@" >&2; }
