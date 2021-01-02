@@ -8,6 +8,7 @@ make_symlinks=(
   .vimrc
   .zsh
   .zshrc
+  .config/starship.toml
 )
 
 required_commands=(
@@ -48,7 +49,7 @@ make_link() {
   local source_dir="${2:-${HOME}}"
 
   local target="${repo_dir}/${rel_target}"
-  local source="${source_dir}/$(basename "${rel_target}")"
+  local source="${source_dir}/${rel_target}"
 
   if [[ -L "${source}" ]]; then
     local cur_target="$(readlink "${source}")"
@@ -105,6 +106,8 @@ set_git_config() {
 }
 
 main() {
+  mkdir -pv ~/.config
+
   local link
   for link in "${make_symlinks[@]}"; do
     make_link "${link}"
