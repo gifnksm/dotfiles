@@ -119,24 +119,52 @@
   (prefer-coding-system 'utf-8-unix)
   (set-default-coding-systems 'utf-8-unix))
 
-(let ((my-set-font
-       (lambda (height ascii-font jp-font emoji-font)
-         (let ((ascii-fontspec (font-spec :family ascii-font))
-               (jp-fontspec    (font-spec :family jp-font))
-               (emoji-fontspec (font-spec :family emoji-font)))
-           (set-face-attribute 'default nil :family ascii-font :height height)
-           (set-fontset-font nil 'japanese-jisx0213.2004-1 jp-fontspec)
-           (set-fontset-font nil 'japanese-jisx0213-2      jp-fontspec)
-           (set-fontset-font nil 'japanese-jisx0212        jp-fontspec)
-           (set-fontset-font nil 'japanese-jisx0208        jp-fontspec)
-           (set-fontset-font nil 'katakana-jisx0201        jp-fontspec)
-           (set-fontset-font nil '(#x0080 . #x024F) ascii-fontspec)
-           (set-fontset-font nil '(#x0370 . #x03FF) ascii-fontspec)
-           (set-fontset-font nil 'symbol emoji-fontspec)))))
-  (cond
-   ((member "CaskaydiaCove Nerd Font Mono" (font-family-list))
-    (funcall my-set-font 120 "CaskaydiaCove Nerd Font Mono" "Ricty" "Noto Color Emoji"))
-   ((member "Ricty" (font-family-list)) (funcall my-set-font 120 "Ricty" "Ricty" "Noto Color Emoji"))))
+(leaf font
+  :config
+  (set-face-attribute 'default nil :height 120)
+  (let ((set-base-font
+         (lambda (name)
+           (when (member name (font-family-list))
+             (set-face-attribute 'default nil :family name)
+             t)))
+        (set-jp-font
+         (lambda (name)
+           (when (member name (font-family-list))
+             (let ((spec (font-spec :family name)))
+               (set-fontset-font nil 'japanese-jisx0213.2004-1 spec)
+               (set-fontset-font nil 'japanese-jisx0213-2      spec)
+               (set-fontset-font nil 'japanese-jisx0212        spec)
+               (set-fontset-font nil 'japanese-jisx0208        spec)
+               (set-fontset-font nil 'katakana-jisx0201        spec))
+             t)))
+        (set-symbol-font
+         (lambda (name)
+           (when (member name (font-family-list))
+             (let ((spec (font-spec :family name)))
+               (set-fontset-font nil 'symbol spec))
+             t))))
+    (or
+     (funcall set-base-font "HackGenNerd Console")
+     (funcall set-base-font "Ricty"))
+    (or
+     (funcall set-jp-font "HackGenNerd Console")
+     (funcall set-jp-font "Ricty"))
+    (or
+     (funcall set-symbol-font "Noto Color Emoji"))))
+
+;; Sample texts
+;;  !"#$%&'()*+,-./
+;; 0123456789:;<=>?
+;; @ABCDEFGHIJKLMNO
+;; PQRSTUVWXYZ[\]^_
+;; `abcdefghijklmno
+;; pqrstuvwxyz{|}~
+;; にほんご
+;; ニホンゴ
+;; 日本語
+;; ばびぶべぼ
+;; ぱぴぷぺぽ
+;; 😊
 
 (leaf cus-start
   :doc "define customization properties of builtins"
@@ -519,9 +547,11 @@
   :bind ((company-active-map
           ("M-n" . nil)
           ("M-p" . nil)
+          ("C-h" . nil)
           ("C-s" . company-filter-candidates)
           ("C-n" . company-select-next)
           ("C-p" . company-select-previous)
+          ("C-i" . company-complete-selection)
           ("<tab>" . company-complete-selection))
          (company-search-map
           ("C-n" . company-select-next)
