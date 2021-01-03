@@ -287,6 +287,12 @@
   :added "2020-12-23"
   :require t)
 
+(leaf executable
+  :doc "base functionality for executable interpreter scripts"
+  :tag "builtin"
+  :added "2021-01-03"
+  :hook (after-save-hook . executable-make-buffer-file-executable-if-script-p))
+
 (leaf dired
   :doc "directory-browsing commands"
   :tag "builtin" "files"
