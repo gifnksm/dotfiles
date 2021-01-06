@@ -439,6 +439,7 @@
   :emacs>= 24.5
   :ensure t
   :leaf-defer nil
+  :defvar (ivy-format-functions-alist)
   :custom ((ivy-intial-inputs-alias . nil)
            (ivy-use-selectable-prompt . t))
   :global-minor-mode t
@@ -455,6 +456,18 @@
     :after ivy
     ;; :bind ("C-s" . swiper)
     )
+  (leaf ivy-rich
+    :doc "More friendly display transformer for ivy"
+    :req "emacs-25.1" "ivy-0.13.0"
+    :tag "ivy" "convenience" "emacs>=25.1"
+    :added "2021-01-06"
+    :url "https://github.com/Yevgnen/ivy-rich"
+    :emacs>= 25.1
+    :ensure t
+    :after ivy
+    :global-minor-mode t
+    :config
+    (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line))
   (leaf ivy-prescient
     :doc "prescient.el + Ivy"
     :req "emacs-25.1" "prescient-5.0" "ivy-0.11.0"
@@ -643,8 +656,11 @@
   :emacs>= 26.1
   :ensure t
   ;; :after spinner markdown-mode lv
-  :hook ((c-mode-hook . lsp-deferred))
+  :hook ((c-mode-hook . lsp-deferred)
+         (rust-mode-hook . lsp-deferred))
+  :custom ((lsp-rust-server . 'rust-analyzer))
   :config
+  (define-key lsp-mode-map (kbd "C-M-l") lsp-command-map)
   (leaf lsp-ui
     :doc "UI modules for lsp-mode"
     :req "emacs-26.1" "dash-2.14" "dash-functional-1.2.0" "lsp-mode-6.0" "markdown-mode-2.3"
@@ -655,6 +671,25 @@
     :ensure t
     ;; :after lsp-mode markdown-mode
     ))
+
+(leaf rust-mode
+  :doc "A major emacs mode for editing Rust source code"
+  :req "emacs-25.1"
+  :tag "languages" "emacs>=25.1"
+  :added "2021-01-05"
+  :url "https://github.com/rust-lang/rust-mode"
+  :emacs>= 25.1
+  :ensure t
+  :custom ((rust-format-on-save . t))
+  :config
+  (leaf cargo
+  :doc "Emacs Minor Mode for Cargo, Rust's Package Manager."
+  :req "emacs-24.3" "rust-mode-0.2.0" "markdown-mode-2.4"
+  :tag "tools" "emacs>=24.3"
+  :added "2021-01-05"
+  :emacs>= 24.3
+  :ensure t
+  :hook ((rust-mode . cargo-minor-mod))))
 
 (provide 'init)
 
