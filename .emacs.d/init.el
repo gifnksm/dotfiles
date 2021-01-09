@@ -419,6 +419,43 @@
   :ensure t
   :hook (c-mode-common-hook . fci-mode))
 
+(leaf highlight-indent-guides
+  :doc "Minor mode to highlight indentation"
+  :req "emacs-24.1"
+  :tag "emacs>=24.1"
+  :added "2021-01-06"
+  :url "https://github.com/DarthFennec/highlight-indent-guides"
+  :emacs>= 24.1
+  :ensure t
+  :hook (prog-mode-hook . highlight-indent-guides-mode)
+  :custom
+    (highlight-indent-guides-auto-enabled .  t)
+    (highlight-indent-guides-responsive . t)
+    (highlight-indent-guides-method . 'fill))
+
+(leaf rainbow-delimiters
+  :doc "Highlight brackets according to their depth"
+  :tag "tools" "lisp" "convenience" "faces"
+  :added "2021-01-06"
+  :url "https://github.com/Fanael/rainbow-delimiters"
+  :ensure t
+  :hook (prog-mode-hook . rainbow-delimiters-mode))
+
+(leaf popwin
+  :doc "Popup Window Manager"
+  :req "emacs-24.3"
+  :tag "convenience" "emacs>=24.3"
+  :added "2021-01-06"
+  :url "https://github.com/emacsorphanage/popwin"
+  :emacs>= 24.3
+  :ensure t
+  :global-minor-mode popwin-mode
+  :defvar (popwin:keymap popwin:special-display-config)
+  :custom (popwin:close-popup-window-timer-inteval .  0.5)
+  :config
+  (global-set-key (kbd "C-x C-p") popwin:keymap)
+  (push '("^\\*Cargo.*" :regexp t :position right :width 80) popwin:special-display-config))
+
 (leaf prescient
   :doc "Better sorting and filtering"
   :req "emacs-25.1"
@@ -689,7 +726,7 @@
   :added "2021-01-05"
   :emacs>= 24.3
   :ensure t
-  :hook ((rust-mode . cargo-minor-mod))))
+  :hook ((rust-mode-hook . cargo-minor-mode))))
 
 (provide 'init)
 
