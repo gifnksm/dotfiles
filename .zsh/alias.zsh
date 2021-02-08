@@ -48,3 +48,4 @@ alias ga=__fzf-git-add
 alias gc=__fzf-git-checkout
 alias gs=__fzf-git-switch
 
+alias ta="tmux new-session -A"

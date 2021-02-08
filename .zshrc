@@ -96,14 +96,6 @@ bindkey "^[Q" show_buffer_stack
 limit coredumpsize unlimited
 ulimit -c unlimited
 
-function ta() {
-  if $(tmux has-session 2> /dev/null); then
-    tmux attach
-  else
-    tmux
-  fi
-}
-
 [ -f ~/.zsh/alias.zsh ] && source ~/.zsh/alias.zsh
 [ -f ~/.zsh/ssh.zsh   ] && source ~/.zsh/ssh.zsh
 [ -f ~/.zsh/tmux.zsh  ] && source ~/.zsh/tmux.zsh
