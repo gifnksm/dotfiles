@@ -2,17 +2,18 @@
 
 make_symlinks=(
   .colordiffrc
-  .tmux.conf
   .vim
   .zsh
   .zshrc
   .config/starship.toml
   .config/emacs
+  .config/tmux
 )
 
 remove_symlinks=(
   .emacs.d
   .vimrc
+  .tmux.conf
 )
 
 required_commands=(
