@@ -6,13 +6,12 @@ var/*
 *.elc
 .emacs.desktop
 .emacs.desktop.lock
+.lsp-session-v1
 bookmarks
 custom.el
 history
-projectile-bookmarks.eld
-recentf
-.lsp-session-v1
 kkcrc
 projectile-bookmarks.eld
+recentf
 tramp
 url
