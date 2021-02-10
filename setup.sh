@@ -10,6 +10,11 @@ make_symlinks=(
   .config/emacs
 )
 
+remove_symlinks=(
+  .emacs.d
+  .vimrc
+)
+
 required_commands=(
   bat
   cargo-install-update
@@ -68,6 +73,30 @@ make_link() {
   ln -sv "${target}" "${source}"
 }
 
+remove_link() {
+  local rel_target="${1}"
+  local source_dir="${2:-${HOME}}"
+
+  local target="${repo_dir}/${rel_target}"
+  local source="${source_dir}/${rel_target}"
+
+  if [[ -L "${source}" ]]; then
+    local cur_target="$(readlink "${source}")"
+    if [[ "${cur_target}" != "${target}" ]]; then
+      warn "symbolic link already exists, which has different target: ${source} -> ${cur_target}"
+      return
+    fi
+    rm -v "${source}"
+    return
+  fi
+
+  if [[ -e "${source}" ]]; then
+    warn "file already exists: ${source}"
+    return
+  fi
+  info "symbolik link already removed: ${source}"
+}
+
 check_installed() {
   local cmd="${1}"
   if ! command -v "${cmd}" > /dev/null; then
@@ -110,6 +139,9 @@ main() {
   local link
   for link in "${make_symlinks[@]}"; do
     make_link "${link}"
+  done
+  for link in "${remove_symlinks[@]}"; do
+    remove_link "${link}"
   done
 
   local cmd
