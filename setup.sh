@@ -2,13 +2,13 @@
 
 make_symlinks=(
   .colordiffrc
-  .emacs.d
   .tmux.conf
   .vim
   .vimrc
   .zsh
   .zshrc
   .config/starship.toml
+  .config/emacs
 )
 
 required_commands=(

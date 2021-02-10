@@ -1,9 +1,4 @@
 .netrwhist
-.emacs.d/.lsp-session-v1
-.emacs.d/kkcrc
-.emacs.d/projectile-bookmarks.eld
-.emacs.d/tramp
-.emacs.d/url
 .vim/bundle/vimproc
 .vim/bundle/vimshell
 
