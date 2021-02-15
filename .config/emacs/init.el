@@ -186,6 +186,12 @@
   :added "2020-12-24"
   :custom `((custom-file . ,(locate-user-emacs-file "custom.el"))))
 
+(leaf files
+  :doc "file input and output commands for Emacs"
+  :tag "builtin"
+  :added "2021-02-15"
+  :custom '(safe-local-variable-values . '((clang-format-on-save))))
+
 (leaf tango-2-theme
   :doc "Tango 2 color theme for GNU Emacs 24"
   :added "2020-12-23"
