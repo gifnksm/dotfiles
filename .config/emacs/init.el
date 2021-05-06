@@ -402,28 +402,37 @@
   :ensure t
   :global-minor-mode t)
 
-(leaf key-combo
-  :doc "map key sequence to commands"
-  :tag "input" "keyboard"
-  :added "2020-12-24"
-  :url "https://github.com/uk-ar/key-combo"
-  :ensure t
-  :require t
-  :global-minor-mode t
-  :hook ((c-mode-common-hook . (lambda ()
-                                 (key-combo-define-local (kbd "/") '(" / " "// " "//! " "//!< " "//!< [in] " "//!< [out] " "//!< [in,out] ")))))
-  :config
-  ;; overwrite default configurations
-  (setq key-combo-global-default
-        '(("C-a" . (back-to-indentation move-beginning-of-line))))
-  (key-combo-load-default))
-
-(leaf fill-column-indicator
-  :doc "Graphically indicate the fill column"
+(leaf mwim
+  :doc "Switch between the beginning/end of line or code"
   :tag "convenience"
-  :added "2020-12-24"
+  :added "2021-05-06"
+  :url "https://github.com/alezost/mwim.el"
   :ensure t
-  :hook (c-mode-common-hook . fci-mode))
+  :bind (("C-a" . mwim-beginning)
+         ("C-e" . mwim-end)))
+
+;; (leaf key-combo
+;;   :doc "map key sequence to commands"
+;;   :tag "input" "keyboard"
+;;   :added "2020-12-24"
+;;   :url "https://github.com/uk-ar/key-combo"
+;;   :ensure t
+;;   :require t
+;;   :global-minor-mode t
+;;   :hook ((c-mode-common-hook . (lambda ()
+;;                                  (key-combo-define-local (kbd "/") '(" / " "// " "//! " "//!< " "//!< [in] " "//!< [out] " "//!< [in,out] ")))))
+;;   :config
+;;   ;; overwrite default configurations
+;;   (setq key-combo-global-default
+;;         '(("C-a" . (back-to-indentation move-beginning-of-line))))
+;;   (key-combo-load-default))
+
+;; (leaf fill-column-indicator
+;;   :doc "Graphically indicate the fill column"
+;;   :tag "convenience"
+;;   :added "2020-12-24"
+;;   :ensure t
+;;   :hook (c-mode-common-hook . fci-mode))
 
 (leaf highlight-indent-guides
   :doc "Minor mode to highlight indentation"
