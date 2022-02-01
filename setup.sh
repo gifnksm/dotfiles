@@ -1,4 +1,8 @@
 #!/bin/bash -eu
+is_wsl=0
+if grep 'WSL2$' /proc/sys/kernel/osrelease >> /dev/null; then
+  is_wsl=1
+fi
 
 make_symlinks=(
   .colordiffrc
@@ -43,6 +47,11 @@ set_git_configs=(
   interactive.diffFilter "delta --color-only"
   pull.ff only
 )
+if [[ "$is_wsl" = 1 ]]; then
+  set_git_configs+=(
+    credential.helper "/mnt/c/Program\ Files/Git/mingw64/libexec/git-core/git-credential-manager-core.exe"
+  )
+fi
 
 repo_dir="$(readlink -f "$(dirname "$0")")"
 error() { echo -e "\e[31;1merror\e[m:" "$@" >&2; }
