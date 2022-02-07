@@ -146,7 +146,7 @@ set_git_config() {
 main() {
   mkdir -pv ~/.config
   mkdir -pv ~/.config/git
-  if [[ -e "~/.gitconfig" ]]; then
+  if [[ -e ~/.gitconfig ]]; then
     warn "git config is ~/.gitconfig"
   else
     touch ~/.config/git/config
