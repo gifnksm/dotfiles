@@ -43,7 +43,7 @@ required_git_configs=(
 
 set_git_configs=(
   core.pager delta
-  core.excludesfile ~/.gitignore
+  core.excludesfile ~/.config/git/ignore
   interactive.diffFilter "delta --color-only"
   pull.ff only
 )
@@ -145,6 +145,13 @@ set_git_config() {
 
 main() {
   mkdir -pv ~/.config
+  mkdir -pv ~/.config/git
+  if [[ -e "~/.gitconfig" ]]; then
+    warn "git config is ~/.gitconfig"
+  else
+    touch ~/.config/git/config
+    info "git config is ~/.config/git/config"
+  fi
 
   local link
   for link in "${make_symlinks[@]}"; do
