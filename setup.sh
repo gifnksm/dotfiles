@@ -49,7 +49,7 @@ set_git_configs=(
 )
 if [[ "$is_wsl" = 1 ]]; then
   set_git_configs+=(
-    credential.helper "/mnt/c/Program\ Files/Git/mingw64/libexec/git-core/git-credential-manager-core.exe"
+    credential.helper "/mnt/c/Program\ Files/Git/mingw64/bin/git-credential-manager-core.exe"
   )
 fi
 
