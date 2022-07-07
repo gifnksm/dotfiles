@@ -5,7 +5,5 @@ export PAGER=less
 if [[ $(uname -r) =~ (m|M)icrosoft ]]; then
   if [[ -z $BROWSER ]]; then
     export BROWSER=wsl-open
-  else
-    export BROWSER="${BROWSER}:wsl-open"
   fi
 fi
