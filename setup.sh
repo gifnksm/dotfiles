@@ -152,6 +152,12 @@ main() {
     touch ~/.config/git/config
     info "git config is ~/.config/git/config"
   fi
+  if [[ -e ~/.config/git/ignore ]] && grep '^\.vscode/$' ~/.config/git/ignore > /dev/null; then
+    info ".vscode/ is in ~/.config/git/ignore"
+  else
+    echo ".vscode/" >> ~/.config/git/ignore
+    info ".vscode/ is added to ~/.config/git/ignore"
+  fi
 
   local link
   for link in "${make_symlinks[@]}"; do
