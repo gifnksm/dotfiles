@@ -5,7 +5,6 @@ if grep 'WSL2$' /proc/sys/kernel/osrelease >>/dev/null; then
 fi
 
 make_symlinks=(
-  .colordiffrc
   .vim
   .zsh
   .zshrc
@@ -18,6 +17,7 @@ remove_symlinks=(
   .emacs.d
   .vimrc
   .tmux.conf
+  .colordiffrc
 )
 
 required_commands=(
