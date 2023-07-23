@@ -5,6 +5,13 @@ elif which fzf > /dev/null 2>&1; then
 else
   echo "warning: sk or fzf are not installed" >&2
 fi
+if which souko > /dev/null 2>&1; then
+  alias __repocmd=souko
+elif which rhq > /dev/null 2>&1; then
+  alias __repocmd=rhq
+else
+  echo "warning: souko or rhq are not installed" >&2
+fi
 
 function __fzf-exec() {
   if zle; then
@@ -32,7 +39,7 @@ function __fzf-is-in-git-repo() {
 }
 
 function __fzf-cd-repository() {
-  local selected=$(rhq list | __fzfcmd --query="$LBUFFER" --exit-0 --prompt='CHANGE DIRECTORY> ')
+  local selected=$(__repocmd list | __fzfcmd --query="$LBUFFER" --exit-0 --prompt='CHANGE DIRECTORY> ')
   if [[ -n $selected ]]; then
     BUFFER="cd \"${selected}\""
     zle accept-line
