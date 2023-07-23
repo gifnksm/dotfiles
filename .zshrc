@@ -79,7 +79,9 @@ zstyle ':completion:*:options' desctiption 'yes'
 zstyle ':completion:*' keep-prefix
 zstyle ':completion:*' group-name ''
 
-eval $(starship init zsh)
+if command -v starship >/dev/null 2>&1; then
+    eval $(starship init zsh)
+fi
 SPROMPT="%{${fg[yellow]}%}correct: %R -> %r [nyae]? %{${reset_color}%}"
 
 # コマンドラインスタックを表示させる
