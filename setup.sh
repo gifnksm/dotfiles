@@ -1,6 +1,6 @@
 #!/bin/bash -eu
 is_wsl=0
-if grep 'WSL2$' /proc/sys/kernel/osrelease >> /dev/null; then
+if grep 'WSL2$' /proc/sys/kernel/osrelease >>/dev/null; then
   is_wsl=1
 fi
 
@@ -55,8 +55,8 @@ fi
 
 repo_dir="$(readlink -f "$(dirname "$0")")"
 error() { echo -e "\e[31;1merror\e[m:" "$@" >&2; }
-warn()  { echo -e "\e[33;1mwarning\e[m:" "$@" >&2; }
-info()  { echo -e "\e[32;1minfo\e[m:" "$@" >&2; }
+warn() { echo -e "\e[33;1mwarning\e[m:" "$@" >&2; }
+info() { echo -e "\e[32;1minfo\e[m:" "$@" >&2; }
 
 make_link() {
   local rel_target="${1}"
@@ -66,7 +66,8 @@ make_link() {
   local source="${source_dir}/${rel_target}"
 
   if [[ -L "${source}" ]]; then
-    local cur_target="$(readlink "${source}")"
+    local cur_target
+    cur_target="$(readlink "${source}")"
     if [[ "${cur_target}" != "${target}" ]]; then
       warn "symbolic link already exists, which has different target: ${source} -> ${cur_target}"
       return
@@ -91,7 +92,8 @@ remove_link() {
   local source="${source_dir}/${rel_target}"
 
   if [[ -L "${source}" ]]; then
-    local cur_target="$(readlink "${source}")"
+    local cur_target
+    cur_target="$(readlink "${source}")"
     if [[ "${cur_target}" != "${target}" ]]; then
       warn "symbolic link already exists, which has different target: ${source} -> ${cur_target}"
       return
@@ -109,7 +111,7 @@ remove_link() {
 
 check_installed() {
   local cmd="${1}"
-  if ! command -v "${cmd}" > /dev/null; then
+  if ! command -v "${cmd}" >/dev/null; then
     warn "${cmd} is not installed"
     return
   fi
@@ -118,7 +120,7 @@ check_installed() {
 
 check_git_config() {
   local name="${1}"
-  if ! git config "${name}" > /dev/null; then
+  if ! git config "${name}" >/dev/null; then
     warn "git config ${name} is not set"
     return
   fi
@@ -129,8 +131,9 @@ set_git_config() {
   local name="${1}"
   local value="${2}"
 
-  if git config --global "${name}" > /dev/null; then
-    local cur_value="$(git config --global "${name}")"
+  if git config --global "${name}" >/dev/null; then
+    local cur_value
+    cur_value="$(git config --global "${name}")"
     if [[ "${cur_value}" != "${value}" ]]; then
       warn "git config already exists, which has different value: ${name} = ${cur_value}, expected ${value}"
       return
@@ -152,10 +155,10 @@ main() {
     touch ~/.config/git/config
     info "git config is ~/.config/git/config"
   fi
-  if [[ -e ~/.config/git/ignore ]] && grep '^\.vscode/$' ~/.config/git/ignore > /dev/null; then
+  if [[ -e ~/.config/git/ignore ]] && grep '^\.vscode/$' ~/.config/git/ignore >/dev/null; then
     info ".vscode/ is in ~/.config/git/ignore"
   else
-    echo ".vscode/" >> ~/.config/git/ignore
+    echo ".vscode/" >>~/.config/git/ignore
     info ".vscode/ is added to ~/.config/git/ignore"
   fi
 
@@ -178,9 +181,9 @@ main() {
   done
 
   local i
-  for ((i = 0; i < "${#set_git_configs[@]}"; i+=2)); do
+  for ((i = 0; i < "${#set_git_configs[@]}"; i += 2)); do
     local name="${set_git_configs[$i]}"
-    local value="${set_git_configs[$i+1]}"
+    local value="${set_git_configs[$i + 1]}"
     set_git_config "${name}" "${value}"
   done
 }
