@@ -1,0 +1,16 @@
+#!/bin/bash
+
+set -eu -o pipefail
+
+REPO_DIR="$(readlink -f "$(dirname "$0")/..")"
+readonly REPO_DIR
+cd "${REPO_DIR}"
+
+find \
+    . \
+    scripts/* \
+    test/* \
+    -maxdepth 1 \
+    -executable \
+    -type f \
+    -exec shellcheck {} +
