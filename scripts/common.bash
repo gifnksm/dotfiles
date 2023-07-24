@@ -15,7 +15,7 @@ print_backtrace() {
         echo -e "[${number}] \e[32;1m$func()\e[m"
         echo "  at $file:$line"
         for ((j = line - 2; j <= line + 2; j++)); do
-            if ((j < 0)); then
+            if ((j <= 0)); then
                 continue
             fi
             local marker
