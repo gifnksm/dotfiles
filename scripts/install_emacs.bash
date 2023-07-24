@@ -2,6 +2,7 @@
 
 install_package_by_spec <<END
     arch: emacs
+    ubuntu_22_04: emacs
 END
 
 assert_command emacs

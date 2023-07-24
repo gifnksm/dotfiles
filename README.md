@@ -12,3 +12,4 @@ dotfiles/install
 ## Supported OS
 
 * Arch Linux
+* Ubuntu 22.04 (Jammy Jellyfish)

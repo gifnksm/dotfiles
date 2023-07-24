@@ -10,3 +10,8 @@ fi
 
 assert_command rustup
 assert_command cargo
+
+install_package_by_spec <<END
+    arch: base-devel
+    ubuntu_22_04: build-essential
+END

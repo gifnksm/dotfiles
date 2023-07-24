@@ -8,8 +8,13 @@ cd "${REPO_DIR}"
 
 source ./scripts/common.bash
 
-source scripts/install_base.bash
-source scripts/install_paru.bash
+source scripts/prepare.bash
+
+if [[ "${OS_NAME}" == "${OS_ARCH_LINUX}" ]]; then
+    source scripts/install_paru.bash
+fi
+
+source scripts/install_curl.bash
 
 source scripts/install_zsh.bash
 source scripts/install_tmux.bash
@@ -19,16 +24,16 @@ source scripts/install_emacs.bash
 source scripts/install_vim.bash
 source scripts/install_keychain.bash
 
-source scripts/install_rustup.bash
-source scripts/install_cargo_binstall.bash # requires rustup
-source scripts/install_cargo_update.bash   # requires rustup
-source scripts/install_topgrade.bash
-source scripts/install_rhq.bash # requires cargo-binstall
-source scripts/install_starship.bash
-source scripts/install_bat.bash
+source scripts/install_rustup.bash         # may require curl
+source scripts/install_cargo_binstall.bash # requires rustup, may require curl
+source scripts/install_cargo_update.bash   # requires rustup, may require cargo-binstall
+source scripts/install_topgrade.bash       # may require cargo-binstall
+source scripts/install_rhq.bash            # requires cargo-binstall
+source scripts/install_starship.bash       # may require cargo-binstall
+source scripts/install_bat.bash            # may require cargo-binstall
 source scripts/install_ripgrep.bash
-source scripts/install_skim.bash
-source scripts/install_delta.bash # requires git
+source scripts/install_skim.bash  # may require cargo-binstall
+source scripts/install_delta.bash # requires git, may require cargo-binstall
 
 source scripts/remove_deprecated.bash
 

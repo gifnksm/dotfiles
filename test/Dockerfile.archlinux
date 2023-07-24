@@ -6,13 +6,16 @@ FROM archlinux:latest
 RUN \
     --mount=type=cache,target=/var/cache/ \
     <<END
-    # install packages
+    set -eux
+
+    # system update & install packages
     pacman -Syu --noconfirm --needed \
-        sudo
+        sudo \
+        ;
 
     # user configuration
-    useradd -m user
-    echo "user ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/user
+    useradd -m arch
+    echo "arch ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/arch
 END
 
-USER user
+USER arch

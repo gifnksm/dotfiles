@@ -76,6 +76,10 @@ assert_command() {
 
 _print_os_name() {
     source /etc/os-release
+    if [[ -v VERSION_ID ]]; then
+        echo "${NAME} ${VERSION_ID}"
+        return
+    fi
     echo "${NAME}"
 }
 
@@ -93,7 +97,7 @@ _init_check_repo_dir() {
 _init_check_os() {
     info "OS: ${OS_NAME}"
     case "${OS_NAME}" in
-    "${OS_ARCH_LINUX}") ;;
+    "${OS_ARCH_LINUX}" | "${OS_UBUNTU_22_04}") ;;
     *)
         error "${OS_NAME} is not supported."
         return "${ERROR_EXIT_CODE}"
@@ -124,6 +128,35 @@ ensure_file_exists() {
     ensure_directory_exists "$(dirname "${file}")"
     touch "${file}"
     info "file created: ${file}"
+}
+
+ensure_symlink_exists() {
+    local target="${1}"
+    local source="${2}"
+
+    if [[ -L "${source}" ]]; then
+        local cur_target
+        cur_target="$(readlink "${source}")"
+        if [[ "${cur_target}" != "${target}" ]]; then
+            warn "symbolic link already exists, which has different target: ${source} -> ${cur_target}"
+            return "${WARN_EXIT_CODE}"
+        fi
+        trace "symbolic link already exists, skip: ${source} -> ${cur_target}"
+        return
+    fi
+
+    if [[ -e "${source}" ]]; then
+        warn "file already exists: ${source}"
+        return "${WARN_EXIT_CODE}"
+    fi
+
+    ensure_directory_exists "$(dirname "${source}")"
+    if [[ -v SUDO ]]; then
+        sudo ln -s "${target}" "${source}"
+    else
+        ln -s "${target}" "${source}"
+    fi
+    info "symbolic link created: ${source} -> ${target}"
 }
 
 ensure_symlink_to_config_exists() {
@@ -237,16 +270,19 @@ cargo_install() {
     cargo binstall -y "$@"
 }
 
+apt_get_install() {
+    info "apt-get install: $*"
+    sudo apt-get install -y --no-install-recommends "$@"
+}
+
 # Usage: install_package_by_spec <<END
 #     <os1>: <package1-1> <package1-2> ...
 #     <os2>: <package2-1>@<source2-1> ...
 #     ...
 # END
 install_package_by_spec() {
-    local raw_spec installed=false
-    while read -r raw_spec; do
-        local spec
-        spec="$(tr -d '[:space:]' <<<"${raw_spec}")"
+    local spec installed=false
+    while read -r spec; do
         if [[ -z "${spec}" ]]; then
             continue
         fi
@@ -255,7 +291,7 @@ install_package_by_spec() {
         os="$(cut -d: -f1 <<<"${spec}")"
         read -ra package_and_sources <<<"$(cut -d: -f2- <<<"${spec}")"
         if [[ -z "${os}" ]]; then
-            error "invalid package spec: ${raw_spec}"
+            error "invalid package spec: ${spec}"
             return "${ERROR_EXIT_CODE}"
         fi
 
@@ -269,7 +305,7 @@ install_package_by_spec() {
             package="$(cut -d@ -f1 <<<"${package_and_source}")"
             source="$(cut -d@ -f2- -s <<<"${package_and_source}")"
             if [[ -z "${package}" ]]; then
-                error "invalid package spec: ${raw_spec}"
+                error "invalid package spec: ${spec}"
                 return "${ERROR_EXIT_CODE}"
             fi
 
@@ -293,14 +329,34 @@ install_package_by_spec() {
                         break
                         ;;
                     *)
-                        error "invalid source '${source}' for package '${package}' in spec: ${raw_spec}"
+                        error "invalid source '${source}' for package '${package}' in spec: ${spec}"
+                        return "${ERROR_EXIT_CODE}"
+                        ;;
+                    esac
+                fi
+                ;;
+            ubuntu_22_04)
+                if [[ "${OS_NAME}" = "${OS_UBUNTU_22_04}" ]]; then
+                    installed=true
+                    case "${source}" in
+                    "" | "apt-get")
+                        apt_get_install "${package}"
+                        break
+                        ;;
+                    "cargo")
+                        source scripts/install_rustup.bash
+                        cargo_install "${package}"
+                        break
+                        ;;
+                    *)
+                        error "invalid source '${source}' for package '${package}' in spec: ${spec}"
                         return "${ERROR_EXIT_CODE}"
                         ;;
                     esac
                 fi
                 ;;
             *)
-                error "invalid os '${os}' in package spec: ${raw_spec}"
+                error "invalid os '${os}' in package spec: ${spec}"
                 return "${ERROR_EXIT_CODE}"
                 ;;
             esac
@@ -308,7 +364,7 @@ install_package_by_spec() {
     done
 
     if ! "${installed}"; then
-        error "no package is installed by spec."
+        error "no package is installed by spec for OS ${OS_NAME}."
         return "${ERROR_EXIT_CODE}"
     fi
 }
@@ -317,6 +373,7 @@ readonly ERROR_EXIT_CODE=1
 readonly WARN_EXIT_CODE=0
 
 readonly OS_ARCH_LINUX="Arch Linux"
+readonly OS_UBUNTU_22_04="Ubuntu 22.04"
 OS_NAME="$(_print_os_name)"
 readonly OS_NAME
 

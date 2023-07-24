@@ -2,7 +2,10 @@
 
 case "${OS_NAME}" in
 "${OS_ARCH_LINUX}")
-    source scripts/install_base_archlinux.bash
+    source scripts/prepare_archlinux.bash
+    ;;
+"${OS_UBUNTU_22_04}")
+    source scripts/prepare_ubuntu_22_04.bash
     ;;
 *)
     error "${OS_NAME} is not supported."

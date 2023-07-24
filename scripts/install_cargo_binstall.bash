@@ -1,7 +1,18 @@
 # shellcheck source-path=SCRIPTDIR/..
 
-install_package_by_spec <<END
-    arch: cargo-binstall
-END
+if ! command -v cargo-binstall >/dev/null; then
+    case "${OS_NAME}" in
+    "${OS_ARCH_LINUX}")
+        pacman_install cargo-binstall
+        ;;
+    "${OS_UBUNTU_22_04}")
+        curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+        ;;
+    *)
+        error "${OS_NAME} is not supported."
+        return "${ERROR_EXIT_CODE}"
+        ;;
+    esac
+fi
 
 assert_command cargo-binstall

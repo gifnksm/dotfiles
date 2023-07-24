@@ -2,6 +2,7 @@
 
 install_package_by_spec <<END
     arch: git-delta
+    ubuntu_22_04: git-delta@cargo
 END
 
 assert_command delta
