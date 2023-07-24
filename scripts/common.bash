@@ -233,8 +233,8 @@ paru_install() {
 }
 
 cargo_install() {
-    info "cargo install: $*"
-    cargo install "$@"
+    info "cargo binstall: $*"
+    cargo binstall -y "$@"
 }
 
 # Usage: install_package_by_spec <<END

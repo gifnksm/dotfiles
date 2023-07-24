@@ -17,18 +17,18 @@ source scripts/install_git.bash
 source scripts/install_tig.bash
 source scripts/install_emacs.bash
 source scripts/install_vim.bash
-source scripts/install_rustup.bash
-source scripts/install_topgrade.bash
-source scripts/install_rhq.bash
+source scripts/install_keychain.bash
 
+source scripts/install_rustup.bash
+source scripts/install_cargo_binstall.bash # requires rustup
+source scripts/install_cargo_update.bash   # requires rustup
+source scripts/install_topgrade.bash
+source scripts/install_rhq.bash # requires cargo-binstall
 source scripts/install_starship.bash
 source scripts/install_bat.bash
 source scripts/install_ripgrep.bash
-source scripts/install_keychain.bash
 source scripts/install_skim.bash
-source scripts/install_cargo_update.bash
-
-source scripts/install_delta.bash # require git
+source scripts/install_delta.bash # requires git
 
 source scripts/remove_deprecated.bash
 
