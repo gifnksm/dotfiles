@@ -1,0 +1,11 @@
+#!/bin/bash
+
+set -eu -o pipefail
+
+TEST_DIR="$(readlink -f "$(dirname "$0")")"
+readonly TEST_DIR
+cd "${TEST_DIR}"
+
+source scripts/common.bash
+
+run_test rockylinux_9

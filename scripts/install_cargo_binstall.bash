@@ -5,7 +5,7 @@ if ! command -v cargo-binstall >/dev/null; then
     "${OS_ARCH_LINUX}")
         pacman_install cargo-binstall
         ;;
-    "${OS_UBUNTU_22_04}")
+    "${OS_UBUNTU_22_04}" | "${OS_ROCKY_LINUX_9}")
         curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
         ;;
     *)

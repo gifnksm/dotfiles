@@ -11,7 +11,11 @@ fi
 assert_command rustup
 assert_command cargo
 
-install_package_by_spec <<END
-    arch: base-devel
-    ubuntu_22_04: build-essential
+if [[ "${OS_NAME}" = "${OS_ROCKY_LINUX_9}" ]]; then
+    dnf_install "@Development Tools"
+else
+    install_package_by_spec <<END
+        arch: base-devel
+        ubuntu_22_04: build-essential
 END
+fi

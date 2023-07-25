@@ -3,6 +3,7 @@
 install_package_by_spec <<END
     arch: zsh
     ubuntu_22_04: zsh
+    rocky_9: zsh
 END
 
 assert_command zsh

@@ -3,6 +3,7 @@
 install_package_by_spec <<END
     arch: bat
     ubuntu_22_04: bat
+    rocky_9: bat
 END
 
 if [[ "${OS_NAME}" = "${OS_UBUNTU_22_04}" ]]; then

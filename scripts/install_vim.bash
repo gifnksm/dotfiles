@@ -3,6 +3,7 @@
 install_package_by_spec <<END
     arch: vim
     ubuntu_22_04: vim
+    rocky_9: vim
 END
 
 assert_command vim

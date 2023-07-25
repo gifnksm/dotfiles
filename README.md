@@ -13,3 +13,4 @@ dotfiles/install
 
 * Arch Linux
 * Ubuntu 22.04 (Jammy Jellyfish)
+* Rocky Linux 9

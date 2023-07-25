@@ -77,6 +77,11 @@ assert_command() {
 _print_os_name() {
     source /etc/os-release
     if [[ -v VERSION_ID ]]; then
+        if [[ "${NAME}" = "Rocky Linux" ]]; then
+            # ignore minor version
+            echo "Rocky Linux $(cut -d. -f1 <<<"${VERSION_ID}")"
+            return
+        fi
         echo "${NAME} ${VERSION_ID}"
         return
     fi
@@ -97,7 +102,7 @@ _init_check_repo_dir() {
 _init_check_os() {
     info "OS: ${OS_NAME}"
     case "${OS_NAME}" in
-    "${OS_ARCH_LINUX}" | "${OS_UBUNTU_22_04}") ;;
+    "${OS_ARCH_LINUX}" | "${OS_UBUNTU_22_04}" | "${OS_ROCKY_LINUX_9}") ;;
     *)
         error "${OS_NAME} is not supported."
         return "${ERROR_EXIT_CODE}"
@@ -275,6 +280,11 @@ apt_get_install() {
     sudo apt-get install -y --no-install-recommends "$@"
 }
 
+dnf_install() {
+    info "dnf install: $*"
+    sudo dnf install -y "$@"
+}
+
 # Usage: install_package_by_spec <<END
 #     <os1>: <package1-1> <package1-2> ...
 #     <os2>: <package2-1>@<source2-1> ...
@@ -355,6 +365,26 @@ install_package_by_spec() {
                     esac
                 fi
                 ;;
+            rocky_9)
+                if [[ "${OS_NAME}" = "${OS_ROCKY_LINUX_9}" ]]; then
+                    installed=true
+                    case "${source}" in
+                    "" | "dnf")
+                        dnf_install "${package}"
+                        break
+                        ;;
+                    "cargo")
+                        source scripts/install_rustup.bash
+                        cargo_install "${package}"
+                        break
+                        ;;
+                    *)
+                        error "invalid source '${source}' for package '${package}' in spec: ${spec}"
+                        return "${ERROR_EXIT_CODE}"
+                        ;;
+                    esac
+                fi
+                ;;
             *)
                 error "invalid os '${os}' in package spec: ${spec}"
                 return "${ERROR_EXIT_CODE}"
@@ -374,6 +404,7 @@ readonly WARN_EXIT_CODE=0
 
 readonly OS_ARCH_LINUX="Arch Linux"
 readonly OS_UBUNTU_22_04="Ubuntu 22.04"
+readonly OS_ROCKY_LINUX_9="Rocky Linux 9"
 OS_NAME="$(_print_os_name)"
 readonly OS_NAME
 
