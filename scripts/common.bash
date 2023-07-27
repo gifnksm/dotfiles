@@ -277,7 +277,7 @@ cargo_install() {
 
 apt_get_install() {
     info "apt-get install: $*"
-    sudo apt-get install -y --no-install-recommends "$@"
+    sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends "$@"
 }
 
 dnf_install() {
