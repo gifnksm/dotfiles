@@ -326,17 +326,14 @@ install_package_by_spec() {
                     case "${source}" in
                     "" | "pacman")
                         pacman_install "${package}"
-                        break
                         ;;
                     "aur")
                         source scripts/install_paru.bash
                         paru_install "${package}"
-                        break
                         ;;
                     "cargo")
                         source scripts/install_rustup.bash
                         cargo_install "${package}"
-                        break
                         ;;
                     *)
                         error "invalid source '${source}' for package '${package}' in spec: ${spec}"
@@ -351,12 +348,10 @@ install_package_by_spec() {
                     case "${source}" in
                     "" | "apt-get")
                         apt_get_install "${package}"
-                        break
                         ;;
                     "cargo")
                         source scripts/install_rustup.bash
                         cargo_install "${package}"
-                        break
                         ;;
                     *)
                         error "invalid source '${source}' for package '${package}' in spec: ${spec}"
@@ -371,12 +366,10 @@ install_package_by_spec() {
                     case "${source}" in
                     "" | "dnf")
                         dnf_install "${package}"
-                        break
                         ;;
                     "cargo")
                         source scripts/install_rustup.bash
                         cargo_install "${package}"
-                        break
                         ;;
                     *)
                         error "invalid source '${source}' for package '${package}' in spec: ${spec}"
@@ -391,6 +384,10 @@ install_package_by_spec() {
                 ;;
             esac
         done
+
+        if "${installed}"; then
+            break
+        fi
     done
 
     if ! "${installed}"; then
