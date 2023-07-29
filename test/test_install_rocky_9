@@ -6,6 +6,6 @@ TEST_DIR="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 readonly TEST_DIR
 cd "${TEST_DIR}"
 
-source scripts/common.bash
+source lib/common.bash
 
 run_test rocky_9

@@ -6,7 +6,7 @@ REPO_DIR="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 readonly REPO_DIR
 cd "${REPO_DIR}"
 
-source ./scripts/common.bash
+source ./lib/common.bash
 is_executed && return
 
 source scripts/prepare.bash
