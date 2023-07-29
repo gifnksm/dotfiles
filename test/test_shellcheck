@@ -1,10 +1,11 @@
 #!/bin/bash
+# shellcheck source-path=SCRIPTDIR/..
 
 set -eu -o pipefail
 
-REPO_DIR="$(realpath "$(dirname "${BASH_SOURCE[0]}")/..")"
-readonly REPO_DIR
-cd "${REPO_DIR}"
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+source test/lib/common.bash
+is_executed && return
 
 find \
     . \

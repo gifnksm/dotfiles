@@ -1,11 +1,10 @@
 #!/bin/bash
+# shellcheck source-path=SCRIPTDIR/..
 
 set -eu -o pipefail
 
-TEST_DIR="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
-readonly TEST_DIR
-cd "${TEST_DIR}"
-
-source lib/common.bash
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+source test/lib/common.bash
+is_executed && return
 
 run_test rocky_9

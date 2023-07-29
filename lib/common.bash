@@ -1,8 +1,8 @@
 # shellcheck source-path=SCRIPTDIR/..
 
-if [[ "$(type -t is_executed)" = "function" ]]; then
-    is_executed && return
-fi
+[[ "$(type -t is_executed)" = "function" ]] && return
+
+set -eu -o pipefail
 
 _timestamp() { date '+%Y-%m-%d %H:%M:%S.%3N'; }
 error() { echo -e "\e[30;1m$(_timestamp)\e[m" "[\e[31;1mERROR\e[m]" "$@" >&2; }
@@ -114,14 +114,7 @@ _print_os_id() {
     )
 }
 
-_init_check_repo_dir() {
-    [[ -v REPO_DIR ]] || abort "REPO_DIR is not set."
-    [[ -d "${REPO_DIR}" ]] || abort "REPO_DIR is not a directory: ${REPO_DIR}"
-
-    local expected_repo_dir
-    expected_repo_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")/..")"
-
-    [[ "${REPO_DIR}" = "${expected_repo_dir}" ]] || abort "REPO_DIR is not the expected directory: ${REPO_DIR} != ${expected_repo_dir}"
+_init_check_pwd() {
     [[ "$(pwd)" = "${REPO_DIR}" ]] || abort "current directory is not REPO_DIR: $(pwd) != ${REPO_DIR}"
 }
 
@@ -525,6 +518,9 @@ install_package_by_spec() {
     "${installed}" || abort "no package is installed by spec for OS ${OS_ID}."
 }
 
+REPO_DIR="$(realpath "$(dirname "${BASH_SOURCE[0]}")/..")"
+readonly REPO_DIR
+
 readonly ERROR_EXIT_CODE=1
 readonly WARN_EXIT_CODE=0
 
@@ -534,5 +530,5 @@ readonly OS_ROCKY_9="rocky-9"
 OS_ID="$(_print_os_id)"
 readonly OS_ID
 
-_init_check_repo_dir
+_init_check_pwd
 _init_check_os

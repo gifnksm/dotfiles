@@ -1,17 +1,10 @@
-# shellcheck source-path=SCRIPTDIR/..
+# shellcheck source-path=SCRIPTDIR/../..
 
-_init_check_test_dir() {
-    if ! [[ -v TEST_DIR ]]; then
-        error "TEST_DIR is not set."
-        return 1
-    fi
-    if ! [[ -d "${TEST_DIR}" ]]; then
-        error "TEST_DIR is not a directory: ${TEST_DIR}"
-        return 1
-    fi
-}
+source lib/common.bash
 
-REPO_DIR="$(realpath "${TEST_DIR}/..")"
+is_executed && return
+
+TEST_DIR="${REPO_DIR}/test"
 
 run_test() {
     local -r test_os_name="${1}"
@@ -22,5 +15,3 @@ run_test() {
     docker build --pull -t "${docker_image_name}" -f "${dockerfile}" .
     docker run --rm -v "${REPO_DIR}:/dotfiles" "${docker_image_name}" /dotfiles/install
 }
-
-_init_check_test_dir
