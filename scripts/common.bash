@@ -24,7 +24,9 @@ print_backtrace() {
             else
                 marker="|"
             fi
-            echo -e "    ${j} ${marker} $(sed -n "${j}p" "$file")\e[m"
+            echo -en "    ${j} ${marker} "
+            echo -n "$(sed -n "${j}p" "${file}")"
+            echo -e "\e[m"
         done
         ((i += 1))
     done
