@@ -315,11 +315,35 @@ dnf_install() {
     sudo dnf install -y "$@"
 }
 
+# Encode package name containing special characters with url-encoding-like format
+pkg_encode() {
+    sed -zE '
+        s/%/%25/g;
+        s/:/%3A/g
+        s/@/%40/g;
+        s/ /%20/g;
+        s/\n/%0A/g;
+        s/\t/%09/g;
+    '
+}
+
+# Decode package name containing special characters with url-encoding-like format
+pkg_decode() {
+    sed -zE '
+        s/%3A/:/g;
+        s/%40/@/g;
+        s/%20/ /g;
+        s/%0A/\n/;
+        s/%09/\t/;
+        s/%25/%/g
+    '
+}
+
 _extract_package() {
-    cut -d@ -f1 <<<"${1}"
+    cut -d@ -f1 <<<"${1}" | pkg_decode
 }
 _extract_source() {
-    cut -d@ -f2- -s <<<"${1}"
+    cut -d@ -f2- -s <<<"${1}" | pkg_decode
 }
 
 install_package_arch() {
