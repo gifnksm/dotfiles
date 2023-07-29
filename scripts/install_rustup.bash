@@ -1,6 +1,8 @@
 # shellcheck source-path=SCRIPTDIR/..
 
 if ! [[ -x ~/.cargo/bin/rustup ]]; then
+    source scripts/install_curl.bash
+
     info "Installing rustup..."
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -yq
 fi

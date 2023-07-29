@@ -29,16 +29,16 @@ source scripts/install_emacs.bash
 source scripts/install_vim.bash
 source scripts/install_keychain.bash
 
-source scripts/install_rustup.bash         # may require curl
-source scripts/install_cargo_binstall.bash # requires rustup, may require curl
-source scripts/install_cargo_update.bash   # requires rustup, may require cargo-binstall
-source scripts/install_topgrade.bash       # may require cargo-binstall
-source scripts/install_rhq.bash            # requires cargo-binstall
-source scripts/install_starship.bash       # may require cargo-binstall
-source scripts/install_bat.bash            # may require cargo-binstall
+source scripts/install_rustup.bash
+source scripts/install_cargo_binstall.bash
+source scripts/install_cargo_update.bash
+source scripts/install_topgrade.bash
+source scripts/install_rhq.bash
+source scripts/install_starship.bash
+source scripts/install_bat.bash
 source scripts/install_ripgrep.bash
-source scripts/install_skim.bash  # may require cargo-binstall
-source scripts/install_delta.bash # requires git, may require cargo-binstall
+source scripts/install_skim.bash
+source scripts/install_delta.bash
 
 source scripts/remove_deprecated.bash
 
