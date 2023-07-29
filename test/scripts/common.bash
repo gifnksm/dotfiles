@@ -11,7 +11,7 @@ _init_check_test_dir() {
     fi
 }
 
-REPO_DIR="$(readlink -f "${TEST_DIR}/..")"
+REPO_DIR="$(realpath "${TEST_DIR}/..")"
 
 run_test() {
     local -r test_os_name="${1}"

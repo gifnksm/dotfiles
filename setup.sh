@@ -53,7 +53,7 @@ if [[ "$is_wsl" = 1 ]]; then
   )
 fi
 
-repo_dir="$(readlink -f "$(dirname "$0")")"
+repo_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 error() { echo -e "\e[31;1merror\e[m:" "$@" >&2; }
 warn() { echo -e "\e[33;1mwarning\e[m:" "$@" >&2; }
 info() { echo -e "\e[32;1minfo\e[m:" "$@" >&2; }
