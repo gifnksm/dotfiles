@@ -281,7 +281,7 @@ ensure_git_config() {
 pacman_install() {
     [[ "$#" -eq 0 ]] && return
     info "pacman install: $*"
-    sudo pacman -S --needed --noconfirm --color always "$@"
+    sudo pacman -Sq --needed --noconfirm --color always "$@"
 }
 
 paru_install() {
@@ -290,7 +290,7 @@ paru_install() {
     source scripts/install_paru.bash
 
     info "paru install: $*"
-    paru -S --needed --noconfirm --color always "$@"
+    paru -Sq --needed --noconfirm --color always "$@"
 }
 
 cargo_install() {
@@ -300,21 +300,21 @@ cargo_install() {
     source scripts/install_cargo_binstall.bash
 
     info "cargo binstall: $*"
-    cargo binstall -y "$@"
+    cargo binstall -qy "$@"
 }
 
 apt_get_install() {
     [[ "$#" -eq 0 ]] && return
 
     info "apt-get install: $*"
-    sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends "$@"
+    sudo DEBIAN_FRONTEND=noninteractive apt-get -qq install -y --no-install-recommends "$@"
 }
 
 dnf_install() {
     [[ "$#" -eq 0 ]] && return
 
     info "dnf install: $*"
-    sudo dnf install -y "$@"
+    sudo dnf install -qy "$@"
 }
 
 epel_install() {
@@ -323,7 +323,7 @@ epel_install() {
     source scripts/install_epel.bash
 
     info "dnf install from EPEL: $*"
-    sudo dnf install -y "$@"
+    sudo dnf install -qy "$@"
 }
 
 # Encode package name containing special characters with url-encoding-like format
