@@ -1,9 +1,14 @@
+#!/bin/bash
 # shellcheck source-path=SCRIPTDIR/..
 
+set -eu -o pipefail
+
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+source ./lib/common.bash
 is_executed && return
 
 if ! [[ -x ~/.cargo/bin/rustup ]]; then
-    source scripts/install_curl.bash
+    source scripts/install_curl
 
     info "Installing rustup..."
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -yq

@@ -1,9 +1,14 @@
+#!/bin/bash
 # shellcheck source-path=SCRIPTDIR/..
 
+set -eu -o pipefail
+
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+source ./lib/common.bash
 is_executed && return
 
 # requires rust toolchain
-source scripts/install_rustup.bash
+source scripts/install_rustup
 
 if ! command -v cargo-binstall >/dev/null; then
     case "${OS_ID}" in
@@ -11,7 +16,7 @@ if ! command -v cargo-binstall >/dev/null; then
         pacman_install cargo-binstall
         ;;
     "${OS_UBUNTU_22_04}" | "${OS_ROCKY_9}")
-        source scripts/install_curl.bash
+        source scripts/install_curl
         curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
         ;;
     *)

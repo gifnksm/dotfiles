@@ -297,7 +297,8 @@ pacman_install() {
 paru_install() {
     [[ "$#" -eq 0 ]] && return
 
-    source scripts/install_paru.bash
+    # shellcheck source=/dev/null
+    source scripts/install_paru
 
     info "paru install: $*"
     paru -Sq --needed --noconfirm --color always "$@"
@@ -306,8 +307,10 @@ paru_install() {
 cargo_install() {
     [[ "$#" -eq 0 ]] && return
 
-    source scripts/install_rustup.bash
-    source scripts/install_cargo_binstall.bash
+    # shellcheck source=/dev/null
+    source scripts/install_rustup
+    # shellcheck source=/dev/null
+    source scripts/install_cargo_binstall
 
     info "cargo binstall: $*"
     cargo binstall -qy "$@"
@@ -330,7 +333,8 @@ dnf_install() {
 epel_install() {
     [[ "$#" -eq 0 ]] && return
 
-    source scripts/install_epel.bash
+    # shellcheck source=/dev/null
+    source scripts/install_epel
 
     info "dnf install from EPEL: $*"
     sudo dnf install -qy "$@"

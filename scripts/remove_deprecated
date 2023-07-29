@@ -1,5 +1,10 @@
+#!/bin/bash
 # shellcheck source-path=SCRIPTDIR/..
 
+set -eu -o pipefail
+
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+source ./lib/common.bash
 is_executed && return
 
 ensure_symlink_to_config_not_exists .colordiffrc

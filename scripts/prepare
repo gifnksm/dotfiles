@@ -1,16 +1,21 @@
+#!/bin/bash
 # shellcheck source-path=SCRIPTDIR/..
 
+set -eu -o pipefail
+
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+source ./lib/common.bash
 is_executed && return
 
 case "${OS_ID}" in
 "${OS_ARCH}")
-    source scripts/prepare_arch.bash
+    source scripts/prepare_arch
     ;;
 "${OS_UBUNTU_22_04}")
-    source scripts/prepare_ubuntu_22_04.bash
+    source scripts/prepare_ubuntu_22_04
     ;;
 "${OS_ROCKY_9}")
-    source scripts/prepare_rocky_9.bash
+    source scripts/prepare_rocky_9
     ;;
 *)
     abort "${OS_ID} is not supported."
