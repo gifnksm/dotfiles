@@ -112,6 +112,12 @@ _print_os_id() {
 _init_check_repo_dir() {
     [[ -v REPO_DIR ]] || abort "REPO_DIR is not set."
     [[ -d "${REPO_DIR}" ]] || abort "REPO_DIR is not a directory: ${REPO_DIR}"
+
+    local expected_repo_dir
+    expected_repo_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")/..")"
+
+    [[ "${REPO_DIR}" = "${expected_repo_dir}" ]] || abort "REPO_DIR is not the expected directory: ${REPO_DIR} != ${expected_repo_dir}"
+    [[ "$(pwd)" = "${REPO_DIR}" ]] || abort "current directory is not REPO_DIR: $(pwd) != ${REPO_DIR}"
 }
 
 _init_check_os() {
