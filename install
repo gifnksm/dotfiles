@@ -10,9 +10,14 @@ source ./scripts/common.bash
 
 source scripts/prepare.bash
 
-if [[ "${OS_ID}" == "${OS_ARCH}" ]]; then
+case "${OS_ID}" in
+"${OS_ARCH}")
     source scripts/install_paru.bash
-fi
+    ;;
+"${OS_ROCKY_9}")
+    source scripts/install_epel.bash
+    ;;
+esac
 
 source scripts/install_curl.bash
 

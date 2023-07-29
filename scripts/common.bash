@@ -315,6 +315,15 @@ dnf_install() {
     sudo dnf install -y "$@"
 }
 
+epel_install() {
+    [[ "$#" -eq 0 ]] && return
+
+    source scripts/install_epel.bash
+
+    info "dnf install from EPEL: $*"
+    sudo dnf install -y "$@"
+}
+
 # Encode package name containing special characters with url-encoding-like format
 pkg_encode() {
     sed -zE '
@@ -418,6 +427,7 @@ install_package_debian() {
 install_package_rhel() {
     local package_and_sources=("$@")
     local dnf_packages=()
+    local epel_packages=()
     local cargo_packages=()
 
     for package_and_source in "${package_and_sources[@]}"; do
@@ -433,6 +443,9 @@ install_package_rhel() {
         "" | dnf)
             dnf_packages+=("${package}")
             ;;
+        epel)
+            epel_packages+=("${package}")
+            ;;
         cargo)
             cargo_packages+=("${package}")
             ;;
@@ -444,6 +457,7 @@ install_package_rhel() {
     done
 
     dnf_install "${dnf_packages[@]}"
+    epel_install "${epel_packages[@]}"
     cargo_install "${cargo_packages[@]}"
 }
 

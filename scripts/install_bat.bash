@@ -3,7 +3,7 @@
 install_package_by_spec <<END
     arch: bat
     ubuntu-22.04: bat
-    rocky-9: bat
+    rocky-9: bat@epel
 END
 
 if [[ "${OS_ID}" = "${OS_UBUNTU_22_04}" ]]; then
