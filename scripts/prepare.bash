@@ -1,5 +1,7 @@
 # shellcheck source-path=SCRIPTDIR/..
 
+is_executed && return
+
 case "${OS_ID}" in
 "${OS_ARCH}")
     source scripts/prepare_arch.bash

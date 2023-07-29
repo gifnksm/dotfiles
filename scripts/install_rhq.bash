@@ -1,5 +1,7 @@
 # shellcheck source-path=SCRIPTDIR/..
 
+is_executed && return
+
 install_package_by_spec <<END
     arch: rhq@cargo
     ubuntu-22.04: rhq@cargo

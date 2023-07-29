@@ -1,5 +1,7 @@
 # shellcheck source-path=SCRIPTDIR/..
 
+is_executed && return
+
 # requires rust toolchain
 source scripts/install_rustup.bash
 

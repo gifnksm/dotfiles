@@ -1,5 +1,7 @@
 # shellcheck source-path=SCRIPTDIR/..
 
+is_executed && return
+
 assert_eq "${OS_ID}" "${OS_ARCH}"
 
 if ! command -v paru >/dev/null; then

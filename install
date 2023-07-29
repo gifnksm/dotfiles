@@ -7,6 +7,7 @@ readonly REPO_DIR
 cd "${REPO_DIR}"
 
 source ./scripts/common.bash
+is_executed && return
 
 source scripts/prepare.bash
 

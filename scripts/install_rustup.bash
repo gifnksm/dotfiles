@@ -1,5 +1,7 @@
 # shellcheck source-path=SCRIPTDIR/..
 
+is_executed && return
+
 if ! [[ -x ~/.cargo/bin/rustup ]]; then
     source scripts/install_curl.bash
 

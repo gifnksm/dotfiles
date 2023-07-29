@@ -1,5 +1,7 @@
 # shellcheck source-path=SCRIPTDIR/..
 
+is_executed && return
+
 install_package_by_spec <<END
     arch: git-delta
     ubuntu-22.04: git-delta@cargo

@@ -1,5 +1,7 @@
 # shellcheck source-path=SCRIPTDIR/..
 
+is_executed && return
+
 install_package_by_spec <<END
     arch: emacs
     ubuntu-22.04: emacs
