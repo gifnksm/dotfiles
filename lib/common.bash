@@ -91,6 +91,7 @@ is_supported_os() {
 _print_os_id() {
     (
         # Run in a subshell to avoid polluting the current shell
+        # shellcheck source=/dev/null
         source /etc/os-release
 
         case "${ID}" in

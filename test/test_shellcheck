@@ -13,4 +13,4 @@ find \
     -maxdepth 1 \
     -executable \
     -type f \
-    -exec shellcheck {} +
+    -exec shellcheck -a {} +
