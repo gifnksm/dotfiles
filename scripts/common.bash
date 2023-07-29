@@ -98,7 +98,7 @@ _print_os_id() {
             echo "${ID}"
             ;;
         *)
-            if [[ -v ID_LIKE ]] && (echo "${ID_LIKE}" | grep -w "rhel" >/dev/null); then
+            if [[ -v ID_LIKE ]] && (grep -qw "rhel" <<<"${ID_LIKE}"); then
                 # For RHEL family OS, ignore minor version
                 echo "${ID}-$(cut -d. -f1 <<<"${VERSION_ID}")"
                 return

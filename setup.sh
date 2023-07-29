@@ -1,6 +1,6 @@
 #!/bin/bash -eu
 is_wsl=0
-if grep 'WSL2$' /proc/sys/kernel/osrelease >>/dev/null; then
+if grep -q 'WSL2$' /proc/sys/kernel/osrelease; then
   is_wsl=1
 fi
 
@@ -155,7 +155,7 @@ main() {
     touch ~/.config/git/config
     info "git config is ~/.config/git/config"
   fi
-  if [[ -e ~/.config/git/ignore ]] && grep '^\.vscode/$' ~/.config/git/ignore >/dev/null; then
+  if [[ -e ~/.config/git/ignore ]] && grep -q '^\.vscode/$' ~/.config/git/ignore; then
     info ".vscode/ is in ~/.config/git/ignore"
   else
     echo ".vscode/" >>~/.config/git/ignore
