@@ -110,22 +110,13 @@ _print_os_id() {
 }
 
 _init_check_repo_dir() {
-    if ! [[ -v REPO_DIR ]]; then
-        error "REPO_DIR is not set."
-        return "${ERROR_EXIT_CODE}"
-    fi
-    if ! [[ -d "${REPO_DIR}" ]]; then
-        error "REPO_DIR is not a directory: ${REPO_DIR}"
-        return "${ERROR_EXIT_CODE}"
-    fi
+    [[ -v REPO_DIR ]] || abort "REPO_DIR is not set."
+    [[ -d "${REPO_DIR}" ]] || abort "REPO_DIR is not a directory: ${REPO_DIR}"
 }
 
 _init_check_os() {
     info "OS: ${OS_ID}"
-    if ! is_supported_os "${OS_ID}"; then
-        error "${OS_ID} is not supported."
-        return "${ERROR_EXIT_CODE}"
-    fi
+    is_supported_os "${OS_ID}" || abort "${OS_ID} is not supported."
 }
 
 ensure_directory_exists() {
@@ -383,8 +374,7 @@ install_package_arch() {
             cargo_packages+=("${package}")
             ;;
         *)
-            error "invalid source '${source}' for package '${package}'"
-            return "${ERROR_EXIT_CODE}"
+            abort "invalid source '${source}' for package '${package}'"
             ;;
         esac
     done
@@ -416,8 +406,7 @@ install_package_debian() {
             cargo_packages+=("${package}")
             ;;
         *)
-            error "invalid source '${source}' for package '${package}'"
-            return "${ERROR_EXIT_CODE}"
+            abort "invalid source '${source}' for package '${package}'"
             ;;
         esac
     done
@@ -452,8 +441,7 @@ install_package_rhel() {
             cargo_packages+=("${package}")
             ;;
         *)
-            error "invalid source '${source}' for package '${package}'"
-            return "${ERROR_EXIT_CODE}"
+            abort "invalid source '${source}' for package '${package}'"
             ;;
         esac
     done
@@ -479,13 +467,11 @@ install_package_by_spec() {
         os="$(cut -d: -f1 <<<"${spec}")"
         read -ra package_and_sources <<<"$(cut -d: -f2- <<<"${spec}")"
         if [[ -z "${os}" ]]; then
-            error "invalid package spec: ${spec}"
-            return "${ERROR_EXIT_CODE}"
+            abort "invalid package spec: ${spec}"
         fi
 
         if ! is_supported_os "${os}"; then
-            error "invalid os '${os}' in package spec: ${spec}"
-            return "${ERROR_EXIT_CODE}"
+            abort "invalid os '${os}' in package spec: ${spec}"
         fi
 
         if [[ "${os}" != "${OS_ID}" ]]; then
@@ -510,10 +496,7 @@ install_package_by_spec() {
         installed=true
     done
 
-    if ! "${installed}"; then
-        error "no package is installed by spec for OS ${OS_ID}."
-        return "${ERROR_EXIT_CODE}"
-    fi
+    "${installed}" || abort "no package is installed by spec for OS ${OS_ID}."
 }
 
 readonly ERROR_EXIT_CODE=1

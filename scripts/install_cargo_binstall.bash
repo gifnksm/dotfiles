@@ -13,8 +13,7 @@ if ! command -v cargo-binstall >/dev/null; then
         curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
         ;;
     *)
-        error "${OS_ID} is not supported."
-        return "${ERROR_EXIT_CODE}"
+        abort "${OS_ID} is not supported."
         ;;
     esac
 fi

@@ -11,7 +11,6 @@ case "${OS_ID}" in
     source scripts/prepare_rocky_9.bash
     ;;
 *)
-    error "${OS_ID} is not supported."
-    return "${ERROR_EXIT_CODE}"
+    abort "${OS_ID} is not supported."
     ;;
 esac
