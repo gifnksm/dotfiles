@@ -8,4 +8,4 @@ cd "${TEST_DIR}"
 
 source scripts/common.bash
 
-run_test archlinux
+run_test arch

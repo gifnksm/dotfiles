@@ -1,6 +1,6 @@
 # shellcheck source-path=SCRIPTDIR/..
 
-assert_eq "${OS_NAME}" "${OS_ARCH_LINUX}"
+assert_eq "${OS_ID}" "${OS_ARCH}"
 
 if ! command -v paru >/dev/null; then
     pacman_install base-devel git

@@ -2,8 +2,8 @@
 
 install_package_by_spec <<END
     arch: tig
-    ubuntu_22_04: tig
-    rocky_9: tig
+    ubuntu-22.04: tig
+    rocky-9: tig
 END
 
 assert_command tig

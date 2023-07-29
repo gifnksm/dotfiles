@@ -10,7 +10,7 @@ source ./scripts/common.bash
 
 source scripts/prepare.bash
 
-if [[ "${OS_NAME}" == "${OS_ARCH_LINUX}" ]]; then
+if [[ "${OS_ID}" == "${OS_ARCH}" ]]; then
     source scripts/install_paru.bash
 fi
 

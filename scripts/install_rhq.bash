@@ -2,8 +2,8 @@
 
 install_package_by_spec <<END
     arch: rhq@cargo
-    ubuntu_22_04: rhq@cargo
-    rocky_9: rhq@cargo
+    ubuntu-22.04: rhq@cargo
+    rocky-9: rhq@cargo
 END
 
 assert_command rhq

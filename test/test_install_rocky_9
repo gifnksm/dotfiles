@@ -8,4 +8,4 @@ cd "${TEST_DIR}"
 
 source scripts/common.bash
 
-run_test rockylinux_9
+run_test rocky_9

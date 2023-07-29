@@ -2,8 +2,8 @@
 
 install_package_by_spec <<END
     arch: ripgrep
-    ubuntu_22_04: ripgrep
-    rocky_9: ripgrep
+    ubuntu-22.04: ripgrep
+    rocky-9: ripgrep
 END
 
 assert_command rg

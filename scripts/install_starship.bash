@@ -2,8 +2,8 @@
 
 install_package_by_spec <<END
     arch: starship
-    ubuntu_22_04: starship@cargo
-    rocky_9: starship@cargo
+    ubuntu-22.04: starship@cargo
+    rocky-9: starship@cargo
 END
 
 assert_command starship

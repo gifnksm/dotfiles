@@ -74,18 +74,37 @@ assert_command() {
     fi
 }
 
-_print_os_name() {
-    source /etc/os-release
-    if [[ -v VERSION_ID ]]; then
-        if [[ "${NAME}" = "Rocky Linux" ]]; then
-            # ignore minor version
-            echo "Rocky Linux $(cut -d. -f1 <<<"${VERSION_ID}")"
-            return
-        fi
-        echo "${NAME} ${VERSION_ID}"
-        return
-    fi
-    echo "${NAME}"
+is_supported_os() {
+    local os_id="${1}"
+    case "${os_id}" in
+    "${OS_ARCH}" | "${OS_UBUNTU_22_04}" | "${OS_ROCKY_9}") return 0 ;;
+    *) return 1 ;;
+    esac
+}
+
+_print_os_id() {
+    (
+        # Run in a subshell to avoid polluting the current shell
+        source /etc/os-release
+
+        case "${ID}" in
+        arch)
+            # Ignore $VERSION_ID
+            #
+            # $VERSION_ID is specified for Arch docker images, but not for non-docker environments.
+            # https://gitlab.archlinux.org/archlinux/archlinux-docker/-/blob/56bb99f5ad26f03ab6ea2984f83b4383bb68a2d2/Dockerfile.base
+            echo "${ID}"
+            ;;
+        *)
+            if [[ -v ID_LIKE ]] && (echo "${ID_LIKE}" | grep -w "rhel" >/dev/null); then
+                # For RHEL family OS, ignore minor version
+                echo "${ID}-$(cut -d. -f1 <<<"${VERSION_ID}")"
+                return
+            fi
+            echo "${ID}-${VERSION_ID}"
+            ;;
+        esac
+    )
 }
 
 _init_check_repo_dir() {
@@ -100,14 +119,11 @@ _init_check_repo_dir() {
 }
 
 _init_check_os() {
-    info "OS: ${OS_NAME}"
-    case "${OS_NAME}" in
-    "${OS_ARCH_LINUX}" | "${OS_UBUNTU_22_04}" | "${OS_ROCKY_LINUX_9}") ;;
-    *)
-        error "${OS_NAME} is not supported."
+    info "OS: ${OS_ID}"
+    if ! is_supported_os "${OS_ID}"; then
+        error "${OS_ID} is not supported."
         return "${ERROR_EXIT_CODE}"
-        ;;
-    esac
+    fi
 }
 
 ensure_directory_exists() {
@@ -305,6 +321,15 @@ install_package_by_spec() {
             return "${ERROR_EXIT_CODE}"
         fi
 
+        if ! is_supported_os "${os}"; then
+            error "invalid os '${os}' in package spec: ${spec}"
+            return "${ERROR_EXIT_CODE}"
+        fi
+
+        if [[ "${os}" != "${OS_ID}" ]]; then
+            continue
+        fi
+
         local package_and_source
         for package_and_source in "${package_and_sources[@]}"; do
             if [[ -z "${package_and_source}" ]]; then
@@ -320,78 +345,66 @@ install_package_by_spec() {
             fi
 
             case "${os}" in
-            arch)
-                if [[ "${OS_NAME}" = "${OS_ARCH_LINUX}" ]]; then
-                    installed=true
-                    case "${source}" in
-                    "" | "pacman")
-                        pacman_install "${package}"
-                        ;;
-                    "aur")
-                        source scripts/install_paru.bash
-                        paru_install "${package}"
-                        ;;
-                    "cargo")
-                        source scripts/install_rustup.bash
-                        cargo_install "${package}"
-                        ;;
-                    *)
-                        error "invalid source '${source}' for package '${package}' in spec: ${spec}"
-                        return "${ERROR_EXIT_CODE}"
-                        ;;
-                    esac
-                fi
+            "${OS_ARCH}")
+                case "${source}" in
+                "" | "pacman")
+                    pacman_install "${package}"
+                    ;;
+                "aur")
+                    source scripts/install_paru.bash
+                    paru_install "${package}"
+                    ;;
+                "cargo")
+                    source scripts/install_rustup.bash
+                    cargo_install "${package}"
+                    ;;
+                *)
+                    error "invalid source '${source}' for package '${package}' in spec: ${spec}"
+                    return "${ERROR_EXIT_CODE}"
+                    ;;
+                esac
                 ;;
-            ubuntu_22_04)
-                if [[ "${OS_NAME}" = "${OS_UBUNTU_22_04}" ]]; then
-                    installed=true
-                    case "${source}" in
-                    "" | "apt-get")
-                        apt_get_install "${package}"
-                        ;;
-                    "cargo")
-                        source scripts/install_rustup.bash
-                        cargo_install "${package}"
-                        ;;
-                    *)
-                        error "invalid source '${source}' for package '${package}' in spec: ${spec}"
-                        return "${ERROR_EXIT_CODE}"
-                        ;;
-                    esac
-                fi
+            "${OS_UBUNTU_22_04}")
+                case "${source}" in
+                "" | "apt-get")
+                    apt_get_install "${package}"
+                    ;;
+                "cargo")
+                    source scripts/install_rustup.bash
+                    cargo_install "${package}"
+                    ;;
+                *)
+                    error "invalid source '${source}' for package '${package}' in spec: ${spec}"
+                    return "${ERROR_EXIT_CODE}"
+                    ;;
+                esac
                 ;;
-            rocky_9)
-                if [[ "${OS_NAME}" = "${OS_ROCKY_LINUX_9}" ]]; then
-                    installed=true
-                    case "${source}" in
-                    "" | "dnf")
-                        dnf_install "${package}"
-                        ;;
-                    "cargo")
-                        source scripts/install_rustup.bash
-                        cargo_install "${package}"
-                        ;;
-                    *)
-                        error "invalid source '${source}' for package '${package}' in spec: ${spec}"
-                        return "${ERROR_EXIT_CODE}"
-                        ;;
-                    esac
-                fi
+            "${OS_ROCKY_9}")
+                case "${source}" in
+                "" | "dnf")
+                    dnf_install "${package}"
+                    ;;
+                "cargo")
+                    source scripts/install_rustup.bash
+                    cargo_install "${package}"
+                    ;;
+                *)
+                    error "invalid source '${source}' for package '${package}' in spec: ${spec}"
+                    return "${ERROR_EXIT_CODE}"
+                    ;;
+                esac
                 ;;
             *)
-                error "invalid os '${os}' in package spec: ${spec}"
-                return "${ERROR_EXIT_CODE}"
+                abort "unexpected error: os=${os}, spec=${spec}"
                 ;;
             esac
         done
 
-        if "${installed}"; then
-            break
-        fi
+        installed=true
     done
 
     if ! "${installed}"; then
-        error "no package is installed by spec for OS ${OS_NAME}."
+        error "no package is installed by spec for OS ${OS_ID}."
         return "${ERROR_EXIT_CODE}"
     fi
 }
@@ -399,11 +412,11 @@ install_package_by_spec() {
 readonly ERROR_EXIT_CODE=1
 readonly WARN_EXIT_CODE=0
 
-readonly OS_ARCH_LINUX="Arch Linux"
-readonly OS_UBUNTU_22_04="Ubuntu 22.04"
-readonly OS_ROCKY_LINUX_9="Rocky Linux 9"
-OS_NAME="$(_print_os_name)"
-readonly OS_NAME
+readonly OS_ARCH="arch"
+readonly OS_UBUNTU_22_04="ubuntu-22.04"
+readonly OS_ROCKY_9="rocky-9"
+OS_ID="$(_print_os_id)"
+readonly OS_ID
 
 _init_check_repo_dir
 _init_check_os

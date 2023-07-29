@@ -2,8 +2,8 @@
 
 install_package_by_spec <<END
     arch: emacs
-    ubuntu_22_04: emacs
-    rocky_9: emacs
+    ubuntu-22.04: emacs
+    rocky-9: emacs
 END
 
 assert_command emacs

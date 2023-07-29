@@ -2,8 +2,8 @@
 
 install_package_by_spec <<END
     arch: tmux
-    ubuntu_22_04: tmux
-    rocky_9: tmux
+    ubuntu-22.04: tmux
+    rocky-9: tmux
 END
 
 assert_command tmux
