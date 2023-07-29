@@ -2,14 +2,14 @@
 
 set -eu -o pipefail
 
-REPO_DIR="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
+REPO_DIR="$(realpath "$(dirname "${BASH_SOURCE[0]}")/..")"
 readonly REPO_DIR
 cd "${REPO_DIR}"
 
 find \
     . \
-    scripts/* \
-    test/* \
+    scripts/ \
+    test/ \
     -maxdepth 1 \
     -executable \
     -type f \
