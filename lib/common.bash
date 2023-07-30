@@ -33,7 +33,9 @@ trace() {
 }
 
 group_start() {
-    is_github_actions && echo "::group::$*"
+    if is_github_actions; then
+        echo "::group::$*"
+    fi
 }
 group_start_file() {
     local file
@@ -41,7 +43,9 @@ group_start_file() {
     group_start "${file##"${REPO_DIR}/"}"
 }
 group_end() {
-    is_github_actions && echo "::endgroup::"
+    if is_github_actions; then
+        echo "::endgroup::"
+    fi
 }
 
 print_backtrace() {
