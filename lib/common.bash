@@ -50,8 +50,10 @@ abort() {
     exit "${ERROR_EXIT_CODE}"
 }
 
-trap '_on_error' ERR
+trap '_on_error $?' ERR
 _on_error() {
+    local exitcode="${1:-}"
+    error "program aborted by error: exitcode=${exitcode}"
     print_backtrace 1 | sed "s/^/    /" >&2
 }
 
