@@ -19,7 +19,12 @@ _run_container() {
     local -r container_name="${2}"
 
     info "Running docker container ${container_name}"
-    docker run -d --rm --init -v "${REPO_DIR}:/dotfiles" --name "${container_name}" "${image_name}" sleep infinity
+    docker run \
+        -d --rm --init -v "${REPO_DIR}:/dotfiles" \
+        --env GITHUB_ACTIONS \
+        --name "${container_name}" \
+        "${image_name}" \
+        sleep infinity
 }
 
 _stop_container() {
@@ -34,7 +39,10 @@ _exec_in_container() {
     local -r command="${2}"
 
     info "Executing '${command}' in docker container ${container_name}"
-    docker exec "${container_name}" "${command}"
+    docker exec \
+        --env GITHUB_ACTIONS \
+        "${container_name}" \
+        "${command}"
 }
 
 run_test() {
@@ -47,21 +55,32 @@ run_test() {
 
     info "Running test for ${test_os_name}"
 
-    _build_image "${image_name}" "${dockerfile}"
-    _run_container "${image_name}" "${container_name}"
+    group_start "Setup container"
+    {
+        _build_image "${image_name}" "${dockerfile}"
+        _run_container "${image_name}" "${container_name}"
+    }
+    group_end
 
-    trap '_stop_container " ${container_name}"' EXIT
-
-    # Run the test script
-    _exec_in_container "${container_name}" "/dotfiles/${test_script}"
-    info "First run for ${test_os_name} succeeded"
+    group_start "Run the test script"
+    {
+        # Run the test script
+        _exec_in_container "${container_name}" "/dotfiles/${test_script}"
+        info "First run for ${test_os_name} succeeded"
+    }
+    group_end
 
     # Run the test script again to make sure it's idempotent
-    _exec_in_container "${container_name}" "/dotfiles/${test_script}"
+    group_start "Run the test script again"
+    {
+        _exec_in_container "${container_name}" "/dotfiles/${test_script}"
+    }
+    group_end
 
-    _stop_container "${container_name}"
+    group_start "Cleanup container"
+    {
+        _stop_container "${container_name}"
+    }
 
     info "Test for ${test_os_name} succeeded"
-
-    trap - EXIT
 }

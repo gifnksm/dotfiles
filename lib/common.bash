@@ -7,12 +7,42 @@ set -eu -o pipefail
 readonly ERROR_EXIT_CODE=1
 readonly WARN_EXIT_CODE=0
 
+is_github_actions() {
+    [[ "${GITHUB_ACTIONS:-}" = "true" ]]
+}
+
 _timestamp() { date '+%Y-%m-%d %H:%M:%S.%3N'; }
-error() { echo -e "\e[30;1m$(_timestamp)\e[m" "[\e[31;1mERROR\e[m]" "$@" >&2; }
-warn() { echo -e "\e[30;1m$(_timestamp)\e[m" "[\e[33;1mWARN\e[m]" "$@" >&2; }
-info() { echo -e "\e[30;1m$(_timestamp)\e[m" "[\e[32;1mINFO\e[m]" "$@" >&2; }
-debug() { echo -e "\e[30;1m$(_timestamp)\e[m" "[\e[36;1mDEBUG\e[m]" "$@" >&2; }
-trace() { echo -e "\e[30;1m$(_timestamp)\e[m" "[\e[30;1mTRACE\e[m]" "$@" >&2; }
+error() {
+    is_github_actions && echo "::error::$*"
+    echo -e "\e[30;1m$(_timestamp)\e[m" "[\e[31;1mERROR\e[m]" "$@" >&2
+}
+warn() {
+    is_github_actions && echo "::warning::$*"
+    echo -e "\e[30;1m$(_timestamp)\e[m" "[\e[33;1mWARN\e[m]" "$@" >&2
+}
+info() {
+    echo -e "\e[30;1m$(_timestamp)\e[m" "[\e[32;1mINFO\e[m]" "$@" >&2
+}
+debug() {
+    is_github_actions && echo "::debug::$*"
+    echo -e "\e[30;1m$(_timestamp)\e[m" "[\e[36;1mDEBUG\e[m]" "$@" >&2
+}
+trace() {
+    is_github_actions && echo "::debug::$*"
+    echo -e "\e[30;1m$(_timestamp)\e[m" "[\e[30;1mTRACE\e[m]" "$@" >&2
+}
+
+group_start() {
+    is_github_actions && echo "::group::$*"
+}
+group_start_file() {
+    local file
+    file="$(realpath "${BASH_SOURCE[1]}")"
+    group_start "${file##"${REPO_DIR}/"}"
+}
+group_end() {
+    is_github_actions && echo "::endgroup::"
+}
 
 print_backtrace() {
     local start="${1:-0}"

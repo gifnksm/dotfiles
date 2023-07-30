@@ -7,8 +7,11 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 source test/lib/test_common.bash
 is_executed && return
 
-find \
-    . \
-    \( -not -path '*/.*' \) -and \( \( -executable -type f \) -or \( -name '*.bash' \) \) \
-    -print \
-    -exec docker run --memory 2G --rm -v "$(pwd):/mnt" koalaman/shellcheck:stable {} +
+group_start_file
+{
+    find \
+        . \
+        \( -not -path '*/.*' \) -and \( \( -executable -type f \) -or \( -name '*.bash' \) \) \
+        -print \
+        -exec docker run --memory 2G --rm -v "$(pwd):/mnt" koalaman/shellcheck:stable {} +
+}

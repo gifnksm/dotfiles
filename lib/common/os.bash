@@ -35,7 +35,6 @@ _print_os_id() {
 }
 
 _init_check_os_id() {
-    info "OS: ${OS_ID}"
     is_supported_os "${OS_ID}" || abort "${OS_ID} is not supported."
 }
 
