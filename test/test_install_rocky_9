@@ -7,4 +7,4 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 source test/lib/test_common.bash
 is_executed && return
 
-run_test rocky_9
+run_test rocky_9 install
