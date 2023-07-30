@@ -1,0 +1,17 @@
+#!/bin/bash
+
+set -euo pipefail
+
+cd "$(dirname "${BASH_SOURCE[0]}")/../../.."
+
+find \
+    test \
+    -type f \
+    -executable |
+    jq \
+        --compact-output \
+        --raw-input \
+        --slurp \
+        'split("\n") |
+            map(select(. != "")) |
+            map({ script: ., name: sub("test/test_";"") })'
