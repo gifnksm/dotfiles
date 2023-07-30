@@ -12,7 +12,6 @@ RUN \
     dnf -y update
     dnf install -y \
         sudo \
-        systemd \
         ;
     dnf clean all
 

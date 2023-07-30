@@ -18,7 +18,16 @@ assert_command git
 ensure_git_config core.excludesfile ~/.config/git/ignore
 ensure_git_config pull.ff only
 
-virt="$(systemd-detect-virt)"
+if command -v systemd-detect-virt >/dev/null; then
+    virt="$(systemd-detect-virt)"
+elif [[ -e ~/.dockerenv ]]; then
+    virt=docker
+elif grep -qE "(Microsoft|WSL)" /proc/version; then
+    virt=wsl
+else
+    virt=unknown
+fi
+
 if [[ "${virt}" = "wsl" ]]; then
     ensure_git_config credential.helper "/mnt/c/Program\ Files/Git/mingw64/bin/git-credential-manager.exe"
 fi
