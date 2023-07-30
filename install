@@ -6,8 +6,6 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 source ./lib/common.bash
 is_executed && return
 
-
-
 group_start_file
 {
     source scripts/prepare
