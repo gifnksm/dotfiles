@@ -14,3 +14,5 @@ install_package_by_spec <<END
 END
 
 assert_command topgrade
+
+ensure_symlink_to_config_exists .config/topgrade.d/disable_self_update.toml
