@@ -7,13 +7,17 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 source ./lib/common.bash
 is_executed && return
 
-# requires rust toolchain
-source scripts/install_rustup
+group_start_file
+{
+    # requires rust toolchain
+    source scripts/install_rustup
 
-install_package_by_spec <<END
-    arch: cargo-update
-    ubuntu-22.04: cargo-update@cargo
-    rocky-9: cargo-update@cargo
+    install_package_by_spec <<END
+        arch: cargo-update
+        ubuntu-22.04: cargo-update@cargo
+        rocky-9: cargo-update@cargo
 END
 
-assert_command cargo-install-update
+    assert_command cargo-install-update
+}
+group_end

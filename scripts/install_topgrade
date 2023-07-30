@@ -7,12 +7,16 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 source ./lib/common.bash
 is_executed && return
 
-install_package_by_spec <<END
-    arch: topgrade@aur
-    ubuntu-22.04: topgrade@cargo
-    rocky-9: topgrade@cargo
+group_start_file
+{
+    install_package_by_spec <<END
+        arch: topgrade@aur
+        ubuntu-22.04: topgrade@cargo
+        rocky-9: topgrade@cargo
 END
 
-assert_command topgrade
+    assert_command topgrade
 
-ensure_symlink_to_config_exists .config/topgrade.d/disable_self_update.toml
+    ensure_symlink_to_config_exists .config/topgrade.d/disable_self_update.toml
+}
+group_end

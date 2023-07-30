@@ -7,22 +7,26 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 source ./lib/common.bash
 is_executed && return
 
-# requires rust toolchain
-source scripts/install_rustup
+group_start_file
+{
+    # requires rust toolchain
+    source scripts/install_rustup
 
-if ! command -v cargo-binstall >/dev/null; then
-    case "${OS_ID}" in
-    "${OS_ARCH}")
-        pacman_install cargo-binstall
-        ;;
-    "${OS_UBUNTU_22_04}" | "${OS_ROCKY_9}")
-        source scripts/install_curl
-        curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
-        ;;
-    *)
-        abort "${OS_ID} is not supported."
-        ;;
-    esac
-fi
+    if ! command -v cargo-binstall >/dev/null; then
+        case "${OS_ID}" in
+        "${OS_ARCH}")
+            pacman_install cargo-binstall
+            ;;
+        "${OS_UBUNTU_22_04}" | "${OS_ROCKY_9}")
+            source scripts/install_curl
+            curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+            ;;
+        *)
+            abort "${OS_ID} is not supported."
+            ;;
+        esac
+    fi
 
-assert_command cargo-binstall
+    assert_command cargo-binstall
+}
+group_end

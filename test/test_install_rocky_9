@@ -7,4 +7,8 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 source test/lib/test_common.bash
 is_executed && return
 
-run_test rocky_9 install
+group_start_file
+{
+    run_test rocky_9 install
+}
+group_end

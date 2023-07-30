@@ -7,21 +7,25 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 source ./lib/common.bash
 is_executed && return
 
-if ! [[ -x ~/.cargo/bin/rustup ]]; then
-    source scripts/install_curl
+group_start_file
+{
+    if ! [[ -x ~/.cargo/bin/rustup ]]; then
+        source scripts/install_curl
 
-    info "Installing rustup..."
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -yq
-fi
+        info "Installing rustup..."
+        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -yq
+    fi
 
-# shellcheck source=/dev/null
-source ~/.cargo/env
+    # shellcheck source=/dev/null
+    source ~/.cargo/env
 
-assert_command rustup
-assert_command cargo
+    assert_command rustup
+    assert_command cargo
 
-install_package_by_spec <<END
-    arch: base-devel
-    ubuntu-22.04: build-essential
-    rocky-9: $(pkg_encode <<<"@Development Tools")
+    install_package_by_spec <<END
+        arch: base-devel
+        ubuntu-22.04: build-essential
+        rocky-9: $(pkg_encode <<<"@Development Tools")
 END
+}
+group_end

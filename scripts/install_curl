@@ -7,10 +7,14 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 source ./lib/common.bash
 is_executed && return
 
-install_package_by_spec <<END
-    arch: curl
-    ubuntu-22.04: curl ca-certificates
-    rocky-9: curl-minimal
+group_start_file
+{
+    install_package_by_spec <<END
+        arch: curl
+        ubuntu-22.04: curl ca-certificates
+        rocky-9: curl-minimal
 END
 
-assert_command curl
+    assert_command curl
+}
+group_end

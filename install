@@ -6,40 +6,42 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 source ./lib/common.bash
 is_executed && return
 
-source scripts/prepare
+group_start_file
+{
+    source scripts/prepare
 
-case "${OS_ID}" in
-"${OS_ARCH}")
-    source scripts/install_paru
-    ;;
-"${OS_ROCKY_9}")
-    source scripts/install_epel
-    ;;
-esac
+    case "${OS_ID}" in
+    "${OS_ARCH}")
+        source scripts/install_paru
+        ;;
+    "${OS_ROCKY_9}")
+        source scripts/install_epel
+        ;;
+    esac
 
-source scripts/install_curl
+    source scripts/install_curl
 
-source scripts/install_zsh
-source scripts/install_tmux
-source scripts/install_git
-source scripts/install_tig
-source scripts/install_emacs
-source scripts/install_vim
-source scripts/install_keychain
+    source scripts/install_zsh
+    source scripts/install_tmux
+    source scripts/install_git
+    source scripts/install_tig
+    source scripts/install_emacs
+    source scripts/install_vim
+    source scripts/install_keychain
 
-source scripts/install_rustup
-source scripts/install_cargo_binstall
-source scripts/install_cargo_update
-source scripts/install_topgrade
-source scripts/install_rhq
-source scripts/install_starship
-source scripts/install_bat
-source scripts/install_ripgrep
-source scripts/install_skim
-source scripts/install_delta
+    source scripts/install_rustup
+    source scripts/install_cargo_binstall
+    source scripts/install_cargo_update
+    source scripts/install_topgrade
+    source scripts/install_rhq
+    source scripts/install_starship
+    source scripts/install_bat
+    source scripts/install_ripgrep
+    source scripts/install_skim
+    source scripts/install_delta
 
-source scripts/remove_deprecated
+    source scripts/remove_deprecated
 
-./setup.sh
-
-info "done."
+    ./setup.sh
+}
+group_end
