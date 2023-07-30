@@ -9,13 +9,6 @@ is_executed && return
 
 find \
     . \
-    scripts \
-    lib \
-    test \
-    test/lib \
-    -maxdepth 1 \
-    -executable \
-    -type f \
-    -o \
-    -name '*.bash' \
+    \( -not -path '*/.*' \) -and \( \( -executable -type f \) -or \( -name '*.bash' \) \) \
+    -print \
     -exec shellcheck {} +
