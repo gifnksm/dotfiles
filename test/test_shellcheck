@@ -11,4 +11,4 @@ find \
     . \
     \( -not -path '*/.*' \) -and \( \( -executable -type f \) -or \( -name '*.bash' \) \) \
     -print \
-    -exec shellcheck {} +
+    -exec docker run --memory 2G --rm -v "$(pwd):/mnt" koalaman/shellcheck:stable {} +
