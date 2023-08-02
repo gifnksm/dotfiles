@@ -10,7 +10,7 @@ is_executed && return
 group_start_file
 {
     install_package_by_spec <<END
-        arch: topgrade@aur
+        arch: topgrade-bin@aur
         ubuntu-22.04: topgrade@cargo
         rocky-9: topgrade@cargo
 END
