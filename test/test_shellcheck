@@ -11,7 +11,9 @@ group_start_file
 {
     find \
         . \
-        \( -not -path '*/.*' \) -and \( \( -executable -type f \) -or \( -name '*.bash' \) \) \
+        \( -not -path './vendor/*' \) -and \
+        \( -not -path '*/.*' \) -and \
+        \( \( -executable -type f \) -or \( -name '*.bash' \) \) \
         -print \
         -exec docker run --memory 2G --rm -v "$(pwd):/mnt" koalaman/shellcheck:stable {} +
 }

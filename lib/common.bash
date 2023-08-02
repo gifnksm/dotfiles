@@ -11,25 +11,41 @@ is_github_actions() {
     [[ "${GITHUB_ACTIONS:-}" = "true" ]]
 }
 
+readonly LOG_LEVEL_ERROR=0
+readonly LOG_LEVEL_WARN=1
+readonly LOG_LEVEL_INFO=2
+readonly LOG_LEVEL_DEBUG=3
+readonly LOG_LEVEL_TRACE=4
+
 _timestamp() { date '+%Y-%m-%d %H:%M:%S.%3N'; }
 error() {
     is_github_actions && echo "::error::$*"
-    echo -e "\e[30;1m$(_timestamp)\e[m" "[\e[31;1mERROR\e[m]" "$@" >&2
+    if [[ "${LOG_LEVEL}" -ge "${LOG_LEVEL_ERROR}" ]]; then
+        echo -e "\e[30;1m$(_timestamp)\e[m" "[\e[31;1mERROR\e[m]" "$@" >&2
+    fi
 }
 warn() {
     is_github_actions && echo "::warning::$*"
-    echo -e "\e[30;1m$(_timestamp)\e[m" "[\e[33;1mWARN\e[m]" "$@" >&2
+    if [[ "${LOG_LEVEL}" -ge "${LOG_LEVEL_WARN}" ]]; then
+        echo -e "\e[30;1m$(_timestamp)\e[m" "[\e[33;1mWARN\e[m]" "$@" >&2
+    fi
 }
 info() {
-    echo -e "\e[30;1m$(_timestamp)\e[m" "[\e[32;1mINFO\e[m]" "$@" >&2
+    if [[ "${LOG_LEVEL}" -ge "${LOG_LEVEL_INFO}" ]]; then
+        echo -e "\e[30;1m$(_timestamp)\e[m" "[\e[32;1mINFO\e[m]" "$@" >&2
+    fi
 }
 debug() {
     is_github_actions && echo "::debug::$*"
-    echo -e "\e[30;1m$(_timestamp)\e[m" "[\e[36;1mDEBUG\e[m]" "$@" >&2
+    if [[ "${LOG_LEVEL}" -ge "${LOG_LEVEL_DEBUG}" ]]; then
+        echo -e "\e[30;1m$(_timestamp)\e[m" "[\e[36;1mDEBUG\e[m]" "$@" >&2
+    fi
 }
 trace() {
     is_github_actions && echo "::debug::$*"
-    echo -e "\e[30;1m$(_timestamp)\e[m" "[\e[30;1mTRACE\e[m]" "$@" >&2
+    if [[ "${LOG_LEVEL}" -ge "${LOG_LEVEL_TRACE}" ]]; then
+        echo -e "\e[30;1m$(_timestamp)\e[m" "[\e[30;1mTRACE\e[m]" "$@" >&2
+    fi
 }
 
 group_start() {
@@ -84,6 +100,23 @@ abort() {
     exit "${ERROR_EXIT_CODE}"
 }
 
+set_log_level() {
+    local level="${1}"
+    case "${level}" in
+    0 | error) LOG_LEVEL="${LOG_LEVEL_ERROR}" ;;
+    1 | warn) LOG_LEVEL="${LOG_LEVEL_WARN}" ;;
+    2 | info) LOG_LEVEL="${LOG_LEVEL_INFO}" ;;
+    3 | debug) LOG_LEVEL="${LOG_LEVEL_DEBUG}" ;;
+    4 | trace) LOG_LEVEL="${LOG_LEVEL_TRACE}" ;;
+    *)
+        LOG_LEVEL="${LOG_LEVEL_INFO}"
+        abort "invalid log level: ${level}"
+        ;;
+    esac
+}
+
+set_log_level "${LOG_LEVEL:-info}" # You can set log-level by environment variable
+
 trap '_on_error $?' ERR
 _on_error() {
     local exitcode="${1:-}"
@@ -117,6 +150,7 @@ source lib/common/assert.bash
 source lib/common/os.bash
 source lib/common/fs.bash
 source lib/common/package.bash
+source lib/common/options.bash
 
 _init_check_pwd
 _init_os
