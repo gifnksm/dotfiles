@@ -48,7 +48,8 @@ debug() {
     fi
 }
 trace() {
-    if is_github_actions; then echo "::debug::$*" >&2
+    if is_github_actions; then
+        echo "::debug::$*" >&2
     fi
     if [[ "${LOG_LEVEL}" -ge "${LOG_LEVEL_TRACE}" ]]; then
         echo -e "\e[30;1m$(_timestamp)\e[m" "[\e[30;1mTRACE\e[m]" "$@" >&2
