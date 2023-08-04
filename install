@@ -10,8 +10,6 @@ parse_args "$@"
 
 group_start_file
 {
-    source scripts/prepare
-
     case "${OS_ID}" in
     "${OS_ARCH}")
         source scripts/install_paru

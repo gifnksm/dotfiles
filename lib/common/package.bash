@@ -1,9 +1,27 @@
 is_executed && return
 
+debug "Loading lib/common/package.bash"
+
+_pacman_executed=false
+_pacman_sync_opt() {
+    local sync_opt
+    if "${_pacman_executed}"; then
+        sync_opt="-S"
+    else
+        sync_opt="-Syu"
+    fi
+    printf "%s" "${sync_opt}"
+}
+
 pacman_install() {
     [[ "$#" -eq 0 ]] && return
-    info "pacman install: $*"
-    sudo pacman -Sq --needed --noconfirm --color always "$@"
+
+    local sync_opt
+    sync_opt="$(_pacman_sync_opt)"
+
+    info "pacman ${sync_opt} $*"
+    sudo pacman "${sync_opt}" -q --needed --noconfirm --color always "$@"
+    _pacman_executed=true
 }
 
 paru_install() {
@@ -12,8 +30,12 @@ paru_install() {
     # shellcheck source=/dev/null
     source scripts/install_paru
 
-    info "paru install: $*"
-    paru -Sq --needed --noconfirm --color always "$@"
+    local sync_opt
+    sync_opt="$(_pacman_sync_opt)"
+
+    info "paru ${sync_opt} $*"
+    paru "${sync_opt}" -q --needed --noconfirm --color always "$@"
+    _pacman_executed=true
 }
 
 cargo_install() {
@@ -24,21 +46,28 @@ cargo_install() {
     # shellcheck source=/dev/null
     source scripts/install_cargo_binstall
 
-    info "cargo binstall: $*"
+    info "cargo binstall $*"
     cargo binstall -qy "$@"
 }
 
+_apt_get_executed=false
 apt_get_install() {
     [[ "$#" -eq 0 ]] && return
 
-    info "apt-get install: $*"
+    if ! "${_apt_get_executed}"; then
+        info "apt-get update"
+        sudo DEBIAN_FRONTEND=noninteractive apt-get -qq update
+        _apt_get_executed=true
+    fi
+
+    info "apt-get install $*"
     sudo DEBIAN_FRONTEND=noninteractive apt-get -qq install -y --no-install-recommends "$@"
 }
 
 dnf_install() {
     [[ "$#" -eq 0 ]] && return
 
-    info "dnf install: $*"
+    info "dnf install $*"
     sudo dnf install -qy "$@"
 }
 
