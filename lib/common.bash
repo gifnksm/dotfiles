@@ -19,13 +19,17 @@ readonly LOG_LEVEL_TRACE=4
 
 _timestamp() { date '+%Y-%m-%d %H:%M:%S.%3N'; }
 error() {
-    is_github_actions && echo "::error::$*"
+    if is_github_actions; then
+        echo "::error::$*" >&2
+    fi
     if [[ "${LOG_LEVEL}" -ge "${LOG_LEVEL_ERROR}" ]]; then
         echo -e "\e[30;1m$(_timestamp)\e[m" "[\e[31;1mERROR\e[m]" "$@" >&2
     fi
 }
 warn() {
-    is_github_actions && echo "::warning::$*"
+    if is_github_actions; then
+        echo "::warning::$*" >&2
+    fi
     if [[ "${LOG_LEVEL}" -ge "${LOG_LEVEL_WARN}" ]]; then
         echo -e "\e[30;1m$(_timestamp)\e[m" "[\e[33;1mWARN\e[m]" "$@" >&2
     fi
@@ -36,13 +40,16 @@ info() {
     fi
 }
 debug() {
-    is_github_actions && echo "::debug::$*"
+    if is_github_actions; then
+        echo "::debug::$*" >&2
+    fi
     if [[ "${LOG_LEVEL}" -ge "${LOG_LEVEL_DEBUG}" ]]; then
         echo -e "\e[30;1m$(_timestamp)\e[m" "[\e[36;1mDEBUG\e[m]" "$@" >&2
     fi
 }
 trace() {
-    is_github_actions && echo "::debug::$*"
+    if is_github_actions; then echo "::debug::$*" >&2
+    fi
     if [[ "${LOG_LEVEL}" -ge "${LOG_LEVEL_TRACE}" ]]; then
         echo -e "\e[30;1m$(_timestamp)\e[m" "[\e[30;1mTRACE\e[m]" "$@" >&2
     fi
@@ -50,7 +57,7 @@ trace() {
 
 group_start() {
     if is_github_actions; then
-        echo "::group::$*"
+        echo "::group::$*" >&2
     fi
 }
 group_start_file() {
@@ -60,7 +67,7 @@ group_start_file() {
 }
 group_end() {
     if is_github_actions; then
-        echo "::endgroup::"
+        echo "::endgroup::" >&2
     fi
 }
 
