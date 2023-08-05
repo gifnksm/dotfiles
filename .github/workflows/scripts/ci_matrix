@@ -8,6 +8,7 @@ find \
     test \
     -type f \
     -executable |
+    sort |
     jq \
         --compact-output \
         --raw-input \
