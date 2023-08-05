@@ -1,6 +1,7 @@
 set -eux -o pipefail
 
 ARCHIVE_URL="${ARCHIVE_URL:-https://github.com/gifnksm/dotfiles/archive/refs/heads/master.tar.gz}"
+REPOSITORY_URL=https://github.com/gifnksm/dotfiles.git
 DOTFILES_PATH="${DOTFILES_PATH:-${HOME}/.local/share/dotfiles}"
 
 main() {
@@ -19,17 +20,21 @@ main() {
         exit 1
     fi
 
-    local tmpdir
-    tmpdir="$(mktemp -d)"
+    if [[ -z "${NO_GIT_CLONE:-}" ]] && command -v git >/dev/null; then
+        git clone --depth=1 "${REPOSITORY_URL}" "${DOTFILES_PATH}"
+    else
+        local tmpdir
+        tmpdir="$(mktemp -d)"
 
-    local -a proto_options=()
-    if ! [[ -v NO_PROTO_CHECK ]]; then
-        proto_options+=("--proto" "=https")
+        local -a proto_options=()
+        if [[ -z "${NO_PROTO_CHECK:-}" ]]; then
+            proto_options+=("--proto" "=https")
+        fi
+        curl -L "${proto_options[@]}" --tlsv1.2 -sSf "${ARCHIVE_URL}" | tar -xvz -C "${tmpdir}" --strip-components=1
+
+        mkdir -pv "$(dirname "${DOTFILES_PATH}")"
+        mv -v "${tmpdir}" "${DOTFILES_PATH}"
     fi
-    curl -L "${proto_options[@]}" --tlsv1.2 -sSf "${ARCHIVE_URL}" | tar -xvz -C "${tmpdir}" --strip-components=1
-
-    mkdir -pv "$(dirname "${DOTFILES_PATH}")"
-    mv -v "${tmpdir}" "${DOTFILES_PATH}"
 
     "${DOTFILES_PATH}/install" "$@"
 }
