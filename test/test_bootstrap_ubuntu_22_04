@@ -12,6 +12,6 @@ is_executed && return
 
 group_start_file
 {
-    test_run_script arch install
+    test_bootstrap ubuntu_22_04
 }
 group_end
