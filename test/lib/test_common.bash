@@ -46,6 +46,7 @@ _run_container_with_bootstrap() {
         --env GITHUB_ACTIONS \
         --env ARCHIVE_URL="file:///archive.tar.gz" \
         --env NO_PROTO_CHECK=true \
+        --env NO_GIT_CLONE=true \
         --name "${container_name}" \
         "${image_name}" \
         sleep infinity

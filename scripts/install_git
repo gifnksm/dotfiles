@@ -48,7 +48,7 @@ END
         info "Initializing git repository"
         git init
         git remote add origin https://github.com/gifnksm/dotfiles.git
-        git fetch origin
+        git fetch --depth 1 origin
         git reset --mixed origin/master
     fi
 }
