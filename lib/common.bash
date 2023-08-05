@@ -157,6 +157,7 @@ _init_check_pwd() {
 source lib/common/assert.bash
 source lib/common/os.bash
 source lib/common/fs.bash
+source lib/common/git.bash
 source lib/common/package.bash
 source lib/common/options.bash
 

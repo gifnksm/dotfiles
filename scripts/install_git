@@ -40,5 +40,8 @@ END
     fi
 
     ensure_line_in_file ".vscode/" ~/.config/git/ignore
+
+    check_git_config "user.name"
+    check_git_config "user.email"
 }
 group_end
