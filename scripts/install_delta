@@ -22,7 +22,10 @@ END
 
     assert_command delta
 
-    ensure_git_config core.pager delta
-    ensure_git_config interactive.diffFilter "delta --color-only"
+    ensure_git_config_included delta.conf
+
+    # remove old settings
+    ensure_git_config_unset core.pager delta
+    ensure_git_config_unset interactive.diffFilter "delta --color-only"
 }
 group_end
