@@ -2,6 +2,8 @@
 
 FROM rockylinux:9
 
+ARG bootstrap=false
+
 # hadolint ignore=DL3041
 RUN \
     --mount=type=cache,target=/var/cache \
@@ -13,6 +15,14 @@ RUN \
     dnf install -y \
         sudo \
         ;
+
+    if [ "${bootstrap}" = "true" ]; then
+        dnf install -y \
+            curl-minimal \
+            tar \
+            ;
+    fi
+
     dnf clean all
 
     # user configuration

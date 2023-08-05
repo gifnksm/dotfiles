@@ -4,14 +4,22 @@ My dotfiles.
 
 ## Prerequisites
 
-* a user account with sudo privilege
-* `sudo` command
-* distribution-specific package manager
-  * Arch Linux: `pacman`
-  * Ubuntu: `apt`
-  * Rocky Linux: `dnf`
+* For bootstrap script
+  * `curl` command
+  * `tar` command
+* For install script
+  * `sudo` command
+  * a user account with sudo privilege
+  * distribution-specific package manager command
+    * Arch Linux: `pacman`
+    * Ubuntu: `apt`
+    * Rocky Linux: `dnf`
 
 ## Installation
+
+```console
+curl -L --proto "=https" --tlsv1.2 -sSf https://raw.githubusercontent.com/gifnksm/dotfiles/master/bootstrap.bash | bash
+```
 
 * Install all packages
 

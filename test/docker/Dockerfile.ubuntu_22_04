@@ -2,6 +2,8 @@
 
 FROM ubuntu:22.04
 
+ARG bootstrap=false
+
 # hadolint ignore=DL3008
 RUN \
     --mount=type=cache,target=/var/lib/apt/lists/* \
@@ -15,6 +17,14 @@ RUN \
     apt-get install -y --no-install-recommends \
         sudo \
         ;
+
+    if [ "${bootstrap}" = "true" ]; then
+        apt-get install -y --no-install-recommends \
+            ca-certificates \
+            curl \
+            tar \
+            ;
+    fi
 
     # user configuration
     useradd -m jammy

@@ -9,9 +9,14 @@ TEST_DIR="${REPO_DIR}/test"
 _build_image() {
     local -r image_name="${1}"
     local -r dockerfile="${2}"
+    local -r bootstrap="${3:-false}"
 
     info "Building docker image ${image_name}"
-    docker buildx build --pull --load -t "${image_name}" -f "${dockerfile}" .
+    docker buildx build --pull --load \
+        --build-arg bootstrap="${bootstrap}" \
+        -t "${image_name}" \
+        -f "${dockerfile}" \
+        .
 }
 
 _run_container() {
@@ -20,8 +25,27 @@ _run_container() {
 
     info "Running docker container ${container_name}"
     docker run \
-        -d --rm --init -v "${REPO_DIR}:/dotfiles" \
+        -d --rm --init \
+        -v "${REPO_DIR}:/dotfiles" \
         --env GITHUB_ACTIONS \
+        --name "${container_name}" \
+        "${image_name}" \
+        sleep infinity
+}
+
+_run_container_with_bootstrap() {
+    local -r image_name="${1}"
+    local -r container_name="${2}"
+    local -r archive_path="${3}"
+
+    info "Running docker container ${container_name}"
+    docker run \
+        -d --rm --init \
+        -v "${REPO_DIR}/bootstrap.bash:/bootstrap.bash" \
+        -v "${archive_path}:/archive.tar.gz" \
+        --env GITHUB_ACTIONS \
+        --env ARCHIVE_URL="file:///archive.tar.gz" \
+        --env NO_PROTO_CHECK=true \
         --name "${container_name}" \
         "${image_name}" \
         sleep infinity
@@ -36,20 +60,20 @@ _stop_container() {
 
 _exec_in_container() {
     local -r container_name="${1}"
-    local -r command="${2}"
+    shift
 
-    info "Executing '${command}' in docker container ${container_name}"
+    info "Executing \`$*\` in docker container ${container_name}"
     docker exec \
         --env GITHUB_ACTIONS \
         "${container_name}" \
-        "${command}"
+        "$@"
 }
 
-run_test() {
+test_run_script() {
     local -r test_os_name="${1}"
     local -r test_script="${2}"
 
-    local -r image_name="dotfiles-test-${test_os_name}"
+    local -r image_name="dotfiles-test-${test_os_name}-script"
     local -r dockerfile="${TEST_DIR}/docker/Dockerfile.${test_os_name}"
     local -r container_name="${image_name}-$$"
 
@@ -80,6 +104,52 @@ run_test() {
     group_start "Cleanup container"
     {
         _stop_container "${container_name}"
+    }
+
+    info "Test for ${test_os_name} succeeded"
+}
+
+test_bootstrap() {
+    local -r test_os_name="${1}"
+
+    local -r image_name="dotfiles-test-${test_os_name}-bootstrap"
+    local -r dockerfile="${TEST_DIR}/docker/Dockerfile.${test_os_name}"
+    local -r container_name="${image_name}-$$"
+
+    info "Running test for ${test_os_name}"
+
+    local work_dir archive_path
+    work_dir="$(mktemp -d)"
+    archive_path="${work_dir}/archive.tar.gz"
+
+    group_start "Create source archive"
+    {
+        local commit_hash
+        commit_hash="$(git stash create)"
+        git archive --prefix=dotfiles/ "${commit_hash:-HEAD}" -o "${archive_path}"
+    }
+
+    group_start "Setup container"
+    {
+        _build_image "${image_name}" "${dockerfile}" true
+        _run_container_with_bootstrap "${image_name}" "${container_name}" "${archive_path}"
+    }
+    group_end
+
+    group_start "Run the bootstrap script"
+    {
+        # Run the bootstrap script
+        _exec_in_container "${container_name}" bash -c "cat /bootstrap.bash | bash"
+    }
+
+    group_start "Cleanup container"
+    {
+        _stop_container "${container_name}"
+    }
+
+    group_start "Cleanup working directory"
+    {
+        rm -rf "${work_dir}"
     }
 
     info "Test for ${test_os_name} succeeded"

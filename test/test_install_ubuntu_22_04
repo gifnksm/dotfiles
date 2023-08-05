@@ -12,6 +12,6 @@ is_executed && return
 
 group_start_file
 {
-    run_test ubuntu_22_04 install
+    test_run_script ubuntu_22_04 install
 }
 group_end
