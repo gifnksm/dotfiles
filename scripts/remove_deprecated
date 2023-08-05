@@ -14,6 +14,9 @@ parse_args "$@"
 
 group_start_file
 {
+    ensure_symlink_to_config_not_exists .emacs.d
+    ensure_symlink_to_config_not_exists .vimrc
+    ensure_symlink_to_config_not_exists .tmux.conf
     ensure_symlink_to_config_not_exists .colordiffrc
 }
 group_end
