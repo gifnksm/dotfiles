@@ -44,7 +44,5 @@ group_start_file
     source scripts/install_delta
 
     source scripts/remove_deprecated
-
-    ./setup.sh
 }
 group_end
