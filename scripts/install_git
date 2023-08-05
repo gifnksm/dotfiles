@@ -40,5 +40,16 @@ END
     fi
 
     ensure_line_in_file ".vscode/" ~/.config/git/ignore
+
+    check_git_config "user.name"
+    check_git_config "user.email"
+
+    if ! [[ -d .git ]]; then
+        info "Initializing git repository"
+        git init
+        git remote add origin https://github.com/gifnksm/dotfiles.git
+        git fetch origin
+        git reset --mixed origin/master
+    fi
 }
 group_end
