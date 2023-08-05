@@ -5,9 +5,11 @@ My dotfiles.
 ## Prerequisites
 
 * For bootstrap script
+  * `bash` command
   * `curl` command
   * `tar` command
 * For install script
+  * `bash` command
   * `sudo` command
   * a user account with sudo privilege
   * distribution-specific package manager command
