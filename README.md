@@ -21,19 +21,19 @@ My dotfiles.
 curl -L --proto "=https" --tlsv1.2 -sSf https://raw.githubusercontent.com/gifnksm/dotfiles/master/bootstrap.bash | bash
 ```
 
-* Install all packages
+By default, the bootstrap script downloads the latest version of the repository on `~/.local/share/dotfiles` and installs all packages.
 
-    ```console
-    cd ${path_to_repository}
-    ./install
-    ```
+After downloading the repository, you can install packages by running the `install` script manually.
 
-* Install only specific packages
+```console
+~/.local/share/dotfiles/install
+```
 
-    ```console
-    cd ${path_to_repository}
-    ./scripts/install_${package_name}
-    ```
+If you want to install only specific packages, you can run the `install_${package_name}` script.
+
+```console
+~/.local/share/dotfiles/scripts/install_${package_name}
+```
 
 ## Supported OS
 
