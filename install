@@ -9,40 +9,168 @@ fi
 source ./lib/common.bash
 is_executed && return
 
-parse_args "$@"
+list_available_modules() {
+    local module
+    for module in modules/*.bash; do
+        basename "${module%.bash}"
+    done | sort -u
+}
 
-group_start_file
-{
-    case "${OS_ID}" in
-    "${OS_ARCH}")
-        source scripts/install_paru
+list_installed_modules() {
+    local module
+    if ! [[ -e "${INSTALLED_MODULES_FILE}" ]]; then
+        return 0
+    fi
+    sort -u "${INSTALLED_MODULES_FILE}"
+}
+
+add_to_installed_modules() {
+    local module="$1"
+    if [[ -e "${INSTALLED_MODULES_FILE}" ]]; then
+        if grep -q "^${module}$" "${INSTALLED_MODULES_FILE}"; then
+            return 0
+        fi
+    fi
+    echo "${module}" >>"${INSTALLED_MODULES_FILE}"
+    readarray -t INSTALLED_MODULES < <(list_installed_modules)
+}
+
+install_module() {
+    local module="$1"
+
+    local module_file="modules/${module}.bash"
+
+    if ! [[ -e "${module_file}" ]]; then
+        error "Module not found: ${module}"
+        return 1
+    fi
+
+    # shellcheck source=/dev/null
+    source "${module_file}"
+    add_to_installed_modules "${module}"
+}
+
+sort_uniq_args() {
+    if [[ $# -eq 0 ]]; then
+        return 0
+    fi
+    printf '%s\n' "$@" | sort -u
+}
+
+parse_args "$@"
+eval "set -- ${REST_ARGS}"
+
+typeset -r INSTALLED_MODULES_FILE=".installed_modules"
+typeset -a AVAILABLE_MODULES
+readarray -t AVAILABLE_MODULES < <(list_available_modules)
+typeset -a INSTALLED_MODULES
+readarray -t INSTALLED_MODULES < <(list_installed_modules)
+
+typeset -a PROFILE_DEVCONTAINER=(
+    bat
+    curl
+    delta
+    git
+    ripgrep
+    skim
+    starship
+    tig
+    vim
+    zsh
+)
+readarray -t PROFILE_DEVCONTAINER < <(sort_uniq_args "${PROFILE_DEVCONTAINER[@]}")
+typeset -a PROFILE_DEFAULT=(
+    "${PROFILE_DEVCONTAINER[@]}"
+    cargo_binstall
+    cargo_update
+    epel
+    paru
+    rhq
+    rustup
+    tmux
+    topgrade
+)
+readarray -t PROFILE_DEFAULT < <(sort_uniq_args "${PROFILE_DEFAULT[@]}")
+typeset -a PROFILE_FULL=(
+    "${PROFILE_DEFAULT[@]}"
+    emacs
+    keychain
+)
+readarray -t PROFILE_FULL < <(sort_uniq_args "${PROFILE_FULL[@]}")
+
+assert_eq "${PROFILE_FULL[*]}" "${AVAILABLE_MODULES[*]}"
+
+install_main() {
+    if [[ "${FLG_LIST_MODULES}" -eq 1 ]]; then
+        for module in "${AVAILABLE_MODULES[@]}"; do
+            echo "${module}"
+        done
+        return 0
+    fi
+
+    if [[ "${FLG_LIST_INSTALLED}" -eq 1 ]]; then
+        for module in "${INSTALLED_MODULES[@]}"; do
+            echo "${module}"
+        done
+        return 0
+    fi
+
+    # install modules specified by arguments
+    local -a install_modules=("$@")
+
+    # if profile is specified, install modules specified by the profile
+    case "${OPT_PROFILE}" in
+    devcontainer)
+        install_modules+=("${PROFILE_DEVCONTAINER[@]}")
         ;;
-    "${OS_ROCKY_9}")
-        source scripts/install_epel
+    default)
+        install_modules+=("${PROFILE_DEFAULT[@]}")
+        ;;
+    full)
+        install_modules+=("${PROFILE_FULL[@]}")
+        ;;
+    none)
+        install_modules+=()
+        ;;
+    "")
+        if [[ "${#install_modules[@]}" -gt 0 ]]; then
+            # if modules are specified, install only them
+            :
+        elif [[ "${#INSTALLED_MODULES[@]}" -gt 0 ]]; then
+            # if no modules are specified, and some modules are installed, re-install them
+            install_modules=("${INSTALLED_MODULES[@]}")
+        else
+            # if no modules are specified, and no modules are installed, install modules in the default profile
+            if [[ "${REMOTE_CONTAINERS:-}" == true ]]; then
+                install_modules=("${PROFILE_DEVCONTAINER[@]}")
+            else
+                install_modules=("${PROFILE_DEFAULT[@]}")
+            fi
+        fi
+        ;;
+    *)
+        error "Unknown profile: ${OPT_PROFILE}"
+        return 1
         ;;
     esac
 
-    source scripts/install_curl
+    # update all installed modules
+    install_modules+=("${INSTALLED_MODULES[@]}")
 
-    source scripts/install_zsh
-    source scripts/install_tmux
-    source scripts/install_git
-    source scripts/install_tig
-    source scripts/install_emacs
-    source scripts/install_vim
-    source scripts/install_keychain
+    # deduplicate and sort modules
+    readarray -t install_modules < <(sort_uniq_args "${install_modules[@]}")
 
-    source scripts/install_rustup
-    source scripts/install_cargo_binstall
-    source scripts/install_cargo_update
-    source scripts/install_topgrade
-    source scripts/install_rhq
-    source scripts/install_starship
-    source scripts/install_bat
-    source scripts/install_ripgrep
-    source scripts/install_skim
-    source scripts/install_delta
-
-    source scripts/remove_deprecated
+    # install each modules
+    local module
+    for module in "${install_modules[@]}"; do
+        if [[ "${FLG_DRY_RUN}" -eq 1 ]]; then
+            info "Would install module: ${module}"
+        else
+            install_module "${module}"
+        fi
+    done
 }
+
+group_start_file
+install_main "$@"
 group_end

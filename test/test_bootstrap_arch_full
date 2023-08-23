@@ -12,15 +12,6 @@ is_executed && return
 
 group_start_file
 {
-    image_name=koalaman/shellcheck:stable
-
-    docker pull "${image_name}"
-
-    find \
-        . \
-        \( -not -path './vendor/*' \) -and \
-        \( -not -path '*/.*' \) -and \
-        \( \( -executable -type f \) -or \( -name '*.bash' \) \) \
-        -print \
-        -exec docker run --memory 2G --rm -v "$(pwd):/mnt" "${image_name}" {} +
+    test_bootstrap arch --profile full
 }
+group_end

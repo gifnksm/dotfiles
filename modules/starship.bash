@@ -1,16 +1,5 @@
-#!/bin/bash
 # shellcheck source-path=SCRIPTDIR/..
-
-set -eu -o pipefail
-
-if [[ "$(pwd)" != "$(realpath "$(dirname "${BASH_SOURCE[0]}")/..")" ]]; then
-    cd "$(dirname "${BASH_SOURCE[0]}")/.."
-    exec ./scripts/"$(basename "${BASH_SOURCE[0]}")" "$@" # to update BASH_SOURCE, etc.
-fi
-source ./lib/common.bash
 is_executed && return
-
-parse_args "$@"
 
 group_start_file
 {

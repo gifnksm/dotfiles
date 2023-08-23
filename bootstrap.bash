@@ -7,6 +7,7 @@ DOTFILES_PATH="${DOTFILES_PATH:-${HOME}/.local/share/dotfiles}"
 main() {
     if [[ -d "${DOTFILES_PATH}" ]]; then
         echo "dotfiles is already installed: ${DOTFILES_PATH}"
+        "${DOTFILES_PATH}/install" "$@"
         exit 0
     fi
 

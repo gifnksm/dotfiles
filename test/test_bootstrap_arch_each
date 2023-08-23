@@ -5,15 +5,13 @@ set -eu -o pipefail
 
 if [[ "$(pwd)" != "$(realpath "$(dirname "${BASH_SOURCE[0]}")/..")" ]]; then
     cd "$(dirname "${BASH_SOURCE[0]}")/.."
-    exec ./scripts/"$(basename "${BASH_SOURCE[0]}")" "$@" # to update BASH_SOURCE, etc.
+    exec ./test/"$(basename "${BASH_SOURCE[0]}")" "$@" # to update BASH_SOURCE, etc.
 fi
-source ./lib/common.bash
+source test/lib/test_common.bash
 is_executed && return
-
-parse_args "$@"
 
 group_start_file
 {
-    ensure_symlink_to_config_not_exists .colordiffrc
+    test_bootstrap_each arch
 }
 group_end

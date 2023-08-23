@@ -5,17 +5,13 @@ set -eu -o pipefail
 
 if [[ "$(pwd)" != "$(realpath "$(dirname "${BASH_SOURCE[0]}")/..")" ]]; then
     cd "$(dirname "${BASH_SOURCE[0]}")/.."
-    exec ./scripts/"$(basename "${BASH_SOURCE[0]}")" "$@" # to update BASH_SOURCE, etc.
+    exec ./test/"$(basename "${BASH_SOURCE[0]}")" "$@" # to update BASH_SOURCE, etc.
 fi
-source ./lib/common.bash
+source test/lib/test_common.bash
 is_executed && return
-
-parse_args "$@"
 
 group_start_file
 {
-    assert_eq "${OS_ID}" "${OS_ROCKY_9}"
-
-    dnf_install epel-release
+    test_bootstrap arch --profile none
 }
 group_end

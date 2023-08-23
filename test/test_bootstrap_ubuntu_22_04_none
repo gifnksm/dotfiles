@@ -12,6 +12,6 @@ is_executed && return
 
 group_start_file
 {
-    test_run_script ubuntu_22_04 install
+    test_bootstrap ubuntu_22_04 --profile none
 }
 group_end

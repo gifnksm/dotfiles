@@ -1,3 +1,5 @@
+# shellcheck source-path=SCRIPTDIR/../..
+
 is_executed && return
 
 debug "Loading lib/common/package.bash"
@@ -27,8 +29,7 @@ pacman_install() {
 paru_install() {
     [[ "$#" -eq 0 ]] && return
 
-    # shellcheck source=/dev/null
-    source scripts/install_paru
+    source modules/paru.bash
 
     local sync_opt
     sync_opt="$(_pacman_sync_opt)"
@@ -41,10 +42,8 @@ paru_install() {
 cargo_install() {
     [[ "$#" -eq 0 ]] && return
 
-    # shellcheck source=/dev/null
-    source scripts/install_rustup
-    # shellcheck source=/dev/null
-    source scripts/install_cargo_binstall
+    source modules/rustup.bash
+    source modules/cargo_binstall.bash
 
     info "cargo binstall $*"
     cargo binstall -qy "$@"
@@ -74,8 +73,7 @@ dnf_install() {
 epel_install() {
     [[ "$#" -eq 0 ]] && return
 
-    # shellcheck source=/dev/null
-    source scripts/install_epel
+    source modules/epel.bash
 
     info "dnf install from EPEL: $*"
     sudo dnf install -qy "$@"

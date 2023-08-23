@@ -2,13 +2,16 @@
 
 is_executed && return
 
-# shellcheck source=/dev/null
 source vendor/getoptions.sh
 
 parser_definition() {
-    setup REST help:usage -- "Usage: $0 [options]..."
+    setup REST_ARGS help:usage -- "Usage: $0 [options]... [modules]..."
     msg -- "Options:"
 
+    flag FLG_LIST_MODULES -l --list-modules -- "List available modules"
+    flag FLG_LIST_INSTALLED --list-installed -- "list installed modules"
+    flag FLG_DRY_RUN -n --dry-run -- "Dry run"
+    param OPT_PROFILE -p --profile -- "Profile to install"
     param OPT_LOG_LEVEL -l --log-level -- "Log level"
     disp :usage -h --help
 }
