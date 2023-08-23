@@ -29,7 +29,7 @@ pacman_install() {
 paru_install() {
     [[ "$#" -eq 0 ]] && return
 
-    source modules/paru.bash
+    install_module paru
 
     local sync_opt
     sync_opt="$(_pacman_sync_opt)"
@@ -42,8 +42,8 @@ paru_install() {
 cargo_install() {
     [[ "$#" -eq 0 ]] && return
 
-    source modules/rustup.bash
-    source modules/cargo_binstall.bash
+    install_module rustup
+    install_module cargo_binstall
 
     info "cargo binstall $*"
     cargo binstall -qy "$@"
@@ -73,7 +73,7 @@ dnf_install() {
 epel_install() {
     [[ "$#" -eq 0 ]] && return
 
-    source modules/epel.bash
+    install_module epel
 
     info "dnf install from EPEL: $*"
     sudo dnf install -qy "$@"

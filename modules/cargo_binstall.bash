@@ -4,7 +4,7 @@ is_executed && return
 group_start_file
 {
     # requires rust toolchain
-    source modules/rustup.bash
+    install_module rustup
 
     if ! command -v cargo-binstall >/dev/null; then
         case "${OS_ID}" in
@@ -12,7 +12,7 @@ group_start_file
             pacman_install cargo-binstall
             ;;
         "${OS_UBUNTU_22_04}" | "${OS_ROCKY_9}")
-            source modules/curl.bash
+            install_module curl
             curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
             ;;
         *)

@@ -160,6 +160,7 @@ source lib/common/fs.bash
 source lib/common/git.bash
 source lib/common/package.bash
 source lib/common/options.bash
+source lib/common/module.bash
 
 _init_check_pwd
 _init_os

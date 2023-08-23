@@ -4,7 +4,7 @@ is_executed && return
 group_start_file
 {
     # requires rust toolchain
-    source modules/rustup.bash
+    install_module rustup
 
     install_package_by_spec <<END
         arch: cargo-update
