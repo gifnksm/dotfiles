@@ -4,7 +4,7 @@ is_executed && return
 group_start_file
 {
     install_package_by_spec <<END
-       arch: git-delta
+        arch: git-delta
         ubuntu-22.04: git-delta@cargo
         rocky-9: git-delta@cargo
 END
