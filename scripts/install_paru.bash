@@ -3,9 +3,7 @@ is_executed && return
 
 group_start_file
 {
-    assert_eq "${OS_ID}" "${OS_ARCH}"
-
-    if ! command -v paru >/dev/null; then
+    if [[ "${OS_ID}" == "${OS_ARCH}" ]] && ! command -v paru >/dev/null; then
         pacman_install base-devel git
 
         ensure_directory_exists ~/.cache/paru/clone

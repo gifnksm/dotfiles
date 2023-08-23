@@ -3,8 +3,8 @@ is_executed && return
 
 group_start_file
 {
-    assert_eq "${OS_ID}" "${OS_ROCKY_9}"
-
-    dnf_install epel-release
+    if [[ "${OS_ID}" == "${OS_ROCKY_9}" ]]; then
+        dnf_install epel-release
+    fi
 }
 group_end

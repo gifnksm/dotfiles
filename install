@@ -13,15 +13,8 @@ parse_args "$@"
 
 group_start_file
 {
-    case "${OS_ID}" in
-    "${OS_ARCH}")
-        source scripts/install_paru.bash
-        ;;
-    "${OS_ROCKY_9}")
-        source scripts/install_epel.bash
-        ;;
-    esac
-
+    source scripts/install_paru.bash
+    source scripts/install_epel.bash
     source scripts/install_curl.bash
 
     source scripts/install_zsh.bash
