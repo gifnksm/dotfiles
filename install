@@ -138,12 +138,15 @@ install_main() {
             :
         elif [[ "${#INSTALLED_MODULES[@]}" -gt 0 ]]; then
             # if no modules are specified, and some modules are installed, re-install them
+            info "Update installed modules"
             install_modules=("${INSTALLED_MODULES[@]}")
         else
             # if no modules are specified, and no modules are installed, install modules in the default profile
             if [[ "${REMOTE_CONTAINERS:-}" == true ]]; then
+                OPT_PROFILE=devcontainer
                 install_modules=("${PROFILE_DEVCONTAINER[@]}")
             else
+                OPT_PROFILE=default
                 install_modules=("${PROFILE_DEFAULT[@]}")
             fi
         fi
@@ -153,6 +156,10 @@ install_main() {
         return 1
         ;;
     esac
+
+    if [[ -n "${OPT_PROFILE}" ]]; then
+        info "Profile: ${OPT_PROFILE}"
+    fi
 
     # update all installed modules
     install_modules+=("${INSTALLED_MODULES[@]}")
