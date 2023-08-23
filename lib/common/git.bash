@@ -52,7 +52,7 @@ ensure_git_config_unset() {
     local value="${2}"
 
     if ! command -v git >/dev/null; then
-        warn "git is not installed. skip git config (${key}=${value})"
+        info "git is not installed. skip git config removal (${key}=${value})"
         return "${WARN_EXIT_CODE}"
     fi
 
