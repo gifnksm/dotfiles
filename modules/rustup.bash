@@ -4,7 +4,7 @@ is_executed && return
 group_start_file
 {
     if ! [[ -x ~/.cargo/bin/rustup ]]; then
-        source modules/curl.bash
+        install_module curl
 
         info "Installing rustup..."
         curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -yq
