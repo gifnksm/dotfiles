@@ -29,6 +29,7 @@ typeset -a PROFILE_DEFAULT=(
     "${PROFILE_DEVCONTAINER[@]}"
     cargo_binstall
     cargo_update
+    devtools
     epel
     paru
     rhq
