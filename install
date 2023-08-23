@@ -35,7 +35,5 @@ group_start_file
     source scripts/install_ripgrep.bash
     source scripts/install_skim.bash
     source scripts/install_delta.bash
-
-    source scripts/remove_deprecated.bash
 }
 group_end
