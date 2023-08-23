@@ -3,6 +3,8 @@ is_executed && return
 
 group_start_file
 {
+    install_module devtools
+
     install_package_by_spec <<END
         arch: rhq@cargo
         ubuntu-22.04: rhq@cargo

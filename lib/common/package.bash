@@ -115,6 +115,7 @@ install_package_arch() {
     local pacman_packages=()
     local aur_packages=()
     local cargo_packages=()
+    local dotfiles_modules=()
 
     for package_and_source in "${package_and_sources[@]}"; do
         if [[ -z "${package_and_source}" ]]; then
@@ -135,6 +136,9 @@ install_package_arch() {
         cargo)
             cargo_packages+=("${package}")
             ;;
+        dotfiles)
+            dotfiles_modules+=("${packages}")
+            ;;
         *)
             abort "invalid source '${source}' for package '${package}'"
             ;;
@@ -144,12 +148,14 @@ install_package_arch() {
     pacman_install "${pacman_packages[@]}"
     paru_install "${aur_packages[@]}"
     cargo_install "${cargo_packages[@]}"
+    install_module "${dotfiles_modules[@]}"
 }
 
 install_package_debian() {
     local package_and_sources=("$@")
     local apt_get_packages=()
     local cargo_packages=()
+    local dotfiles_modules=()
 
     for package_and_source in "${package_and_sources[@]}"; do
         if [[ -z "${package_and_source}" ]]; then
@@ -167,6 +173,9 @@ install_package_debian() {
         cargo)
             cargo_packages+=("${package}")
             ;;
+        dotfiles)
+            dotfiles_modules+=("${packages}")
+            ;;
         *)
             abort "invalid source '${source}' for package '${package}'"
             ;;
@@ -175,6 +184,7 @@ install_package_debian() {
 
     apt_get_install "${apt_get_packages[@]}"
     cargo_install "${cargo_packages[@]}"
+    install_module "${dotfiles_modules[@]}"
 }
 
 install_package_rhel() {
@@ -182,6 +192,7 @@ install_package_rhel() {
     local dnf_packages=()
     local epel_packages=()
     local cargo_packages=()
+    local dotfiles_modules=()
 
     for package_and_source in "${package_and_sources[@]}"; do
         if [[ -z "${package_and_source}" ]]; then
@@ -202,6 +213,9 @@ install_package_rhel() {
         cargo)
             cargo_packages+=("${package}")
             ;;
+        dotfiles)
+            dotfiles_modules+=("${packages}")
+            ;;
         *)
             abort "invalid source '${source}' for package '${package}'"
             ;;
@@ -211,6 +225,7 @@ install_package_rhel() {
     dnf_install "${dnf_packages[@]}"
     epel_install "${epel_packages[@]}"
     cargo_install "${cargo_packages[@]}"
+    install_module "${dotfiles_modules[@]}"
 }
 
 # Usage: install_package_by_spec <<END

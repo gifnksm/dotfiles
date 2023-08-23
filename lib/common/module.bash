@@ -29,18 +29,19 @@ add_to_installed_modules() {
 }
 
 install_module() {
-    local module="$1"
+    local module
+    for module in "$@"; do
+        local module_file="modules/${module}.bash"
 
-    local module_file="modules/${module}.bash"
+        if ! [[ -e "${module_file}" ]]; then
+            error "Module not found: ${module}"
+            return 1
+        fi
 
-    if ! [[ -e "${module_file}" ]]; then
-        error "Module not found: ${module}"
-        return 1
-    fi
-
-    # shellcheck source=/dev/null
-    source "${module_file}"
-    add_to_installed_modules "${module}"
+        # shellcheck source=/dev/null
+        source "${module_file}"
+        add_to_installed_modules "${module}"
+    done
 }
 
 sort_uniq_args() {
