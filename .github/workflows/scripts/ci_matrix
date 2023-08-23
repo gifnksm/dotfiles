@@ -4,15 +4,54 @@ set -euo pipefail
 
 cd "$(dirname "${BASH_SOURCE[0]}")/../../.."
 
-find \
-    test \
-    -type f \
-    -executable |
-    sort |
-    jq \
-        --compact-output \
-        --raw-input \
-        --slurp \
-        'split("\n") |
-            map(select(. != "")) |
-            map({ script: ., name: sub("test/test_";"") })'
+main() {
+    local -a test_files
+    readarray -t test_files < <(find test -type f -executable | sort)
+
+    local -a profiles=(
+        "none"
+        "devcontainer"
+        "default"
+        "full"
+    )
+    local -a modules=()
+    readarray -t modules < <(./install --list-modules)
+
+    {
+        echo '['
+        local test_file
+        for test_file in "${test_files[@]}"; do
+            if [[ "${test_file}" != "${test_files[0]}" ]]; then
+                echo ","
+            fi
+            local name
+            name="$(basename "${test_file}")"
+            name="${name##test_}"
+            echo "  {"
+            echo "    \"name\": \"${name}\","
+            echo "    \"command\": \"./${test_file}\""
+            echo "  }"
+            if [[ "${name}" =~ ^bootstrap_ ]]; then
+                local profile
+                for profile in "${profiles[@]}"; do
+                    echo ","
+                    echo "  {"
+                    echo "    \"name\": \"${name} ${profile}\","
+                    echo "    \"command\": \"./${test_file} --profile ${profile}\""
+                    echo "  }"
+                done
+                local module
+                for module in "${modules[@]}"; do
+                    echo ","
+                    echo "  {"
+                    echo "    \"name\": \"${name} ${module}\","
+                    echo "    \"command\": \"./${test_file} ${module}\""
+                    echo "  }"
+                done
+            fi
+        done
+        echo ']'
+    } | jq --compact-output
+}
+
+main "$@"

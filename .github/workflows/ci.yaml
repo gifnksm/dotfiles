@@ -38,7 +38,7 @@ jobs:
       - name: Run test
         run: |
           echo "Running test for ${{ matrix.tests.name }}"
-          ./${{ matrix.tests.script }}
+          ${{ matrix.tests.command }}
         shell: bash
 
   ci-complete:
