@@ -31,11 +31,17 @@ After downloading the repository, you can install packages by running the `insta
 ~/.local/share/dotfiles/install
 ```
 
-<!-- If you want to install only specific packages, you can run the `install_${package_name}` script.
+If you want to install only specific packages, you can run the `install ${module_name}`.
 
 ```console
-~/.local/share/dotfiles/modules/${package_name}
-``` -->
+~/.local/share/dotfiles/install ${module_name}
+```
+
+All available modules can be listed by running the `install --list-modules`.
+
+```console
+~/.local/share/dotfiles/install --list-modules
+```
 
 ## Supported OS
 

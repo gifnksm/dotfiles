@@ -12,6 +12,6 @@ is_executed && return
 
 group_start_file
 {
-    test_run_script rocky_9 install
+    test_bootstrap_each arch
 }
 group_end

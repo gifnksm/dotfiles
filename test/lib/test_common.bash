@@ -19,20 +19,6 @@ _build_image() {
         .
 }
 
-_run_container() {
-    local -r image_name="${1}"
-    local -r container_name="${2}"
-
-    info "Running docker container ${container_name}"
-    docker run \
-        -d --rm --init \
-        -v "${REPO_DIR}:/dotfiles" \
-        --env GITHUB_ACTIONS \
-        --name "${container_name}" \
-        "${image_name}" \
-        sleep infinity
-}
-
 _run_container_with_bootstrap() {
     local -r image_name="${1}"
     local -r container_name="${2}"
@@ -70,48 +56,9 @@ _exec_in_container() {
         "$@"
 }
 
-test_run_script() {
-    local -r test_os_name="${1}"
-    local -r test_script="${2}"
-
-    local -r image_name="dotfiles-test-${test_os_name}-script"
-    local -r dockerfile="${TEST_DIR}/docker/Dockerfile.${test_os_name}"
-    local -r container_name="${image_name}-$$"
-
-    info "Running test for ${test_os_name}"
-
-    group_start "Setup container"
-    {
-        _build_image "${image_name}" "${dockerfile}"
-        _run_container "${image_name}" "${container_name}"
-    }
-    group_end
-
-    group_start "Run the test script"
-    {
-        # Run the test script
-        _exec_in_container "${container_name}" "/dotfiles/${test_script}"
-        info "First run for ${test_os_name} succeeded"
-    }
-    group_end
-
-    # Run the test script again to make sure it's idempotent
-    group_start "Run the test script again"
-    {
-        _exec_in_container "${container_name}" "/dotfiles/${test_script}"
-    }
-    group_end
-
-    group_start "Cleanup container"
-    {
-        _stop_container "${container_name}"
-    }
-
-    info "Test for ${test_os_name} succeeded"
-}
-
 test_bootstrap() {
     local -r test_os_name="${1}"
+    shift
 
     local -r image_name="dotfiles-test-${test_os_name}-bootstrap"
     local -r dockerfile="${TEST_DIR}/docker/Dockerfile.${test_os_name}"
@@ -140,13 +87,65 @@ test_bootstrap() {
     group_start "Run the bootstrap script"
     {
         # Run the bootstrap script
-        _exec_in_container "${container_name}" bash -c "cat /bootstrap.bash | bash"
+        _exec_in_container "${container_name}" bash -c "cat /bootstrap.bash | bash -s -- $*"
     }
 
     group_start "Cleanup container"
     {
         _stop_container "${container_name}"
     }
+
+    group_start "Cleanup working directory"
+    {
+        rm -rf "${work_dir}"
+    }
+
+    info "Test for ${test_os_name} succeeded"
+}
+
+test_bootstrap_each() {
+    local -r test_os_name="${1}"
+
+    local -r image_name="dotfiles-test-${test_os_name}-bootstrap"
+    local -r dockerfile="${TEST_DIR}/docker/Dockerfile.${test_os_name}"
+
+    info "Running test for ${test_os_name}"
+
+    local work_dir archive_path
+    work_dir="$(mktemp -d)"
+    archive_path="${work_dir}/archive.tar.gz"
+
+    group_start "Create source archive"
+    {
+        local commit_hash
+        commit_hash="$(git stash create)"
+        git archive --prefix=dotfiles/ "${commit_hash:-HEAD}" -o "${archive_path}"
+    }
+
+    local -a available_modules
+    readarray -t available_modules < <(./install --list-modules)
+
+    for module in "${available_modules[@]}"; do
+        local container_name="${image_name}-${module}-$$"
+
+        group_start "Setup container for ${module}"
+        {
+            _build_image "${image_name}" "${dockerfile}" true
+            _run_container_with_bootstrap "${image_name}" "${container_name}" "${archive_path}"
+        }
+        group_end
+
+        group_start "Run the bootstrap script for ${module}"
+        {
+            # Run the bootstrap script
+            _exec_in_container "${container_name}" bash -c "cat /bootstrap.bash | bash -s -- ${module}"
+        }
+
+        group_start "Cleanup container for ${module}"
+        {
+            _stop_container "${container_name}"
+        }
+    done
 
     group_start "Cleanup working directory"
     {
