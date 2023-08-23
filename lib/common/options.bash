@@ -2,7 +2,6 @@
 
 is_executed && return
 
-# shellcheck source=/dev/null
 source vendor/getoptions.sh
 
 parser_definition() {
