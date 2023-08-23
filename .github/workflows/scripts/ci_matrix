@@ -31,7 +31,7 @@ main() {
             echo "    \"name\": \"${name}\","
             echo "    \"command\": \"./${test_file}\""
             echo "  }"
-            if [[ "${name}" =~ ^bootstrap_ ]]; then
+            if [[ "${name}" =~ ^install_ ]]; then
                 local profile
                 for profile in "${profiles[@]}"; do
                     echo ","
