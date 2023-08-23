@@ -12,6 +12,6 @@ is_executed && return
 
 group_start_file
 {
-    test_bootstrap arch
+    test_bootstrap arch "$@"
 }
 group_end

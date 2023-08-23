@@ -12,6 +12,6 @@ is_executed && return
 
 group_start_file
 {
-    test_bootstrap ubuntu_22_04
+    test_bootstrap ubuntu_22_04 "$@"
 }
 group_end

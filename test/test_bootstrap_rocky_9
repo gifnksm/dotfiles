@@ -12,6 +12,6 @@ is_executed && return
 
 group_start_file
 {
-    test_bootstrap rocky_9
+    test_bootstrap rocky_9 "$@"
 }
 group_end
