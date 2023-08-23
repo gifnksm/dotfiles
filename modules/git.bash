@@ -5,7 +5,7 @@ group_start_file
 {
     install_package_by_spec <<END
         arch: git
-        ubuntu-22.04: git
+        ubuntu-22.04: git ca-certificates
         rocky-9: git
 END
 
