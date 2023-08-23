@@ -1,21 +1,10 @@
-#!/bin/bash
 # shellcheck source-path=SCRIPTDIR/..
-
-set -eu -o pipefail
-
-if [[ "$(pwd)" != "$(realpath "$(dirname "${BASH_SOURCE[0]}")/..")" ]]; then
-    cd "$(dirname "${BASH_SOURCE[0]}")/.."
-    exec ./scripts/"$(basename "${BASH_SOURCE[0]}")" "$@" # to update BASH_SOURCE, etc.
-fi
-source ./lib/common.bash
 is_executed && return
-
-parse_args "$@"
 
 group_start_file
 {
     # requires rust toolchain
-    source scripts/install_rustup
+    source scripts/install_rustup.bash
 
     if ! command -v cargo-binstall >/dev/null; then
         case "${OS_ID}" in
@@ -23,7 +12,7 @@ group_start_file
             pacman_install cargo-binstall
             ;;
         "${OS_UBUNTU_22_04}" | "${OS_ROCKY_9}")
-            source scripts/install_curl
+            source scripts/install_curl.bash
             curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
             ;;
         *)

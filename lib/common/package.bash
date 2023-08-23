@@ -28,7 +28,7 @@ paru_install() {
     [[ "$#" -eq 0 ]] && return
 
     # shellcheck source=/dev/null
-    source scripts/install_paru
+    source scripts/install_paru.bash
 
     local sync_opt
     sync_opt="$(_pacman_sync_opt)"
@@ -42,9 +42,9 @@ cargo_install() {
     [[ "$#" -eq 0 ]] && return
 
     # shellcheck source=/dev/null
-    source scripts/install_rustup
+    source scripts/install_rustup.bash
     # shellcheck source=/dev/null
-    source scripts/install_cargo_binstall
+    source scripts/install_cargo_binstall.bash
 
     info "cargo binstall $*"
     cargo binstall -qy "$@"
@@ -75,7 +75,7 @@ epel_install() {
     [[ "$#" -eq 0 ]] && return
 
     # shellcheck source=/dev/null
-    source scripts/install_epel
+    source scripts/install_epel.bash
 
     info "dnf install from EPEL: $*"
     sudo dnf install -qy "$@"

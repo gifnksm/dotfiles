@@ -1,21 +1,10 @@
-#!/bin/bash
 # shellcheck source-path=SCRIPTDIR/..
-
-set -eu -o pipefail
-
-if [[ "$(pwd)" != "$(realpath "$(dirname "${BASH_SOURCE[0]}")/..")" ]]; then
-    cd "$(dirname "${BASH_SOURCE[0]}")/.."
-    exec ./scripts/"$(basename "${BASH_SOURCE[0]}")" "$@" # to update BASH_SOURCE, etc.
-fi
-source ./lib/common.bash
 is_executed && return
-
-parse_args "$@"
 
 group_start_file
 {
     if ! [[ -x ~/.cargo/bin/rustup ]]; then
-        source scripts/install_curl
+        source scripts/install_curl.bash
 
         info "Installing rustup..."
         curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -yq
