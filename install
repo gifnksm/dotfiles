@@ -13,27 +13,27 @@ parse_args "$@"
 
 group_start_file
 {
-    source scripts/install_paru.bash
-    source scripts/install_epel.bash
-    source scripts/install_curl.bash
+    source modules/paru.bash
+    source modules/epel.bash
+    source modules/curl.bash
 
-    source scripts/install_zsh.bash
-    source scripts/install_tmux.bash
-    source scripts/install_git.bash
-    source scripts/install_tig.bash
-    source scripts/install_emacs.bash
-    source scripts/install_vim.bash
-    source scripts/install_keychain.bash
+    source modules/zsh.bash
+    source modules/tmux.bash
+    source modules/git.bash
+    source modules/tig.bash
+    source modules/emacs.bash
+    source modules/vim.bash
+    source modules/keychain.bash
 
-    source scripts/install_rustup.bash
-    source scripts/install_cargo_binstall.bash
-    source scripts/install_cargo_update.bash
-    source scripts/install_topgrade.bash
-    source scripts/install_rhq.bash
-    source scripts/install_starship.bash
-    source scripts/install_bat.bash
-    source scripts/install_ripgrep.bash
-    source scripts/install_skim.bash
-    source scripts/install_delta.bash
+    source modules/rustup.bash
+    source modules/cargo_binstall.bash
+    source modules/cargo_update.bash
+    source modules/topgrade.bash
+    source modules/rhq.bash
+    source modules/starship.bash
+    source modules/bat.bash
+    source modules/ripgrep.bash
+    source modules/skim.bash
+    source modules/delta.bash
 }
 group_end

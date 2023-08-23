@@ -34,7 +34,7 @@ After downloading the repository, you can install packages by running the `insta
 <!-- If you want to install only specific packages, you can run the `install_${package_name}` script.
 
 ```console
-~/.local/share/dotfiles/scripts/install_${package_name}
+~/.local/share/dotfiles/modules/${package_name}
 ``` -->
 
 ## Supported OS
