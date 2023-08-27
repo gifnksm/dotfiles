@@ -13,7 +13,9 @@ END
 
     sudo chsh -s /bin/zsh "$(id -un)"
 
+    ensure_symlink_to_config_exists .config/zsh
+
     ensure_symlink_to_config_exists .zshrc
-    ensure_symlink_to_config_exists .zsh
+    ensure_symlink_to_config_not_exists .zsh
 }
 group_end

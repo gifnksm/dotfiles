@@ -98,12 +98,12 @@ bindkey "^[Q" show_buffer_stack
 limit coredumpsize unlimited
 ulimit -c unlimited
 
-[ -f ~/.zsh/env.zsh   ] && source ~/.zsh/env.zsh
-[ -f ~/.zsh/alias.zsh ] && source ~/.zsh/alias.zsh
-[ -f ~/.zsh/ssh.zsh   ] && source ~/.zsh/ssh.zsh
-[ -f ~/.zsh/tmux.zsh  ] && source ~/.zsh/tmux.zsh
-[ -f ~/.zsh/fzf.zsh   ] && source ~/.zsh/fzf.zsh
-[ -f ~/.zsh/local.zsh ] && source ~/.zsh/local.zsh
+[ -f ~/.config/zsh/env.zsh   ] && source ~/.config/zsh/env.zsh
+[ -f ~/.config/zsh/alias.zsh ] && source ~/.config/zsh/alias.zsh
+[ -f ~/.config/zsh/ssh.zsh   ] && source ~/.config/zsh/ssh.zsh
+[ -f ~/.config/zsh/tmux.zsh  ] && source ~/.config/zsh/tmux.zsh
+[ -f ~/.config/zsh/fzf.zsh   ] && source ~/.config/zsh/fzf.zsh
+[ -f ~/.config/zsh/local.zsh ] && source ~/.config/zsh/local.zsh
 
 
 # added by travis gem
