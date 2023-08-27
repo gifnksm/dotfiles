@@ -14,7 +14,10 @@ END
     sudo chsh -s /bin/zsh "$(id -un)"
 
     # zshrc
-    ensure_symlink_to_config_not_exists .zshrc # this line must be before the next line
+    if [[ -L ~/.zshrc ]]; then
+        # if ~/.zshrc is a symbolic link to dotfiles/.zshrc, remove it
+        ensure_symlink_to_config_not_exists .zshrc # this line must be before the next line
+    fi
     ensure_line_in_file "source ~/.config/zsh/zshrc" ~/.zshrc
 
     # zsh config files
