@@ -26,8 +26,8 @@ END
 
     # zsh history
     ensure_directory_exists ~/.local/share/zsh
-    if [ -f ~/.zsh/history ]; then
-        mv ~/.zsh/history ~/.local/share/zsh/history
+    if [[ -f .zsh/history ]]; then
+        mv .zsh/history ~/.local/share/zsh/history
     fi
 }
 group_end
