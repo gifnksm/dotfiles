@@ -32,8 +32,8 @@ typeset -a PROFILE_DEFAULT=(
     devtools
     epel
     paru
-    rhq
     rustup
+    souko
     tmux
     topgrade
 )
