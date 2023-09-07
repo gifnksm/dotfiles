@@ -14,7 +14,7 @@ list_installed_modules() {
     if ! [[ -e "${INSTALLED_MODULES_FILE}" ]]; then
         return 0
     fi
-    sort -u "${INSTALLED_MODULES_FILE}"
+    sort -u "${INSTALLED_MODULES_FILE}" | grep -v '^\s*$'
 }
 
 add_to_installed_modules() {
@@ -28,12 +28,34 @@ add_to_installed_modules() {
     readarray -t INSTALLED_MODULES < <(list_installed_modules)
 }
 
+remove_from_installed_modules() {
+    local module="$1"
+    if ! [[ -e "${INSTALLED_MODULES_FILE}" ]]; then
+        return 0
+    fi
+    if ! grep -q "^${module}$" "${INSTALLED_MODULES_FILE}"; then
+        return 0
+    fi
+    sed -i "/^${module}$/d" "${INSTALLED_MODULES_FILE}"
+    readarray -t INSTALLED_MODULES < <(list_installed_modules)
+}
+
+check_module_exists() {
+    local module="$1"
+    local module_file="modules/${module}.bash"
+
+    if ! [[ -e "${module_file}" ]]; then
+        return 1
+    fi
+    return 0
+}
+
 install_module() {
     local module
     for module in "$@"; do
         local module_file="modules/${module}.bash"
 
-        if ! [[ -e "${module_file}" ]]; then
+        if ! check_module_exists "${module}"; then
             error "Module not found: ${module}"
             return 1
         fi
@@ -48,7 +70,7 @@ sort_uniq_args() {
     if [[ $# -eq 0 ]]; then
         return 0
     fi
-    printf '%s\n' "$@" | sort -u
+    printf '%s\n' "$@" | LC_ALL=C sort -u
 }
 
 typeset -r INSTALLED_MODULES_FILE=".installed_modules"
