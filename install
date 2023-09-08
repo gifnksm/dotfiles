@@ -73,6 +73,7 @@ expand_profile() {
         %full)
             printf "%s\n" "${PROFILE_FULL[@]}"
             ;;
+        %none) ;;
         %*)
             error "Unknown profile: ${module:1}"
             return 1
