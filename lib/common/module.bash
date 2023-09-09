@@ -127,20 +127,24 @@ install_profile() {
             return 1
         fi
 
-        if is_dry_run; then
-            debug "Would install profile: ${profile}"
-        else
-            debug "Install profile: ${profile}"
-        fi
+        group_start "%${profile}(install)"
+        {
+            if is_dry_run; then
+                debug "Would install profile: ${profile}"
+            else
+                debug "Install profile: ${profile}"
+            fi
 
-        local -a members=()
-        readarray -t members < <(list_modules_in_profile "${profile}")
+            local -a members=()
+            readarray -t members < <(list_modules_in_profile "${profile}")
 
-        for member in "${members[@]}"; do
-            install_module "${member}"
-        done
+            for member in "${members[@]}"; do
+                install_module "${member}"
+            done
 
-        _mark_as_installed "%${profile}"
+            _mark_as_installed "%${profile}"
+        }
+        group_end
     done
 }
 
@@ -161,20 +165,24 @@ update_profile() {
             continue
         fi
 
-        if is_dry_run; then
-            debug "Would update profile: ${profile}"
-        else
-            debug "Update profile: ${profile}"
-        fi
+        group_start "%${profile}(update)"
+        {
+            if is_dry_run; then
+                debug "Would update profile: ${profile}"
+            else
+                debug "Update profile: ${profile}"
+            fi
 
-        local -a members=()
-        readarray -t members < <(list_modules_in_profile "${profile}")
+            local -a members=()
+            readarray -t members < <(list_modules_in_profile "${profile}")
 
-        for member in "${members[@]}"; do
-            update_module "${member}"
-        done
+            for member in "${members[@]}"; do
+                update_module "${member}"
+            done
 
-        _mark_as_installed "%${profile}"
+            _mark_as_installed "%${profile}"
+        }
+        group_end
     done
 }
 
@@ -194,15 +202,19 @@ install_module() {
             return 1
         fi
 
-        if is_dry_run; then
-            debug "Would install module: ${module}"
-        else
-            debug "Install module: ${module}"
-        fi
+        group_start "${module}(install)"
+        {
+            if is_dry_run; then
+                debug "Would install module: ${module}"
+            else
+                debug "Install module: ${module}"
+            fi
 
-        # shellcheck source=/dev/null
-        source "${module_file}"
-        _mark_as_installed "${module}"
+            # shellcheck source=/dev/null
+            source "${module_file}"
+            _mark_as_installed "${module}"
+        }
+        group_end
     done
 }
 
@@ -223,15 +235,19 @@ update_module() {
             continue
         fi
 
-        if is_dry_run; then
-            debug "Would update module: ${module}"
-        else
-            debug "Update module: ${module}"
-        fi
+        group_start "${module}(update)"
+        {
+            if is_dry_run; then
+                debug "Would update module: ${module}"
+            else
+                debug "Update module: ${module}"
+            fi
 
-        # shellcheck source=/dev/null
-        source "${module_file}"
-        _mark_as_installed "${module}"
+            # shellcheck source=/dev/null
+            source "${module_file}"
+            _mark_as_installed "${module}"
+        }
+        group_end
     done
 }
 

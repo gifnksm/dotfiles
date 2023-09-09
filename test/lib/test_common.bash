@@ -39,6 +39,7 @@ _run_container() {
         --env ARCHIVE_URL="file:///archive.tar.gz" \
         --env NO_PROTO_CHECK=true \
         --env NO_GIT_CLONE=true \
+        --env GROUP_PREFIX="$(show_current_group)" \
         --name "${container_name}" \
         "${image_name}" \
         sleep infinity
@@ -58,6 +59,7 @@ _exec_in_container() {
     info "Executing \`$*\` in docker container ${container_name}"
     docker exec \
         --env GITHUB_ACTIONS \
+        --env GROUP_PREFIX="$(show_current_group)" \
         "${container_name}" \
         "$@"
 }
@@ -69,6 +71,7 @@ _exec_in_container_root() {
     info "Executing \`$*\` in docker container ${container_name}"
     docker exec \
         --env GITHUB_ACTIONS \
+        --env GROUP_PREFIX="$(show_current_group)" \
         --user root:root \
         "${container_name}" \
         "$@"
@@ -107,6 +110,7 @@ test_bootstrap() {
     {
         # Run the bootstrap script
         _exec_in_container "${container_name}" bash -c "cat /bootstrap.bash | bash -s -- $*"
+        reset_last_group # The bootstrap script may output group_end
     }
     group_end
 
@@ -114,11 +118,13 @@ test_bootstrap() {
     {
         _stop_container "${container_name}"
     }
+    group_end
 
     group_start "Cleanup working directory"
     {
         rm -rf "${work_dir}"
     }
+    group_end
 
     info "Test for ${test_os_name} succeeded"
 }
@@ -166,9 +172,11 @@ _test_install_common() {
 
     group_start "Run the install script"
     {
-        # Run the bootstrap script
+        # Run the install script
         _exec_in_container "${container_name}" bash -c "/dotfiles/install $*"
+        reset_last_group # The install script may output group_end
     }
+    group_end
 
     if [[ "${dry_run}" = false ]]; then
         # Run the test script again to make sure it's idempotent
@@ -176,18 +184,22 @@ _test_install_common() {
         {
             # Run the bootstrap script
             _exec_in_container "${container_name}" bash -c "/dotfiles/install $*"
+            reset_last_group # The install script may output group_end
         }
+        group_end
     fi
 
     group_start "Cleanup container"
     {
         _stop_container "${container_name}"
     }
+    group_end
 
     group_start "Cleanup working directory"
     {
         rm -rf "${work_dir}"
     }
+    group_end
 
     info "Test for ${test_os_name} succeeded"
 }

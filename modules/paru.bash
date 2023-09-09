@@ -1,15 +1,12 @@
 # shellcheck source-path=SCRIPTDIR/..
-group_start_file
-{
-    if [[ "${OS_ID}" == "${OS_ARCH}" ]] && ! command -v paru >/dev/null; then
-        pacman_install base-devel git
 
-        ensure_directory_exists ~/.cache/paru/clone
+if [[ "${OS_ID}" == "${OS_ARCH}" ]] && ! command -v paru >/dev/null; then
+    pacman_install base-devel git
 
-        ACTION="fetching paru-bin" execute git clone https://aur.archlinux.org/paru-bin.git ~/.cache/paru/clone/paru-bin
-        ACTION="installing paru-bin" execute bash -c "cd ~/.cache/paru/clone/paru-bin && makepkg -si --noconfirm"
+    ensure_directory_exists ~/.cache/paru/clone
 
-        assert_command paru
-    fi
-}
-group_end
+    ACTION="fetching paru-bin" execute git clone https://aur.archlinux.org/paru-bin.git ~/.cache/paru/clone/paru-bin
+    ACTION="installing paru-bin" execute bash -c "cd ~/.cache/paru/clone/paru-bin && makepkg -si --noconfirm"
+
+    assert_command paru
+fi

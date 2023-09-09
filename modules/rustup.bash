@@ -1,18 +1,15 @@
 # shellcheck source-path=SCRIPTDIR/..
-group_start_file
-{
-    if ! [[ -x ~/.cargo/bin/rustup ]]; then
-        install_module curl
 
-        ACTION="installing rustup" execute bash -c "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -yq"
-    fi
+if ! [[ -x ~/.cargo/bin/rustup ]]; then
+    install_module curl
 
-    if [[ -e ~/.cargo/env ]]; then
-        # shellcheck source=/dev/null
-        source ~/.cargo/env
-    fi
+    ACTION="installing rustup" execute bash -c "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -yq"
+fi
 
-    assert_command rustup
-    assert_command cargo
-}
-group_end
+if [[ -e ~/.cargo/env ]]; then
+    # shellcheck source=/dev/null
+    source ~/.cargo/env
+fi
+
+assert_command rustup
+assert_command cargo

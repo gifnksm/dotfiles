@@ -9,8 +9,4 @@ if [[ "$(pwd)" != "$(realpath "$(dirname "${BASH_SOURCE[0]}")/..")" ]]; then
 fi
 source test/lib/test_common.bash
 
-group_start_file
-{
-    test_install_normal rocky_9 "$@"
-}
-group_end
+test_install_normal rocky_9 "$@"

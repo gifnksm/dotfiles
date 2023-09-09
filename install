@@ -82,6 +82,4 @@ install_main() {
     info "Done"
 }
 
-group_start_file
 install_main "$@"
-group_end

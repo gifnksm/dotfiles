@@ -8,6 +8,9 @@ readonly WARN_EXIT_CODE=0
 is_github_actions() {
     [[ "${GITHUB_ACTIONS:-}" = "true" ]]
 }
+is_gha_debug_mode() {
+    is_github_actions && [[ "${RUNNER_DEBUG:-}" = 1 ]]
+}
 
 readonly LOG_LEVEL_ERROR=0
 readonly LOG_LEVEL_WARN=1
@@ -18,56 +21,87 @@ readonly LOG_LEVEL_TRACE=4
 _timestamp() { date '+%Y-%m-%d %H:%M:%S.%3N'; }
 error() {
     if is_github_actions; then
+        _update_group
         echo "::error::$*" >&2
     fi
     if [[ "${LOG_LEVEL}" -ge "${LOG_LEVEL_ERROR}" ]]; then
+        _update_group
         echo -e "\e[30;1m$(_timestamp)\e[m" "[\e[31;1mERROR\e[m]" "$@" >&2
     fi
 }
 warn() {
     if is_github_actions; then
+        _update_group
         echo "::warning::$*" >&2
     fi
     if [[ "${LOG_LEVEL}" -ge "${LOG_LEVEL_WARN}" ]]; then
+        _update_group
         echo -e "\e[30;1m$(_timestamp)\e[m" "[\e[33;1mWARN\e[m]" "$@" >&2
     fi
 }
 info() {
     if [[ "${LOG_LEVEL}" -ge "${LOG_LEVEL_INFO}" ]]; then
+        _update_group
         echo -e "\e[30;1m$(_timestamp)\e[m" "[\e[32;1mINFO\e[m]" "$@" >&2
     fi
 }
 debug() {
-    if is_github_actions; then
+    if is_gha_debug_mode; then
+        _update_group
         echo "::debug::$*" >&2
     fi
     if [[ "${LOG_LEVEL}" -ge "${LOG_LEVEL_DEBUG}" ]]; then
+        _update_group
         echo -e "\e[30;1m$(_timestamp)\e[m" "[\e[36;1mDEBUG\e[m]" "$@" >&2
     fi
 }
 trace() {
-    if is_github_actions; then
+    if is_gha_debug_mode; then
+        _update_group
         echo "::debug::$*" >&2
     fi
     if [[ "${LOG_LEVEL}" -ge "${LOG_LEVEL_TRACE}" ]]; then
+        _update_group
         echo -e "\e[30;1m$(_timestamp)\e[m" "[\e[30;1mTRACE\e[m]" "$@" >&2
     fi
 }
 
-group_start() {
-    if is_github_actions; then
-        echo "::group::$*" >&2
+typeset -a _groups=()
+if [[ -n "${GROUP_PREFIX:-}" ]]; then
+    _groups=("${GROUP_PREFIX}")
+fi
+typeset _last_group_str="${GROUP_PREFIX:-}"
+reset_last_group() {
+    _last_group_str="${GROUP_PREFIX:-}"
+}
+show_current_group() {
+    local IFS='/'
+    echo "${_groups[*]}"
+}
+_update_group() {
+    if ! is_github_actions; then
+        return
+    fi
+
+    local group_str
+    group_str="$(show_current_group)"
+
+    # GitHub Actions does not support nested group, so close previous group before start new group
+    if [[ "${group_str}" != "${_last_group_str}" ]]; then
+        echo "::endgroup::" >&2
+        if [[ -n "${group_str}" ]]; then
+            echo "::group::${group_str}" >&2
+        fi
+        _last_group_str="${group_str}"
     fi
 }
-group_start_file() {
-    local file
-    file="$(realpath "${BASH_SOURCE[1]}")"
-    group_start "${file##"${REPO_DIR}/"}"
+
+group_start() {
+    local -r name="${1}"
+    _groups+=("${name}")
 }
 group_end() {
-    if is_github_actions; then
-        echo "::endgroup::" >&2
-    fi
+    _groups=("${_groups[@]:0:${#_groups[@]}-1}")
 }
 
 print_backtrace() {
