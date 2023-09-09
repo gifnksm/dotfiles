@@ -125,6 +125,31 @@ set_log_level() {
 
 set_log_level "${LOG_LEVEL:-info}" # You can set log-level by environment variable
 
+DRY_RUN=0
+
+set_dry_run() {
+    case "${1}" in
+    "" | 0 | false) DRY_RUN=0 ;;
+    1 | true) DRY_RUN=1 ;;
+    *)
+        abort "invalid dry-run: ${1}"
+        ;;
+    esac
+}
+
+is_dry_run() {
+    [[ "${DRY_RUN}" -eq 1 ]]
+}
+
+execute() {
+    if is_dry_run; then
+        info "Would execute: $*"
+    else
+        trace "Executing: $*"
+        "$@"
+    fi
+}
+
 trap '_on_error $?' ERR
 _on_error() {
     local exitcode="${1:-}"

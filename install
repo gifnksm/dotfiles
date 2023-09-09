@@ -12,203 +12,59 @@ is_executed && return
 parse_args "$@"
 eval "set -- ${REST_ARGS}"
 
-typeset -a PROFILE_DEVCONTAINER=(
-    bat
-    curl
-    delta
-    git
-    ripgrep
-    skim
-    starship
-    tig
-    vim
-    zsh
-)
-readarray -t PROFILE_DEVCONTAINER < <(sort_uniq_args "${PROFILE_DEVCONTAINER[@]}")
-typeset -a PROFILE_DEFAULT=(
-    "${PROFILE_DEVCONTAINER[@]}"
-    cargo_binstall
-    cargo_update
-    devtools
-    epel
-    paru
-    rustup
-    souko
-    tmux
-    topgrade
-)
-readarray -t PROFILE_DEFAULT < <(sort_uniq_args "${PROFILE_DEFAULT[@]}")
-typeset -a PROFILE_FULL=(
-    "${PROFILE_DEFAULT[@]}"
-    emacs
-    keychain
-)
-readarray -t PROFILE_FULL < <(sort_uniq_args "${PROFILE_FULL[@]}")
-
-assert_eq "${PROFILE_FULL[*]}" "${AVAILABLE_MODULES[*]}"
-
-list_installed_profiles() {
-    list_installed_modules | sed -n 's/^%//p'
-}
+if [[ "${FLG_DRY_RUN}" -eq 1 ]]; then
+    set_dry_run true
+else
+    set_dry_run false
+fi
 
 show_default_profile() {
     if [[ "${REMOTE_CONTAINERS:-}" == true ]]; then
-        echo "devcontainer"
+        echo "%devcontainer"
     else
-        echo "default"
+        echo "%default"
     fi
 }
 
-expand_profile() {
-    while [[ $# -gt 0 ]]; do
-        local module="$1"
-        shift
-        case "${module}" in
-        %devcontainer)
-            printf "%s\n" "${PROFILE_DEVCONTAINER[@]}"
-            ;;
-        %default)
-            printf "%s\n" "${PROFILE_DEFAULT[@]}"
-            ;;
-        %full)
-            printf "%s\n" "${PROFILE_FULL[@]}"
-            ;;
-        %none) ;;
-        %*)
-            error "Unknown profile: ${module:1}"
-            return 1
-            ;;
-        *)
-            printf "%s\n" "${module}"
-            ;;
-        esac
-    done
-}
-
 install_main() {
+    if [[ "${FLG_LIST_PROFILES}" -eq 1 ]]; then
+        list_available_profiles
+        return 0
+    fi
+
     if [[ "${FLG_LIST_MODULES}" -eq 1 ]]; then
-        for module in "${AVAILABLE_MODULES[@]}"; do
-            echo "${module}"
-        done
+        list_available_modules
         return 0
     fi
 
     if [[ "${FLG_LIST_INSTALLED}" -eq 1 ]]; then
-        for module in "${INSTALLED_MODULES[@]}"; do
-            echo "${module}"
-        done
+        list_installed_profiles_or_modules
         return 0
     fi
 
-    local -a profiles=()
-    local -a install_modules=("$@")
-    local -a update_modules=()
-
-    # if profile is specified, install modules specified by the profile
+    # install specifiled modules
+    local -a to_install=("$@")
     if [[ -n "${OPT_PROFILE}" ]]; then
-        profiles+=("${OPT_PROFILE}")
-        install_modules+=("%${OPT_PROFILE}")
-    else
-        readarray -t profiles < <(list_installed_profiles)
-        if [[ "${#profiles[@]}" -gt 0 ]]; then
-            readarray -t update_modules < <(printf "%%%s\n" "${profiles[@]}")
-        else
-            profiles=("$(show_default_profile)")
-            readarray -t install_modules < <(printf "%%%s\n" "${profiles[@]}")
-        fi
+        # if profile is specified, install modules specified by the profile
+        to_install+=("%${OPT_PROFILE}")
     fi
 
-    info "Profiles: ${profiles[*]}"
+    # update all installed modules / profiles
+    local -a to_update
+    readarray -t to_update < <(list_installed_profiles_or_modules)
 
-    # update all installed modules
-    update_modules+=("${INSTALLED_MODULES[@]}")
+    # if nothing to install / update, install default profile
+    if [[ "${#to_install[@]}" -eq 0 && "${#to_update[@]}" -eq 0 ]]; then
+        to_install=("$(show_default_profile)")
+    fi
 
-    # deduplicate and sort modules
-    readarray -t install_modules < <(sort_uniq_args "${install_modules[@]}")
-    readarray -t update_modules < <(sort_uniq_args "${update_modules[@]}")
+    # sort & remove duplicates
+    readarray -t to_install < <(sort_uniq_args "${to_install[@]}")
+    readarray -t to_update < <(sort_uniq_args "${to_update[@]}")
 
-    local -A handled_modules=()
-
-    # install each modules
-    local module_name
-    for module_name in "${install_modules[@]}"; do
-        if [[ -n "${handled_modules["${module_name}"]:-}" ]]; then
-            continue
-        fi
-        handled_modules["${module_name}"]=1
-
-        local modules
-        readarray -t modules < <(expand_profile "${module_name}")
-
-        local module
-        for module in "${modules[@]}"; do
-            if [[ -n "${handled_modules["${module}"]:-}" ]]; then
-                continue
-            fi
-            handled_modules["${module}"]=1
-
-            local display_module="${module_name}"
-            if [[ "${module_name}" =~ ^% ]]; then
-                display_module="${module} (${module_name:1})"
-            fi
-
-            if ! check_module_exists "${module}"; then
-                error "Module not found: ${display_module}"
-                return 1
-            fi
-
-            if [[ "${FLG_DRY_RUN}" -eq 1 ]]; then
-                info "Would install module: ${display_module}"
-            else
-                install_module "${module}"
-            fi
-        done
-
-        if [[ "${FLG_DRY_RUN}" -ne 1 ]] && [[ "${module_name}" =~ ^% ]]; then
-            add_to_installed_modules "${module_name}"
-        fi
-    done
-
-    # update each modules
-    local module_name
-    for module_name in "${update_modules[@]}"; do
-        if [[ -n "${handled_modules["${module_name}"]:-}" ]]; then
-            continue
-        fi
-
-        local modules
-        readarray -t modules < <(expand_profile "${module_name}")
-
-        local module
-        for module in "${modules[@]}"; do
-            if [[ -n "${handled_modules["${module}"]:-}" ]]; then
-                continue
-            fi
-            handled_modules["${module}"]=1
-
-            local display_module="${module_name}"
-            if [[ "${module_name}" =~ ^% ]]; then
-                display_module="${module} (${module_name:1})"
-            fi
-
-            if ! check_module_exists "${module}"; then
-                warn "Module not found: ${display_module}"
-                if [[ "${FLG_DRY_RUN}" -ne 1 ]]; then
-                    remove_from_installed_modules "${module}"
-                fi
-                continue
-            fi
-            if [[ "${FLG_DRY_RUN}" -eq 1 ]]; then
-                info "Would update module: ${display_module}"
-            else
-                install_module "${module}"
-            fi
-        done
-
-        if [[ "${FLG_DRY_RUN}" -ne 1 ]] && [[ "${module_name}" =~ ^% ]]; then
-            add_to_installed_modules "${module_name}"
-        fi
-    done
+    # install / update
+    install_profile_or_module "${to_install[@]}"
+    update_profile_or_module "${to_update[@]}"
 }
 
 group_start_file

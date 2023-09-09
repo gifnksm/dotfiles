@@ -1,0 +1,10 @@
+bat
+curl
+delta
+git
+ripgrep
+skim
+starship
+tig
+vim
+zsh

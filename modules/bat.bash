@@ -14,6 +14,5 @@ END
     fi
 
     assert_command bat
-
 }
 group_end

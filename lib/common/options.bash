@@ -8,8 +8,9 @@ parser_definition() {
     setup REST_ARGS help:usage -- "Usage: $0 [options]... [modules]..."
     msg -- "Options:"
 
-    flag FLG_LIST_MODULES -l --list-modules -- "List available modules"
-    flag FLG_LIST_INSTALLED --list-installed -- "list installed modules"
+    flag FLG_LIST_PROFILES --list-profiles -- "List available profiles"
+    flag FLG_LIST_MODULES --list-modules -- "List available modules"
+    flag FLG_LIST_INSTALLED --list-installed -- "list installed profiles or modules"
     flag FLG_DRY_RUN -n --dry-run -- "Dry run"
     param OPT_PROFILE -p --profile -- "Profile to install"
     param OPT_LOG_LEVEL -l --log-level -- "Log level"
