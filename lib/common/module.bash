@@ -197,8 +197,9 @@ install_module() {
         fi
 
         if is_dry_run; then
-            info "Would install module: ${module}"
-            continue
+            debug "Would install module: ${module}"
+        else
+            debug "Install module: ${module}"
         fi
 
         # shellcheck source=/dev/null
@@ -225,8 +226,9 @@ update_module() {
         fi
 
         if is_dry_run; then
-            info "Would update module: ${module}"
-            continue
+            debug "Would update module: ${module}"
+        else
+            debug "Update module: ${module}"
         fi
 
         # shellcheck source=/dev/null

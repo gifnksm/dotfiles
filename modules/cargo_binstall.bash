@@ -13,7 +13,7 @@ group_start_file
             ;;
         "${OS_UBUNTU_22_04}" | "${OS_ROCKY_9}")
             install_module curl
-            curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+            ACTION="installing cargo-binstall" execute bash -c "curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash"
             ;;
         *)
             abort "${OS_ID} is not supported."

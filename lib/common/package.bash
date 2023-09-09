@@ -26,8 +26,7 @@ pacman_install() {
     local sync_opt
     sync_opt="$(_pacman_sync_opt)"
 
-    info "pacman ${sync_opt} $*"
-    sudo pacman "${sync_opt}" -q --needed --noconfirm --color always "$@"
+    ACTION="pacman ${sync_opt} $*" execute sudo pacman "${sync_opt}" -q --needed --noconfirm --color always "$@"
     _pacman_executed=true
 }
 
@@ -55,8 +54,7 @@ paru_install() {
     local sync_opt
     sync_opt="$(_paru_sync_opt)"
 
-    info "paru ${sync_opt} $*"
-    paru "${sync_opt}" -q --needed --noconfirm --color always "$@"
+    ACTION="paru ${sync_opt} $*" execute paru "${sync_opt}" -q --needed --noconfirm --color always "$@"
     _paru_executed=true
 }
 
@@ -68,7 +66,7 @@ cargo_install() {
 
     local package not_installed=()
     for package in "$@"; do
-        if cargo install --list | grep -q "^${package} v.*\$"; then
+        if command -v cargo >/dev/null && cargo install --list | grep -q "^${package} v.*\$"; then
             debug "cargo binstall: ${package} (already installed)"
         else
             not_installed+=("${package}")
@@ -79,8 +77,7 @@ cargo_install() {
         return
     fi
 
-    info "cargo binstall $*"
-    cargo binstall -y "$@"
+    ACTION="cargo binstall $*" execute cargo binstall -y "$@"
 }
 
 _apt_get_executed=false
@@ -93,13 +90,11 @@ apt_get_install() {
     fi
 
     if ! "${_apt_get_executed}"; then
-        info "apt-get update"
-        sudo DEBIAN_FRONTEND=noninteractive apt-get -qq update
+        ACTION="apt-get update" execute sudo DEBIAN_FRONTEND=noninteractive apt-get -qq update
         _apt_get_executed=true
     fi
 
-    info "apt-get install $*"
-    sudo DEBIAN_FRONTEND=noninteractive apt-get -qq install -y --no-install-recommends "$@"
+    ACTION="apt-get install $*" execute sudo DEBIAN_FRONTEND=noninteractive apt-get -qq install -y --no-install-recommends "$@"
 }
 
 dnf_install() {
@@ -118,8 +113,7 @@ dnf_install() {
         return
     fi
 
-    info "dnf install $*"
-    sudo dnf install -qy "$@"
+    ACTION="dnf install $*" execute sudo dnf install -qy "$@"
 }
 
 epel_install() {
@@ -140,8 +134,7 @@ epel_install() {
 
     install_module epel
 
-    info "dnf install from EPEL: $*"
-    sudo dnf install -qy "$@"
+    ACTION="dnf install $*" execute sudo dnf install -qy "$@"
 }
 
 # Encode package name containing special characters with url-encoding-like format

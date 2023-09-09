@@ -6,12 +6,13 @@ group_start_file
     if ! [[ -x ~/.cargo/bin/rustup ]]; then
         install_module curl
 
-        info "Installing rustup..."
-        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -yq
+        ACTION="installing rustup" execute bash -c "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -yq"
     fi
 
-    # shellcheck source=/dev/null
-    source ~/.cargo/env
+    if [[ -e ~/.cargo/env ]]; then
+        # shellcheck source=/dev/null
+        source ~/.cargo/env
+    fi
 
     assert_command rustup
     assert_command cargo

@@ -142,10 +142,15 @@ is_dry_run() {
 }
 
 execute() {
-    if is_dry_run; then
-        info "Would execute: $*"
+    if [[ -v ACTION ]]; then
+        if [[ -n "${ACTION}" ]]; then
+            info "${ACTION}"
+        fi
     else
-        trace "Executing: $*"
+        info "executing: $*"
+    fi
+
+    if ! is_dry_run; then
         "$@"
     fi
 }

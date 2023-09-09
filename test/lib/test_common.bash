@@ -172,12 +172,14 @@ _test_install_common() {
         _exec_in_container "${container_name}" bash -c "/dotfiles/install $*"
     }
 
-    # Run the test script again to make sure it's idempotent
-    group_start "Run the install script again"
-    {
-        # Run the bootstrap script
-        _exec_in_container "${container_name}" bash -c "/dotfiles/install $*"
-    }
+    if [[ "${dry_run}" = false ]]; then
+        # Run the test script again to make sure it's idempotent
+        group_start "Run the install script again"
+        {
+            # Run the bootstrap script
+            _exec_in_container "${container_name}" bash -c "/dotfiles/install $*"
+        }
+    fi
 
     group_start "Cleanup container"
     {

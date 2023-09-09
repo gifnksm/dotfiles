@@ -41,11 +41,11 @@ END
 
     # initialize git repository if needed
     if ! [[ -d .git ]]; then
-        info "Initializing git repository"
-        git init
-        git remote add origin https://github.com/gifnksm/dotfiles.git
-        git fetch --depth 1 origin
-        git reset --mixed origin/master
+        info "initializing git repository"
+        ACTION="" execute git init
+        ACTION="" execute git remote add origin https://github.com/gifnksm/dotfiles.git
+        ACTION="" execute git fetch --depth 1 origin
+        ACTION="" execute git reset --mixed origin/master
     fi
 }
 group_end
