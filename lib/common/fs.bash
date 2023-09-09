@@ -1,5 +1,3 @@
-is_executed && return
-
 typeset -A _created_directories=(
     ["/"]=1
 )
@@ -13,13 +11,13 @@ ensure_directory_exists() {
 
     if is_dry_run; then
         # cache created directories to avoid outputting too many logs
-        if [[ -n "${_created_directories["${dir}"]:-}" ]]; then
+        if [[ -v '_created_directories["${dir}"]' ]]; then
             trace "directory already created: ${dir}"
             return
         fi
 
         local parent_dir="${dir}"
-        while [[ -z "${_created_directories["${parent_dir}"]:-}" ]]; do
+        while ! [[ -v '_created_directories["${parent_dir}"]' ]]; do
             _created_directories["${parent_dir}"]=1
             parent_dir="$(dirname "${parent_dir}")"
         done

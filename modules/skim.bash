@@ -1,6 +1,4 @@
 # shellcheck source-path=SCRIPTDIR/..
-is_executed && return
-
 group_start_file
 {
     install_package_by_spec <<END

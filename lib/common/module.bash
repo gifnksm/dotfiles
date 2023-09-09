@@ -1,7 +1,5 @@
 # shellcheck source-path=SCRIPTDIR/../..
 
-is_executed && return
-
 show_profile_file() {
     local profile="$1"
     echo "profiles/${profile}.txt"
@@ -116,7 +114,7 @@ update_profile_or_module() {
 install_profile() {
     local profile profile_file
     for profile in "$@"; do
-        if [[ -n "${_handled_profiles["${profile}"]:-}" ]]; then
+        if [[ -v '_handled_profiles["${profile}"]' ]]; then
             trace "Profile already handled: ${profile}"
             continue
         fi
@@ -149,7 +147,7 @@ install_profile() {
 update_profile() {
     local profile profile_file
     for profile in "$@"; do
-        if [[ -n "${_handled_profiles["${profile}"]:-}" ]]; then
+        if [[ -v '_handled_profiles["${profile}"]' ]]; then
             trace "Profile already handled: ${profile}"
             continue
         fi
@@ -183,7 +181,7 @@ update_profile() {
 install_module() {
     local module module_file
     for module in "$@"; do
-        if [[ -n "${_handled_modules["${module}"]:-}" ]]; then
+        if [[ -v '_handled_modules["${module}"]' ]]; then
             trace "Module already handled: ${module}"
             continue
         fi
@@ -211,7 +209,7 @@ install_module() {
 update_module() {
     local module module_file
     for module in "$@"; do
-        if [[ -n "${_handled_modules["${module}"]:-}" ]]; then
+        if [[ -v '_handled_modules["${module}"]' ]]; then
             trace "Module already handled: ${module}"
             continue
         fi

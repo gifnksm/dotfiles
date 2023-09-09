@@ -1,6 +1,4 @@
 # shellcheck source-path=SCRIPTDIR/..
-is_executed && return
-
 group_start_file
 {
     if [[ "${OS_ID}" == "${OS_ARCH}" ]] && ! command -v paru >/dev/null; then

@@ -1,5 +1,3 @@
-is_executed && return
-
 ensure_git_config_added() {
     local key="${1}"
     local value="${2}"

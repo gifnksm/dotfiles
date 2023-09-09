@@ -2,8 +2,6 @@
 
 source lib/common.bash
 
-is_executed && return
-
 TEST_DIR="${REPO_DIR}/test"
 
 _archive_repo() {

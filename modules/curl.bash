@@ -1,6 +1,4 @@
 # shellcheck source-path=SCRIPTDIR/..
-is_executed && return
-
 group_start_file
 {
     if ! command -v curl >/dev/null; then

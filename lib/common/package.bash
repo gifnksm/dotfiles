@@ -1,9 +1,5 @@
 # shellcheck source-path=SCRIPTDIR/../..
 
-is_executed && return
-
-debug "Loading lib/common/package.bash"
-
 _pacman_executed=false
 _pacman_sync_opt() {
     local sync_opt

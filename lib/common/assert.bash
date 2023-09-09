@@ -1,5 +1,3 @@
-is_executed && return
-
 assert_eq() {
     local -r expected="${1}"
     local -r actual="${2}"

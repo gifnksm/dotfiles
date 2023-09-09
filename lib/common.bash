@@ -1,7 +1,5 @@
 # shellcheck source-path=SCRIPTDIR/..
 
-[[ "$(type -t is_executed)" = "function" ]] && return
-
 set -eu -o pipefail
 
 readonly ERROR_EXIT_CODE=1
@@ -160,21 +158,6 @@ _on_error() {
     local exitcode="${1:-}"
     error "program aborted by error: exitcode=${exitcode}"
     print_backtrace 1 | sed "s/^/    /" >&2
-}
-
-declare -A _executed_files=()
-is_executed() {
-    local source key source_rel
-    source="$(realpath "${BASH_SOURCE[1]}")"
-    key="$(md5sum <<<"${source}" | cut -d ' ' -f 1)"
-    source_rel="${source#"${REPO_DIR}/"}"
-    if [[ -v '_executed_files[${key}]' ]]; then
-        trace "already executed: ${source_rel}"
-        return 0
-    fi
-    debug "executing: ${source_rel}"
-    _executed_files["${key}"]="${source}"
-    return 1
 }
 
 REPO_DIR="$(realpath "$(dirname "${BASH_SOURCE[0]}")/..")"
