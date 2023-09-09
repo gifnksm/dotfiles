@@ -26,3 +26,6 @@ ensure_directory_exists ~/.local/share/zsh
 if [[ -f .zsh/history ]]; then
     execute mv .zsh/history ~/.local/share/zsh/history
 fi
+if [[ -f .zsh/local.zsh ]]; then
+    execute mv .zsh/local.zsh .config/zsh/
+fi
