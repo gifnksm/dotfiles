@@ -78,6 +78,8 @@ install_main() {
     # install / update
     install_profile_or_module "${to_install[@]}"
     update_profile_or_module "${to_update[@]}"
+
+    info "Done"
 }
 
 group_start_file

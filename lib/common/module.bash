@@ -130,9 +130,9 @@ install_profile() {
         fi
 
         if is_dry_run; then
-            info "Would install profile: ${profile}"
+            debug "Would install profile: ${profile}"
         else
-            info "Install profile: ${profile}"
+            debug "Install profile: ${profile}"
         fi
 
         local -a members=()
@@ -164,9 +164,9 @@ update_profile() {
         fi
 
         if is_dry_run; then
-            info "Would update profile: ${profile}"
+            debug "Would update profile: ${profile}"
         else
-            info "Update profile: ${profile}"
+            debug "Update profile: ${profile}"
         fi
 
         local -a members=()
