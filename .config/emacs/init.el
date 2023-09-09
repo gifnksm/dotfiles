@@ -178,7 +178,8 @@
             (truncate-lines . t)
             (indent-tabs-mode . nil)
             (menu-bar-mode .  nil)
-            (tool-bar-mode . nil)))
+            (tool-bar-mode . nil)
+            (visible-bell . t)))
 
 (leaf cus-edit
   :doc "tools for customizing Emacs and Lisp packages"
