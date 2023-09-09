@@ -4,16 +4,16 @@
 FROM archlinux:latest
 
 ARG bootstrap=false
+ARG dry_run=false
+ARG user=arch
+
+SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
 RUN \
     --mount=type=cache,target=/var/cache/ \
     <<END
-    set -eux
-
-    # system update & install packages
-    pacman -Syu --noconfirm --needed \
-        sudo \
-        ;
+    # system update
+    pacman -Syu --noconfirm
 
     if [ "${bootstrap}" = "true" ]; then
         pacman -S --noconfirm --needed \
@@ -23,8 +23,19 @@ RUN \
     fi
 
     # user configuration
-    useradd -m arch
-    echo "arch ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/arch
+    useradd -m "${user}"
+
+    if [ "${dry_run}" = "true" ]; then
+        # remove write access to home directory
+        chmod -R a-w "$(getent passwd "${user}" | cut -d: -f6)"
+    else
+        # sudo configuration
+        pacman -S --noconfirm --needed \
+            sudo \
+            ;
+        echo "${user} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/10-${user}
+    fi
 END
 
-USER arch
+USER "${user}"
+SHELL ["/bin/bash", "-c"]

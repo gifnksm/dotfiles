@@ -3,18 +3,18 @@
 FROM rockylinux:9
 
 ARG bootstrap=false
+ARG dry_run=false
+ARG user=rocky
+
+SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
 # hadolint ignore=DL3041
 RUN \
     --mount=type=cache,target=/var/cache \
     <<END
-    set -eux
 
-    # system update & install packages
+    # system update
     dnf -y update
-    dnf install -y \
-        sudo \
-        ;
 
     if [ "${bootstrap}" = "true" ]; then
         dnf install -y \
@@ -23,11 +23,22 @@ RUN \
             ;
     fi
 
-    dnf clean all
-
     # user configuration
-    useradd -m rocky
-    echo "rocky ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/rocky
+    useradd -m "${user}"
+    if [ "${dry_run}" = "true" ]; then
+        # remove write access to home directory
+        chmod -R a-w "$(getent passwd "${user}" | cut -d: -f6)"
+    else
+        # sudo configuration
+        dnf install -y \
+            sudo \
+            ;
+        echo "${user} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/10-${user}
+    fi
+
+    # cleanup
+    dnf clean all
 END
 
-USER rocky
+USER "${user}"
+SHELL ["/bin/bash", "-c"]

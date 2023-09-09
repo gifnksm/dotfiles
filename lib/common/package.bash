@@ -1,9 +1,5 @@
 # shellcheck source-path=SCRIPTDIR/../..
 
-is_executed && return
-
-debug "Loading lib/common/package.bash"
-
 _pacman_executed=false
 _pacman_sync_opt() {
     local sync_opt
@@ -18,12 +14,27 @@ _pacman_sync_opt() {
 pacman_install() {
     [[ "$#" -eq 0 ]] && return
 
+    if pacman -Q "$@" >/dev/null 2>&1; then
+        debug "pacman: $* (already installed)"
+        return
+    fi
+
     local sync_opt
     sync_opt="$(_pacman_sync_opt)"
 
-    info "pacman ${sync_opt} $*"
-    sudo pacman "${sync_opt}" -q --needed --noconfirm --color always "$@"
+    ACTION="pacman ${sync_opt} $*" execute sudo pacman "${sync_opt}" -q --needed --noconfirm --color always "$@" >/dev/null
     _pacman_executed=true
+}
+
+_paru_executed=false
+_paru_sync_opt() {
+    local sync_opt
+    if "${_paru_executed}"; then
+        sync_opt="-S"
+    else
+        sync_opt="-Syu"
+    fi
+    printf "%s" "${sync_opt}"
 }
 
 paru_install() {
@@ -31,12 +42,16 @@ paru_install() {
 
     install_module paru
 
-    local sync_opt
-    sync_opt="$(_pacman_sync_opt)"
+    if paru -Q "$@" >/dev/null 2>&1; then
+        debug "paru: $* (already installed)"
+        return
+    fi
 
-    info "paru ${sync_opt} $*"
-    paru "${sync_opt}" -q --needed --noconfirm --color always "$@"
-    _pacman_executed=true
+    local sync_opt
+    sync_opt="$(_paru_sync_opt)"
+
+    ACTION="paru ${sync_opt} $*" execute paru "${sync_opt}" -q --needed --noconfirm --color always "$@" >/dev/null
+    _paru_executed=true
 }
 
 cargo_install() {
@@ -45,38 +60,77 @@ cargo_install() {
     install_module rustup
     install_module cargo_binstall
 
-    info "cargo binstall $*"
-    cargo binstall -qy "$@"
+    local package not_installed=()
+    for package in "$@"; do
+        if command -v cargo >/dev/null && cargo install --list | grep -q "^${package} v.*\$"; then
+            debug "cargo binstall: ${package} (already installed)"
+        else
+            not_installed+=("${package}")
+        fi
+    done
+
+    if [[ "${#not_installed[@]}" -eq 0 ]]; then
+        return
+    fi
+
+    ACTION="cargo binstall $*" execute cargo binstall -y --log-level warn "$@"
 }
 
 _apt_get_executed=false
 apt_get_install() {
     [[ "$#" -eq 0 ]] && return
 
+    if dpkg -s "$@" >/dev/null 2>&1; then
+        debug "apt-get: $* (already installed)"
+        return
+    fi
+
     if ! "${_apt_get_executed}"; then
-        info "apt-get update"
-        sudo DEBIAN_FRONTEND=noninteractive apt-get -qq update
+        ACTION="apt-get update" execute sudo DEBIAN_FRONTEND=noninteractive apt-get -qq update >/dev/null
         _apt_get_executed=true
     fi
 
-    info "apt-get install $*"
-    sudo DEBIAN_FRONTEND=noninteractive apt-get -qq install -y --no-install-recommends "$@"
+    ACTION="apt-get install $*" execute sudo DEBIAN_FRONTEND=noninteractive apt-get -qq install -y --no-install-recommends "$@" >/dev/null
 }
 
 dnf_install() {
     [[ "$#" -eq 0 ]] && return
 
-    info "dnf install $*"
-    sudo dnf install -qy "$@"
+    local package not_installed=()
+    for package in "$@"; do
+        if dnf list --installed "${package}" >/dev/null 2>&1; then
+            debug "dnf: ${package} (already installed)"
+        else
+            not_installed+=("${package}")
+        fi
+    done
+
+    if [[ "${#not_installed[@]}" -eq 0 ]]; then
+        return
+    fi
+
+    ACTION="dnf install $*" execute sudo dnf install -qy "$@" >/dev/null
 }
 
 epel_install() {
     [[ "$#" -eq 0 ]] && return
 
+    local package not_installed=()
+    for package in "$@"; do
+        if dnf list --installed "${package}" >/dev/null 2>&1; then
+            debug "dnf: ${package} (already installed)"
+        else
+            not_installed+=("${package}")
+        fi
+    done
+
+    if [[ "${#not_installed[@]}" -eq 0 ]]; then
+        return
+    fi
+
     install_module epel
 
-    info "dnf install from EPEL: $*"
-    sudo dnf install -qy "$@"
+    ACTION="dnf install $*" execute sudo dnf install -qy "$@" >/dev/null
 }
 
 # Encode package name containing special characters with url-encoding-like format

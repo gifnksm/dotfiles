@@ -4,18 +4,33 @@ set -euo pipefail
 
 cd "$(dirname "${BASH_SOURCE[0]}")/../../.."
 
+pretty_os() {
+    case "${1}" in
+    arch) echo "arch" ;;
+    rocky_9) echo "rocky-9" ;;
+    ubuntu_22_04) echo "ubuntu-22.04" ;;
+    *) echo "${1}" ;;
+    esac
+}
+
 main() {
     local -a test_files
     readarray -t test_files < <(find test -type f -executable | sort)
 
-    local -a profiles=(
-        "none"
-        "devcontainer"
-        "default"
-        "full"
-    )
+    local -a profiles=()
+    readarray -t profiles < <(./install --list-profiles)
     local -a modules=()
     readarray -t modules < <(./install --list-modules)
+
+    if [[ "${#profiles[@]}" -eq 0 ]]; then
+        echo "profiles not found" >&2
+        exit 1
+    fi
+
+    if [[ "${#modules[@]}" -eq 0 ]]; then
+        echo "modules not found" >&2
+        exit 1
+    fi
 
     {
         echo '['
@@ -27,31 +42,60 @@ main() {
             local name
             name="$(basename "${test_file}")"
             name="${name##test_}"
-            echo "  {"
-            echo "    \"name\": \"${name}\","
-            echo "    \"command\": \"./${test_file}\""
-            echo "  }"
-            if [[ "${name}" =~ ^install_ ]]; then
+            if [[ "${name}" =~ ^install_normal ]]; then
+                local os="${name##install_normal_}"
+                os="$(pretty_os "${os}")"
                 local profile
                 for profile in "${profiles[@]}"; do
-                    echo ","
-                    echo "  {"
-                    echo "    \"name\": \"${name} ${profile}\","
-                    echo "    \"command\": \"./${test_file} --profile ${profile}\""
-                    echo "  }"
+                    if [[ "${profile}" != "${profiles[0]}" ]]; then
+                        echo ","
+                    fi
+                    cat <<END
+                        {
+                            "name": "install [normal] %${profile} - ${os}",
+                            "command": "./${test_file} --profile ${profile}"
+                        }
+END
                 done
                 local module
                 for module in "${modules[@]}"; do
                     echo ","
-                    echo "  {"
-                    echo "    \"name\": \"${name} ${module}\","
-                    echo "    \"command\": \"./${test_file} ${module}\""
-                    echo "  }"
+                    cat <<END
+                        {
+                            "name": "install [normal] ${module} - ${os}",
+                            "command": "./${test_file} ${module}"
+                        }
+END
                 done
+            elif [[ "${name}" =~ ^install_dry_run_ ]]; then
+                local os="${name##install_dry_run_}"
+                os="$(pretty_os "${os}")"
+                cat <<END
+                    {
+                        "name": "install [dry-run] %full - ${os}",
+                        "command": "./${test_file} --profile full"
+                    }
+END
+            elif [[ "${name}" =~ ^bootstrap_ ]]; then
+                local os="${name##bootstrap_}"
+                os="$(pretty_os "${os}")"
+                cat <<END
+                    {
+                        "name": "bootstrap - ${os}",
+                        "command": "./${test_file}"
+                    }
+END
+            else
+                cat <<END
+                    {
+                        "name": "${name}",
+                        "command": "./${test_file}"
+                    }
+END
             fi
         done
         echo ']'
-    } | jq --compact-output
+    } | jq --compact-output 'sort_by(.name)'
 }
 
 main "$@"

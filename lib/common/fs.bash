@@ -1,5 +1,6 @@
-is_executed && return
-
+typeset -A _created_directories=(
+    ["/"]=1
+)
 ensure_directory_exists() {
     local dir="${1}"
 
@@ -8,8 +9,21 @@ ensure_directory_exists() {
         return
     fi
 
-    mkdir -p "${dir}" | sed 's/^/  /'
-    info "directory created: ${dir}"
+    if is_dry_run; then
+        # cache created directories to avoid outputting too many logs
+        if [[ -v '_created_directories["${dir}"]' ]]; then
+            trace "directory already created: ${dir}"
+            return
+        fi
+
+        local parent_dir="${dir}"
+        while ! [[ -v '_created_directories["${parent_dir}"]' ]]; do
+            _created_directories["${parent_dir}"]=1
+            parent_dir="$(dirname "${parent_dir}")"
+        done
+    fi
+
+    ACTION="creating directory: ${dir}" execute mkdir -p "${dir}"
 }
 
 ensure_file_exists() {
@@ -21,8 +35,7 @@ ensure_file_exists() {
     fi
 
     ensure_directory_exists "$(dirname "${file}")"
-    touch "${file}"
-    info "file created: ${file}"
+    ACTION="creating file: ${file}" execute touch "${file}"
 }
 
 ensure_symlink_exists() {
@@ -46,12 +59,12 @@ ensure_symlink_exists() {
     fi
 
     ensure_directory_exists "$(dirname "${source}")"
+    local action="creating symbolic link: ${source} -> ${target}"
     if [[ -v SUDO ]]; then
-        sudo ln -s "${target}" "${source}"
+        ACTION="${action}" execute sudo ln -s "${target}" "${source}"
     else
-        ln -s "${target}" "${source}"
+        ACTION="${action}" execute ln -s "${target}" "${source}"
     fi
-    info "symbolic link created: ${source} -> ${target}"
 }
 
 ensure_symlink_to_config_exists() {
@@ -78,8 +91,7 @@ ensure_symlink_to_config_exists() {
     fi
 
     ensure_directory_exists "$(dirname "${source}")"
-    ln -s "${target}" "${source}"
-    info "symbolic link created: ${source} -> ${target}"
+    ACTION="creating symbolic link: ${source} -> ${target}" execute ln -s "${target}" "${source}"
 }
 
 ensure_symlink_to_config_not_exists() {
@@ -96,8 +108,7 @@ ensure_symlink_to_config_not_exists() {
             warn "symbolic link already exists, which has different target: ${source} -> ${cur_target}"
             return "${WARN_EXIT_CODE}"
         fi
-        rm "${source}"
-        info "symbolic link removed: ${source} -> ${cur_target}"
+        ACTION="removing symbolic link: ${source} -> ${cur_target} " execute rm "${source}"
         return
     fi
 
@@ -119,6 +130,20 @@ ensure_line_in_file() {
     fi
 
     ensure_file_exists "${file}"
-    echo "${line}" >>"${file}"
-    info "line added: ${line} in ${file}"
+
+    ACTION="adding '${line}' to ${file}" execute bash -c "echo '${line}' >>'${file}'"
+}
+
+ensure_login_shell() {
+    local shell="${1}"
+    local user_name current_shell
+    user_name="$(id -un)"
+    current_shell="$(getent passwd "${user_name}" | cut -d: -f7)"
+
+    if [[ "${current_shell}" == "${shell}" ]]; then
+        trace "login shell is already ${shell}"
+        return
+    fi
+
+    ACTION="changing ${user_name}'s login shell: ${current_shell} -> ${shell}" execute sudo chsh -s "${shell}" "${user_name}"
 }

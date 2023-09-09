@@ -1,5 +1,3 @@
-is_executed && return
-
 is_supported_os() {
     local os_id="${1}"
     case "${os_id}" in

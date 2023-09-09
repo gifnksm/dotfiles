@@ -1,0 +1,10 @@
+%devcontainer
+cargo_binstall
+cargo_update
+devtools
+epel
+paru
+rustup
+souko
+tmux
+topgrade

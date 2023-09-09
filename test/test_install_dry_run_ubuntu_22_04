@@ -8,10 +8,5 @@ if [[ "$(pwd)" != "$(realpath "$(dirname "${BASH_SOURCE[0]}")/..")" ]]; then
     exec ./test/"$(basename "${BASH_SOURCE[0]}")" "$@" # to update BASH_SOURCE, etc.
 fi
 source test/lib/test_common.bash
-is_executed && return
 
-group_start_file
-{
-    test_install ubuntu_22_04 "$@"
-}
-group_end
+test_install_dry_run ubuntu_22_04 "$@"

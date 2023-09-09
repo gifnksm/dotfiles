@@ -1,5 +1,3 @@
-is_executed && return
-
 assert_eq() {
     local -r expected="${1}"
     local -r actual="${2}"
@@ -18,11 +16,19 @@ assert_command() {
     local -r command="${1}"
     local -r message="${2:-}"
 
-    if ! command -v "${command}" >/dev/null; then
-        if [[ -n "${message}" ]]; then
-            abort "assertion failure: ${message} (command not found: ${command})"
-        else
-            abort "assertion failure: command not found: ${command}"
-        fi
+    if command -v "${command}" >/dev/null; then
+        trace "command found: ${command}"
+        return 0
+    fi
+
+    if is_dry_run; then
+        debug "command not found, but ignore it for dry-run mode: ${command}"
+        return 0
+    fi
+
+    if [[ -n "${message}" ]]; then
+        abort "assertion failure: ${message} (command not found: ${command})"
+    else
+        abort "assertion failure: command not found: ${command}"
     fi
 }
