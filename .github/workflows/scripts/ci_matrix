@@ -8,14 +8,20 @@ main() {
     local -a test_files
     readarray -t test_files < <(find test -type f -executable | sort)
 
-    local -a profiles=(
-        "none"
-        "devcontainer"
-        "default"
-        "full"
-    )
+    local -a profiles=()
+    readarray -t profiles < <(./install --list-profiles)
     local -a modules=()
     readarray -t modules < <(./install --list-modules)
+
+    if [[ "${#profiles[@]}" -eq 0 ]]; then
+        echo "profiles not found" >&2
+        exit 1
+    fi
+
+    if [[ "${#modules[@]}" -eq 0 ]]; then
+        echo "modules not found" >&2
+        exit 1
+    fi
 
     {
         echo '['
