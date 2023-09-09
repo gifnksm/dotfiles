@@ -3,20 +3,19 @@
 FROM ubuntu:22.04
 
 ARG bootstrap=false
+ARG dry_run=false
+ARG user=jammy
+
+SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
 # hadolint ignore=DL3008
 RUN \
     --mount=type=cache,target=/var/lib/apt/lists/* \
     <<END
-    set -eux
-
-    # system update & install packages
+    # system update
     export DEBIAN_FRONTEND=noninteractive
     apt-get update
     apt-get upgrade -y
-    apt-get install -y --no-install-recommends \
-        sudo \
-        ;
 
     if [ "${bootstrap}" = "true" ]; then
         apt-get install -y --no-install-recommends \
@@ -27,8 +26,18 @@ RUN \
     fi
 
     # user configuration
-    useradd -m jammy
-    echo "jammy ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/jammy
+    useradd -m "${user}"
+    if [ "${dry_run}" = "true" ]; then
+        # remove write access to home directory
+        chmod -R a-w "$(getent passwd "${user}" | cut -d: -f6)"
+    else
+        # sudo configuration
+        apt-get install -y --no-install-recommends \
+            sudo \
+            ;
+        echo "${user} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/10-${user}
+    fi
 END
 
-USER jammy
+USER "${user}"
+SHELL ["/bin/bash", "-c"]

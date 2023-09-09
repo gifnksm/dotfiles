@@ -21,6 +21,7 @@ _build_image() {
     info "Building docker image ${image_name}"
     docker buildx build --pull --load \
         --build-arg bootstrap="${bootstrap}" \
+        --build-arg dry_run="${dry_run}" \
         -t "${image_name}" \
         -f "${dockerfile}" \
         .
@@ -63,7 +64,21 @@ _exec_in_container() {
         "$@"
 }
 
+_exec_in_container_root() {
+    local -r container_name="${1}"
+    shift
+
+    info "Executing \`$*\` in docker container ${container_name}"
+    docker exec \
+        --env GITHUB_ACTIONS \
+        --user root:root \
+        "${container_name}" \
+        "$@"
+}
+
 test_bootstrap() {
+    local -r bootstrap=true
+    local -r dry_run=false
     local -r test_os_name="${1}"
     shift
 
@@ -85,7 +100,7 @@ test_bootstrap() {
 
     group_start "Setup container"
     {
-        _build_image "${image_name}" "${dockerfile}" true
+        _build_image "${image_name}" "${dockerfile}" "${bootstrap}" "${dry_run}"
         _run_container "${image_name}" "${container_name}" "${archive_path}"
     }
     group_end
@@ -110,7 +125,10 @@ test_bootstrap() {
     info "Test for ${test_os_name} succeeded"
 }
 
-test_install() {
+_test_install_common() {
+    local -r bootstrap=false
+    local -r dry_run="${1}"
+    shift
     local -r test_os_name="${1}"
     shift
 
@@ -132,18 +150,18 @@ test_install() {
 
     group_start "Setup container"
     {
-        _build_image "${image_name}" "${dockerfile}"
+        _build_image "${image_name}" "${dockerfile}" "${bootstrap}" "${dry_run}"
         _run_container "${image_name}" "${container_name}" "${archive_path}"
     }
     group_end
 
     group_start "Extract archive"
     {
-        _exec_in_container "${container_name}" sudo mkdir -p /dotfiles
+        _exec_in_container_root "${container_name}" mkdir -p /dotfiles
         local uid gid
         uid="$(_exec_in_container "${container_name}" id -u)"
         gid="$(_exec_in_container "${container_name}" id -g)"
-        _exec_in_container "${container_name}" sudo chown -R "${uid}:${gid}" /dotfiles
+        _exec_in_container_root "${container_name}" chown -R "${uid}:${gid}" /dotfiles
         _exec_in_container "${container_name}" tar -xzf /archive.tar.gz -C /
     }
     group_end
@@ -172,4 +190,14 @@ test_install() {
     }
 
     info "Test for ${test_os_name} succeeded"
+}
+
+test_install_normal() {
+    local dry_run=false
+    _test_install_common "${dry_run}" "$@"
+}
+
+test_install_dry_run() {
+    local dry_run=true
+    _test_install_common "${dry_run}" "$@" --dry-run
 }

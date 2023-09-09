@@ -37,7 +37,7 @@ main() {
             echo "    \"name\": \"${name}\","
             echo "    \"command\": \"./${test_file}\""
             echo "  }"
-            if [[ "${name}" =~ ^install_ ]]; then
+            if [[ "${name}" =~ ^install_normal ]]; then
                 local profile
                 for profile in "${profiles[@]}"; do
                     echo ","
@@ -54,6 +54,12 @@ main() {
                     echo "    \"command\": \"./${test_file} ${module}\""
                     echo "  }"
                 done
+            elif [[ "${name}" =~ ^install_dry_run_ ]]; then
+                echo ","
+                echo "  {"
+                echo "    \"name\": \"${name}\","
+                echo "    \"command\": \"./${test_file} --profile full\""
+                echo "  }"
             fi
         done
         echo ']'

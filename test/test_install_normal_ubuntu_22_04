@@ -12,6 +12,6 @@ is_executed && return
 
 group_start_file
 {
-    test_install arch "$@"
+    test_install_normal ubuntu_22_04 "$@"
 }
 group_end

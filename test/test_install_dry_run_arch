@@ -12,6 +12,6 @@ is_executed && return
 
 group_start_file
 {
-    test_install ubuntu_22_04 "$@"
+    test_install_dry_run arch "$@"
 }
 group_end

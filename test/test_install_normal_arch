@@ -12,6 +12,6 @@ is_executed && return
 
 group_start_file
 {
-    test_install rocky_9 "$@"
+    test_install_normal arch "$@"
 }
 group_end
