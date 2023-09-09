@@ -104,6 +104,17 @@ group_end() {
     _groups=("${_groups[@]:0:${#_groups[@]}-1}")
 }
 
+debug_group_start() {
+    if is_gha_debug_mode; then
+        group_start "$@"
+    fi
+}
+debug_group_end() {
+    if is_gha_debug_mode; then
+        group_end
+    fi
+}
+
 print_backtrace() {
     local start="${1:-0}"
     local i="${start}" line file func

@@ -127,7 +127,7 @@ install_profile() {
             return 1
         fi
 
-        group_start "%${profile}(install)"
+        debug_group_start "%${profile}(install)"
         {
             if is_dry_run; then
                 debug "Would install profile: ${profile}"
@@ -144,7 +144,7 @@ install_profile() {
 
             _mark_as_installed "%${profile}"
         }
-        group_end
+        debug_group_end
     done
 }
 
@@ -165,7 +165,7 @@ update_profile() {
             continue
         fi
 
-        group_start "%${profile}(update)"
+        debug_group_start "%${profile}(update)"
         {
             if is_dry_run; then
                 debug "Would update profile: ${profile}"
@@ -182,7 +182,7 @@ update_profile() {
 
             _mark_as_installed "%${profile}"
         }
-        group_end
+        debug_group_end
     done
 }
 
@@ -202,7 +202,7 @@ install_module() {
             return 1
         fi
 
-        group_start "${module}(install)"
+        debug_group_start "${module}(install)"
         {
             if is_dry_run; then
                 debug "Would install module: ${module}"
@@ -214,7 +214,7 @@ install_module() {
             source "${module_file}"
             _mark_as_installed "${module}"
         }
-        group_end
+        debug_group_end
     done
 }
 
@@ -235,7 +235,7 @@ update_module() {
             continue
         fi
 
-        group_start "${module}(update)"
+        debug_group_start "${module}(update)"
         {
             if is_dry_run; then
                 debug "Would update module: ${module}"
@@ -247,7 +247,7 @@ update_module() {
             source "${module_file}"
             _mark_as_installed "${module}"
         }
-        group_end
+        debug_group_end
     done
 }
 

@@ -22,7 +22,7 @@ pacman_install() {
     local sync_opt
     sync_opt="$(_pacman_sync_opt)"
 
-    ACTION="pacman ${sync_opt} $*" execute sudo pacman "${sync_opt}" -q --needed --noconfirm --color always "$@"
+    ACTION="pacman ${sync_opt} $*" execute sudo pacman "${sync_opt}" -q --needed --noconfirm --color always "$@" >/dev/null
     _pacman_executed=true
 }
 
@@ -50,7 +50,7 @@ paru_install() {
     local sync_opt
     sync_opt="$(_paru_sync_opt)"
 
-    ACTION="paru ${sync_opt} $*" execute paru "${sync_opt}" -q --needed --noconfirm --color always "$@"
+    ACTION="paru ${sync_opt} $*" execute paru "${sync_opt}" -q --needed --noconfirm --color always "$@" >/dev/null
     _paru_executed=true
 }
 
@@ -73,7 +73,7 @@ cargo_install() {
         return
     fi
 
-    ACTION="cargo binstall $*" execute cargo binstall -y "$@"
+    ACTION="cargo binstall $*" execute cargo binstall -y --log-level warn "$@"
 }
 
 _apt_get_executed=false
@@ -86,11 +86,11 @@ apt_get_install() {
     fi
 
     if ! "${_apt_get_executed}"; then
-        ACTION="apt-get update" execute sudo DEBIAN_FRONTEND=noninteractive apt-get -qq update
+        ACTION="apt-get update" execute sudo DEBIAN_FRONTEND=noninteractive apt-get -qq update >/dev/null
         _apt_get_executed=true
     fi
 
-    ACTION="apt-get install $*" execute sudo DEBIAN_FRONTEND=noninteractive apt-get -qq install -y --no-install-recommends "$@"
+    ACTION="apt-get install $*" execute sudo DEBIAN_FRONTEND=noninteractive apt-get -qq install -y --no-install-recommends "$@" >/dev/null
 }
 
 dnf_install() {
@@ -109,7 +109,7 @@ dnf_install() {
         return
     fi
 
-    ACTION="dnf install $*" execute sudo dnf install -qy "$@"
+    ACTION="dnf install $*" execute sudo dnf install -qy "$@" >/dev/null
 }
 
 epel_install() {
@@ -130,7 +130,7 @@ epel_install() {
 
     install_module epel
 
-    ACTION="dnf install $*" execute sudo dnf install -qy "$@"
+    ACTION="dnf install $*" execute sudo dnf install -qy "$@" >/dev/null
 }
 
 # Encode package name containing special characters with url-encoding-like format

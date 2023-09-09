@@ -39,8 +39,8 @@ ensure_git_config_unset credential.helper "/mnt/c/Program\ Files/Git/mingw64/lib
 # initialize git repository if needed
 if ! [[ -d .git ]]; then
     info "initializing git repository"
-    ACTION="" execute git init
+    ACTION="" execute git init -q
     ACTION="" execute git remote add origin https://github.com/gifnksm/dotfiles.git
-    ACTION="" execute git fetch --depth 1 origin
-    ACTION="" execute git reset --mixed origin/master
+    ACTION="" execute git fetch -q --depth 1 origin
+    ACTION="" execute git reset -q --mixed origin/master
 fi
