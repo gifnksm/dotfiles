@@ -24,5 +24,5 @@ ensure_symlink_to_config_not_exists .zsh
 # zsh history
 ensure_directory_exists ~/.local/share/zsh
 if [[ -f .zsh/history ]]; then
-    mv .zsh/history ~/.local/share/zsh/history
+    execute mv .zsh/history ~/.local/share/zsh/history
 fi
