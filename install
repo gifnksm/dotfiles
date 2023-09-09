@@ -6,17 +6,24 @@ if [[ "$(pwd)" != "$(realpath "$(dirname "${BASH_SOURCE[0]}")")" ]]; then
     cd "$(dirname "${BASH_SOURCE[0]}")"
     exec ./"$(basename "${BASH_SOURCE[0]}")" "$@" # to update BASH_SOURCE, etc.
 fi
+
+source vendor/getoptions.sh
 source ./lib/common.bash
-is_executed && return
 
-parse_args "$@"
-eval "set -- ${REST_ARGS}"
+parser_definition() {
+    setup ARG_INSTALL_MODULES help:usage -- "Usage: $0 [options]... [modules]..."
+    msg -- "Options:"
 
-if [[ "${FLG_DRY_RUN}" -eq 1 ]]; then
-    set_dry_run true
-else
-    set_dry_run false
-fi
+    flag FLG_LIST_PROFILES --list-profiles -- "List available profiles"
+    flag FLG_LIST_MODULES --list-modules -- "List available modules"
+    flag FLG_LIST_INSTALLED --list-installed -- "list installed profiles or modules"
+    flag FLG_DRY_RUN -n --dry-run -- "Dry run"
+    param OPT_PROFILE -p --profile -- "Profile to install"
+    param OPT_LOG_LEVEL -l --log-level -- "Log level"
+    disp :usage -h --help
+}
+
+eval "$(getoptions parser_definition parse_args)"
 
 show_default_profile() {
     if [[ "${REMOTE_CONTAINERS:-}" == true ]]; then
@@ -27,6 +34,12 @@ show_default_profile() {
 }
 
 install_main() {
+    parse_args "$@"
+    eval "ARG_INSTALL_MODULES=(${ARG_INSTALL_MODULES})"
+
+    set_log_level "${OPT_LOG_LEVEL:-info}"
+    set_dry_run "${FLG_DRY_RUN:-0}"
+
     if [[ "${FLG_LIST_PROFILES}" -eq 1 ]]; then
         list_available_profiles
         return 0
@@ -43,7 +56,7 @@ install_main() {
     fi
 
     # install specifiled modules
-    local -a to_install=("$@")
+    local -a to_install+=("${ARG_INSTALL_MODULES[@]}")
     if [[ -n "${OPT_PROFILE}" ]]; then
         # if profile is specified, install modules specified by the profile
         to_install+=("%${OPT_PROFILE}")
