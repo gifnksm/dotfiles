@@ -11,7 +11,7 @@ END
 
     assert_command zsh
 
-    sudo chsh -s /bin/zsh "$(id -un)"
+    ensure_login_shell /bin/zsh
 
     # zshrc
     if [[ -L ~/.zshrc ]]; then

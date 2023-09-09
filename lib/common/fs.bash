@@ -122,3 +122,17 @@ ensure_line_in_file() {
     echo "${line}" >>"${file}"
     info "line added: ${line} in ${file}"
 }
+
+ensure_login_shell() {
+    local shell="${1}"
+    local user_name current_shell
+    user_name="$(id -un)"
+    current_shell="$(getent passwd "${user_name}" | cut -d: -f7)"
+
+    if [[ "${current_shell}" == "${shell}" ]]; then
+        trace "login shell is already ${shell}"
+        return
+    fi
+
+    sudo chsh -s "${shell}" "${user_name}"
+}
