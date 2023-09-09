@@ -18,6 +18,11 @@ _pacman_sync_opt() {
 pacman_install() {
     [[ "$#" -eq 0 ]] && return
 
+    if pacman -Q "$@" >/dev/null 2>&1; then
+        debug "pacman: $* (already installed)"
+        return
+    fi
+
     local sync_opt
     sync_opt="$(_pacman_sync_opt)"
 
@@ -26,17 +31,33 @@ pacman_install() {
     _pacman_executed=true
 }
 
+_paru_executed=false
+_paru_sync_opt() {
+    local sync_opt
+    if "${_paru_executed}"; then
+        sync_opt="-S"
+    else
+        sync_opt="-Syu"
+    fi
+    printf "%s" "${sync_opt}"
+}
+
 paru_install() {
     [[ "$#" -eq 0 ]] && return
 
     install_module paru
 
+    if paru -Q "$@" >/dev/null 2>&1; then
+        debug "paru: $* (already installed)"
+        return
+    fi
+
     local sync_opt
-    sync_opt="$(_pacman_sync_opt)"
+    sync_opt="$(_paru_sync_opt)"
 
     info "paru ${sync_opt} $*"
     paru "${sync_opt}" -q --needed --noconfirm --color always "$@"
-    _pacman_executed=true
+    _paru_executed=true
 }
 
 cargo_install() {
@@ -45,13 +66,31 @@ cargo_install() {
     install_module rustup
     install_module cargo_binstall
 
+    local package not_installed=()
+    for package in "$@"; do
+        if cargo install --list | grep -q "^${package} v.*\$"; then
+            debug "cargo binstall: ${package} (already installed)"
+        else
+            not_installed+=("${package}")
+        fi
+    done
+
+    if [[ "${#not_installed[@]}" -eq 0 ]]; then
+        return
+    fi
+
     info "cargo binstall $*"
-    cargo binstall -qy "$@"
+    cargo binstall -y "$@"
 }
 
 _apt_get_executed=false
 apt_get_install() {
     [[ "$#" -eq 0 ]] && return
+
+    if dpkg -s "$@" >/dev/null 2>&1; then
+        debug "apt-get: $* (already installed)"
+        return
+    fi
 
     if ! "${_apt_get_executed}"; then
         info "apt-get update"
@@ -66,12 +105,38 @@ apt_get_install() {
 dnf_install() {
     [[ "$#" -eq 0 ]] && return
 
+    local package not_installed=()
+    for package in "$@"; do
+        if dnf list --installed "${package}" >/dev/null 2>&1; then
+            debug "dnf: ${package} (already installed)"
+        else
+            not_installed+=("${package}")
+        fi
+    done
+
+    if [[ "${#not_installed[@]}" -eq 0 ]]; then
+        return
+    fi
+
     info "dnf install $*"
     sudo dnf install -qy "$@"
 }
 
 epel_install() {
     [[ "$#" -eq 0 ]] && return
+
+    local package not_installed=()
+    for package in "$@"; do
+        if dnf list --installed "${package}" >/dev/null 2>&1; then
+            debug "dnf: ${package} (already installed)"
+        else
+            not_installed+=("${package}")
+        fi
+    done
+
+    if [[ "${#not_installed[@]}" -eq 0 ]]; then
+        return
+    fi
 
     install_module epel
 
