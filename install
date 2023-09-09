@@ -55,20 +55,28 @@ install_main() {
         return 0
     fi
 
-    # install specifiled modules
-    local -a to_install+=("${ARG_INSTALL_MODULES[@]}")
+    # install specifiled profiles /  modules
+    local -a to_install+=()
     if [[ -n "${OPT_PROFILE}" ]]; then
         # if profile is specified, install modules specified by the profile
+        info "install modules in profile: ${OPT_PROFILE}"
         to_install+=("%${OPT_PROFILE}")
     fi
+    if [[ "${#ARG_INSTALL_MODULES[@]}" -gt 0 ]]; then
+        info "install modules: ${ARG_INSTALL_MODULES[*]}"
+        to_install+=("${ARG_INSTALL_MODULES[@]}")
+    fi
 
-    # update all installed modules / profiles
+    # update all installed profiles / modules
     local -a to_update
     readarray -t to_update < <(list_installed_profiles_or_modules)
 
     # if nothing to install / update, install default profile
     if [[ "${#to_install[@]}" -eq 0 && "${#to_update[@]}" -eq 0 ]]; then
-        to_install=("$(show_default_profile)")
+        local default_profile
+        default_profile="$(show_default_profile)"
+        info "install modules in profile: ${default_profile}"
+        to_install=("${default_profile}")
     fi
 
     # sort & remove duplicates
@@ -76,10 +84,13 @@ install_main() {
     readarray -t to_update < <(sort_uniq_args "${to_update[@]}")
 
     # install / update
+    info "installing ${#to_install[@]} profiles / modules..."
     install_profile_or_module "${to_install[@]}"
+
+    info "updating ${#to_update[@]} profiles / modules..."
     update_profile_or_module "${to_update[@]}"
 
-    info "Done"
+    info "done"
 }
 
 install_main "$@"
