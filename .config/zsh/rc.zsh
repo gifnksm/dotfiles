@@ -1,29 +1,43 @@
-mkdir -p ~/.local/share/zsh
+# Description: zsh configuration file
+
+## Load utility modules
+autoload colors && colors # for escape sequence shorthands (`${fg[yellow]}` etc.`)
 
 ## History
+mkdir -p ~/.local/share/zsh
+# See zshparam(1) for details
 HISTFILE=~/.local/share/zsh/history
 HISTSIZE=100000
 SAVEHIST=100000
 
-setopt extended_history
-setopt share_history
-setopt hist_ignore_all_dups
-setopt hist_ignore_space
-setopt hist_reduce_blanks
-setopt hist_no_store
-setopt hist_verify
+# See zshoptions(1) for details
+setopt EXTENDED_HISTORY
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_IGNORE_SPACE
+setopt HIST_NO_FUNCTIONS
+setopt HIST_NO_STORE
+setopt HIST_REDUCE_BLANKS
+setopt HIST_VERIFY
+setopt SHARE_HISTORY
+
+## Prompt
+# Use starship for prompt
+if command -v starship >/dev/null 2>&1; then
+    eval "$(starship init zsh)"
+    # startship sets PROMPT, RPROMPT, PROMPT2
+    # for details, see zshparam(1)
+fi
+SPROMPT="%{${fg[yellow]}%}correct: %R -> %r [nyae]? %{${reset_color}%}"
+
+## Key binding
+bindkey -e # Emacs keybinding
 
 ## Others
-bindkey -e
-
 autoload -Uz compinit
 compinit
 
 # autoload predict-on
 # predict-on
-
-autoload colors
-colors
 
 setopt auto_cd appendhistory extendedglob notify
 setopt prompt_subst
@@ -83,16 +97,11 @@ zstyle ':completion:*:options' desctiption 'yes'
 zstyle ':completion:*' keep-prefix
 zstyle ':completion:*' group-name ''
 
-if command -v starship >/dev/null 2>&1; then
-    eval $(starship init zsh)
-fi
-SPROMPT="%{${fg[yellow]}%}correct: %R -> %r [nyae]? %{${reset_color}%}"
-
 # コマンドラインスタックを表示させる
 show_buffer_stack() {
-  POSTDISPLAY="
+    POSTDISPLAY="
 stack: $LBUFFER"
-  zle push-line-or-edit
+    zle push-line-or-edit
 }
 zle -N show_buffer_stack
 bindkey "^q" show_buffer_stack
@@ -102,9 +111,8 @@ bindkey "^[Q" show_buffer_stack
 limit coredumpsize unlimited
 ulimit -c unlimited
 
-if [[ -f ~/.config/zsh/env.zsh   ]]; then source ~/.config/zsh/env.zsh; fi
-if [[ -f ~/.config/zsh/alias.zsh ]]; then source ~/.config/zsh/alias.zsh; fi
-if [[ -f ~/.config/zsh/ssh.zsh   ]]; then source ~/.config/zsh/ssh.zsh; fi
-if [[ -f ~/.config/zsh/tmux.zsh  ]]; then source ~/.config/zsh/tmux.zsh; fi
-if [[ -f ~/.config/zsh/fzf.zsh   ]]; then source ~/.config/zsh/fzf.zsh; fi
-if [[ -f ~/.config/zsh/local.zsh ]]; then source ~/.config/zsh/local.zsh; fi
+() {
+    for script in ~/.config/zsh/rc.d/*.zsh; do
+        source "${script}"
+    done
+}

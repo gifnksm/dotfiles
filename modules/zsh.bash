@@ -15,7 +15,8 @@ if [[ -L ~/.zshrc ]]; then
     # if ~/.zshrc is a symbolic link to dotfiles/.zshrc, remove it
     ensure_symlink_to_config_not_exists .zshrc # this line must be before the next line
 fi
-ensure_line_in_file "source ~/.config/zsh/zshrc" ~/.zshrc
+ensure_line_not_in_file "source ~/.config/zsh/zshrc" ~/.zshrc
+ensure_line_in_file "source ~/.config/zsh/rc.zsh " ~/.zshrc
 
 # zsh config files
 ensure_symlink_to_config_exists .config/zsh

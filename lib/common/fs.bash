@@ -134,6 +134,24 @@ ensure_line_in_file() {
     ACTION="adding '${line}' to ${file}" execute bash -c "echo '${line}' >>'${file}'"
 }
 
+ensure_line_not_in_file() {
+    local line="${1}"
+    local file="${2}"
+
+    if [[ -f "${file}" ]] && ! grep -qFx "${line}" "${file}"; then
+        trace "line already not exists: ${line} in ${file}"
+        return
+    fi
+
+    local lineno
+    while lineno="$(grep -nFx "${line}" "${file}" | cut -d: -f1)"; do
+        ACTION="removing '${line}' from ${file} at line ${lineno}" execute sed -i "${lineno}d" "${file}"
+        if is_dry_run; then
+            break
+        fi
+    done
+}
+
 ensure_login_shell() {
     local shell="${1}"
     local user_name current_shell
