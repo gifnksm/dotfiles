@@ -1,2 +1,4 @@
+"$schema" = 'https://starship.rs/config-schema.json'
+
 [hostname]
 ssh_only = false
