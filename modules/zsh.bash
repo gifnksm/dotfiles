@@ -28,8 +28,8 @@ if [[ -f .zsh/history ]]; then
     execute mv .zsh/history ~/.local/share/zsh/history
 fi
 if [[ -f .zsh/local.zsh ]]; then
-    execute mv .zsh/local.zsh .config/zsh/90-local.zsh
+    execute mv .zsh/local.zsh .config/zsh/rc.d/90-local.zsh
 fi
 if [[ -f .config/zsh/local.zsh ]]; then
-    execute mv .config/zsh/local.zsh .config/zsh/90-local.zsh
+    execute mv .config/zsh/local.zsh .config/zsh/rc.d/90-local.zsh
 fi
