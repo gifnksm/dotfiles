@@ -13,8 +13,9 @@ alias j=z
 
 alias history="history -E"
 
-rgdelta() {
-  rg --json -C2 "$@" | delta
+rg() {
+  command rg --json -C2 "$@" | delta
+  return "${PIPESTATUS[1]}"
 }
-alias rg=rgdelta
+
 alias ta="tmux new-session -A"
