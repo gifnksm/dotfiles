@@ -31,7 +31,7 @@ zstyle ':completion:*:options' desctiption 'yes'
 
 ## Prompt
 # Use starship for prompt
-if command -v starship >/dev/null 2>&1; then
+if command -v starship >/dev/null; then
     eval "$(starship init zsh)"
     # startship sets PROMPT, RPROMPT, PROMPT2
 fi

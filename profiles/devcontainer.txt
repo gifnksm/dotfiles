@@ -4,6 +4,7 @@ delta
 git
 ripgrep
 skim
+sheldon
 starship
 tig
 vim
