@@ -138,7 +138,7 @@ ensure_line_not_in_file() {
     local line="${1}"
     local file="${2}"
 
-    if [[ -f "${file}" ]] && ! grep -qFx "${line}" "${file}"; then
+    if ! [[ -f "${file}" ]] || ! grep -qFx "${line}" "${file}"; then
         trace "line already not exists: ${line} in ${file}"
         return
     fi
