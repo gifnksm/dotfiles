@@ -33,6 +33,16 @@ show_default_profile() {
     fi
 }
 
+contains_profile() {
+    local module
+    for module in "$@"; do
+        if [[ "${module}" =~ ^% ]]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
 install_main() {
     parse_args "$@"
     eval "ARG_INSTALL_MODULES=(${ARG_INSTALL_MODULES})"
@@ -71,8 +81,8 @@ install_main() {
     local -a to_update
     readarray -t to_update < <(list_installed_profiles_or_modules)
 
-    # if nothing to install / update, install default profile
-    if [[ "${#to_install[@]}" -eq 0 && "${#to_update[@]}" -eq 0 ]]; then
+    # if no profile to install / update, install default profile
+    if ! contains_profile "${to_install[@]}" "${to_update[@]}"; then
         local default_profile
         default_profile="$(show_default_profile)"
         info "install modules in profile: ${default_profile}"
