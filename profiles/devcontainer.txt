@@ -1,6 +1,7 @@
 bat
 curl
 delta
+eza
 git
 ripgrep
 skim
