@@ -18,6 +18,7 @@ parser_definition() {
     flag FLG_LIST_MODULES --list-modules -- "List available modules"
     flag FLG_LIST_INSTALLED --list-installed -- "list installed profiles or modules"
     flag FLG_DRY_RUN -n --dry-run -- "Dry run"
+    flag FLG_INSTALL_ONLY --install-only -- "Only install, do not update"
     param OPT_PROFILE -p --profile -- "Profile to install"
     param OPT_LOG_LEVEL -l --log-level -- "Log level"
     disp :usage -h --help
@@ -65,6 +66,11 @@ install_main() {
         return 0
     fi
 
+    local do_update=true
+    if [[ "${FLG_INSTALL_ONLY}" -eq 1 ]]; then
+        do_update=false
+    fi
+
     # install specifiled profiles /  modules
     local -a to_install+=()
     if [[ -n "${OPT_PROFILE}" ]]; then
@@ -97,8 +103,10 @@ install_main() {
     info "installing ${#to_install[@]} profiles / modules..."
     install_profile_or_module "${to_install[@]}"
 
-    info "updating ${#to_update[@]} profiles / modules..."
-    update_profile_or_module "${to_update[@]}"
+    if "${do_update}"; then
+        info "updating ${#to_update[@]} profiles / modules..."
+        update_profile_or_module "${to_update[@]}"
+    fi
 
     info "done"
 }
