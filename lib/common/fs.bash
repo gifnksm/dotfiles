@@ -49,6 +49,7 @@ ensure_symlink_exists() {
             warn "symbolic link already exists, which has different target: ${source} -> ${cur_target}"
             return "${WARN_EXIT_CODE}"
         fi
+
         trace "symbolic link already exists, skip: ${source} -> ${cur_target}"
         return
     fi
@@ -77,12 +78,21 @@ ensure_symlink_to_config_exists() {
     if [[ -L "${source}" ]]; then
         local cur_target
         cur_target="$(readlink "${source}")"
-        if [[ "${cur_target}" != "${target}" ]]; then
-            warn "symbolic link already exists, which has different target: ${source} -> ${cur_target}"
-            return "${WARN_EXIT_CODE}"
+        if [[ "${cur_target}" = "${target}" ]]; then
+            trace "symbolic link already exists, skip: ${source} -> ${cur_target}"
+            return
         fi
-        trace "symbolic link already exists, skip: ${source} -> ${cur_target}"
-        return
+
+        local canonical_cur_target
+        canonical_cur_target="$(readlink -e "${source}")"
+        if [[ "${canonical_cur_target}" = "${target}" ]]; then
+            ACTION="removing symbolic link: ${source} -> ${cur_target} " execute rm "${source}"
+            ACTION="update symbolic link: ${source} -> ${target}" execute ln -sf "${target}" "${source}"
+            return
+        fi
+
+        warn "symbolic link already exists, which has different target: ${source} -> ${cur_target}"
+        return "${WARN_EXIT_CODE}"
     fi
 
     if [[ -e "${source}" ]]; then

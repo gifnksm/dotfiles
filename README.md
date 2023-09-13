@@ -49,6 +49,16 @@ All available modules can be listed by running the `install --list-modules`.
 * Ubuntu 22.04 (Jammy Jellyfish)
 * Rocky Linux 9
 
+## Move dotfiles to another directory
+
+```console
+mv ${src_path} ${dst_path}
+ln -s ${src_path} ${dst_path}
+${dst_path}/install
+```
+
+After running the above commands, you can remove the `${src_path}` safely.
+
 ## Running tests
 
 Docker is required to run tests.
