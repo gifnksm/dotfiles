@@ -1,6 +1,6 @@
 if [[ -n "${TMUX}" ]]; then
     function _update_tmux_env() {
-        local -a lines=("${(f)$(tmux show-env)}")
+        local -a lines=("${(@f)$(tmux show-env)}")
         local line
         for line in "${lines[@]}"; do
             if [[ "${line}" =~ ^- ]]; then
