@@ -6,8 +6,6 @@ SAVEHIST=100000
 
 
 ## Completion
-autoload -Uz compinit && compinit
-
 # see zshcompsys(1) for details
 if [[ -n "${LS_COLORS:-}" ]]; then
     zstyle ':completion:*:default' list-colors "${(s.:.)LS_COLORS}"
@@ -27,6 +25,8 @@ zstyle ':completion:*:messages' format \
 zstyle ':completion:*:warnings' format \
     "%F{red}No matches for: %F{yellow}%d%f"
 zstyle ':completion:*:options' desctiption 'yes'
+
+autoload -Uz compinit && compinit
 
 
 ## Prompt
