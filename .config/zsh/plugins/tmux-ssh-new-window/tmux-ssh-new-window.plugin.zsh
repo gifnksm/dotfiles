@@ -21,7 +21,7 @@
                 # the flag has an argument
                 arg="${match[1]}"
                 if [[ -z "${match[2]}" ]]; then
-                    # next arg is the argument to this option, so skip it
+                    # next arg is the argument to the flag, so skip it
                     ((i += 1))
                 fi
             fi
