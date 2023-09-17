@@ -12,6 +12,12 @@
 
 [plugins]
 
+[plugins.tmux-env-autoupdate]
+local = '~/.config/zsh/plugins/tmux-env-autoupdate'
+
+[plugins.tmux-ssh-new-window]
+local = '~/.config/zsh/plugins/tmux-ssh-new-window'
+
 [plugins.fast-syntax-highlighting]
 github = 'zdharma/fast-syntax-highlighting'
 
@@ -19,8 +25,3 @@ github = 'zdharma/fast-syntax-highlighting'
 github = 'marlonrichert/zsh-autocomplete'
 [plugins.zsh-autocomplete.hooks]
 post = "source ~/.config/sheldon/hooks/zsh-autocomplete-post.zsh"
-
-# For example:
-#
-# [plugins.base16]
-# github = "chriskempson/base16-shell"
