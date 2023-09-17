@@ -17,6 +17,8 @@ github = 'zdharma/fast-syntax-highlighting'
 
 [plugins.zsh-autocomplete]
 github = 'marlonrichert/zsh-autocomplete'
+[plugins.zsh-autocomplete.hooks]
+post = "source ~/.config/sheldon/hooks/zsh-autocomplete-post.zsh"
 
 # For example:
 #
