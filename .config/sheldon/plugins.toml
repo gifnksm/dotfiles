@@ -21,6 +21,9 @@ local = '~/.config/zsh/plugins/tmux-ssh-new-window'
 [plugins.fast-syntax-highlighting]
 github = 'zdharma/fast-syntax-highlighting'
 
+[plugins.zoxide]
+github = 'ajeetdsouza/zoxide'
+
 [plugins.zsh-autocomplete]
 github = 'marlonrichert/zsh-autocomplete'
 [plugins.zsh-autocomplete.hooks]

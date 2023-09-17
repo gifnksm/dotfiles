@@ -9,4 +9,5 @@ sheldon
 starship
 tig
 vim
+zoxide
 zsh
