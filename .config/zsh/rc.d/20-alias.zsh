@@ -20,4 +20,4 @@ rg() {
   return "${PIPESTATUS[1]}"
 }
 
-alias ta="tmux new-session -A"
+alias ta="tmux new-session -A -s default"
