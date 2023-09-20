@@ -18,6 +18,9 @@ fi
 ensure_line_not_in_file "source ~/.config/zsh/zshrc" ~/.zshrc
 ensure_line_in_file "source ~/.config/zsh/rc.zsh " ~/.zshrc
 
+# zshenv
+ensure_line_in_file "path+=(~/.local/bin)" ~/.zshenv
+
 # zsh config files
 ensure_symlink_to_config_exists .config/zsh
 ensure_symlink_to_config_not_exists .zsh

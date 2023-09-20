@@ -2,6 +2,7 @@ bat
 curl
 delta
 eza
+fzf
 git
 ripgrep
 skim
