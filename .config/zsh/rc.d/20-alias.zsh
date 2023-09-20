@@ -12,7 +12,7 @@ alias mv="mv -i"
 alias du="du -h"
 alias df="df -h"
 
-alias history="history -E"
+alias history="history -i"
 
 alias grep='grep --color=auto'
 rg() {
