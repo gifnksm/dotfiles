@@ -1,5 +1,5 @@
 if command -v eza >/dev/null; then
-  alias ls='eza --icons --group --git --sort Name'
+  alias ls='eza --icons --group --git --sort Name --time-style=iso'
 else
   alias ls='ls -h --color=auto'
 fi
