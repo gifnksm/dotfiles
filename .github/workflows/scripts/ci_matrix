@@ -63,7 +63,7 @@ END
                     cat <<END
                         {
                             "name": "install [normal] ${module} - ${os}",
-                            "command": "./${test_file} ${module}"
+                            "command": "./${test_file} ${module} --profile none"
                         }
 END
                 done
