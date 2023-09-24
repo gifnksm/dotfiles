@@ -20,7 +20,7 @@ My dotfiles.
 ## Installation
 
 ```console
-curl -L --proto "=https" --tlsv1.2 -sSf https://raw.githubusercontent.com/gifnksm/dotfiles/master/bootstrap.bash | bash
+curl -L --proto "=https" --tlsv1.2 -sSf https://raw.githubusercontent.com/gifnksm/dotfiles/main/bootstrap.bash | bash
 ```
 
 By default, the bootstrap script downloads the latest version of the repository on `~/.local/share/dotfiles` and installs all packages.

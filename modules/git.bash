@@ -42,5 +42,5 @@ if ! [[ -d .git ]]; then
     ACTION="" execute git init -q
     ACTION="" execute git remote add origin https://github.com/gifnksm/dotfiles.git
     ACTION="" execute git fetch -q --depth 1 origin
-    ACTION="" execute git reset -q --mixed origin/master
+    ACTION="" execute git reset -q --mixed origin/main
 fi

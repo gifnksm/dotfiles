@@ -1,6 +1,6 @@
 set -eu -o pipefail
 
-ARCHIVE_URL="${ARCHIVE_URL:-https://github.com/gifnksm/dotfiles/archive/refs/heads/master.tar.gz}"
+ARCHIVE_URL="${ARCHIVE_URL:-https://github.com/gifnksm/dotfiles/archive/refs/heads/main.tar.gz}"
 REPOSITORY_URL=https://github.com/gifnksm/dotfiles.git
 DOTFILES_PATH="${DOTFILES_PATH:-${HOME}/.local/share/dotfiles}"
 
