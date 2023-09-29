@@ -14,4 +14,5 @@ fi
 assert_command rustup
 assert_command cargo
 
-ensure_line_in_file  '. "$HOME/.cargo/env"' ~/.zshenv
+# shellcheck disable=SC2016
+ensure_line_in_file '. "$HOME/.cargo/env"' ~/.zshenv
