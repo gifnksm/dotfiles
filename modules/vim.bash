@@ -3,6 +3,7 @@
 install_package_by_spec <<END
     arch: vim
     ubuntu-22.04: vim
+    debian-11: vim
     rocky-9: vim
 END
 

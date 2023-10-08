@@ -1,0 +1,43 @@
+# syntax=docker/dockerfile:1
+
+FROM debian:11
+
+ARG bootstrap=false
+ARG dry_run=false
+ARG user=bullseye
+
+SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
+
+# hadolint ignore=DL3008
+RUN \
+    --mount=type=cache,target=/var/lib/apt/lists/* \
+    <<END
+    # system update
+    export DEBIAN_FRONTEND=noninteractive
+    apt-get update
+    apt-get upgrade -y
+
+    if [ "${bootstrap}" = "true" ]; then
+        apt-get install -y --no-install-recommends \
+            ca-certificates \
+            curl \
+            tar \
+            ;
+    fi
+
+    # user configuration
+    useradd -m "${user}"
+    if [ "${dry_run}" = "true" ]; then
+        # remove write access to home directory
+        chmod -R a-w "$(getent passwd "${user}" | cut -d: -f6)"
+    else
+        # sudo configuration
+        apt-get install -y --no-install-recommends \
+            sudo \
+            ;
+        echo "${user} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/10-${user}
+    fi
+END
+
+USER "${user}"
+SHELL ["/bin/bash", "-c"]

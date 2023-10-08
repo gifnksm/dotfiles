@@ -1,0 +1,12 @@
+#!/bin/bash
+# shellcheck source-path=SCRIPTDIR/..
+
+set -eu -o pipefail
+
+if [[ "$(pwd)" != "$(realpath "$(dirname "${BASH_SOURCE[0]}")/..")" ]]; then
+    cd "$(dirname "${BASH_SOURCE[0]}")/.."
+    exec ./test/"$(basename "${BASH_SOURCE[0]}")" "$@" # to update BASH_SOURCE, etc.
+fi
+source test/lib/test_common.bash
+
+test_install_normal debian_11 "$@"

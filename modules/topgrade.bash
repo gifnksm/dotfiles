@@ -3,6 +3,7 @@
 install_package_by_spec <<END
     arch: topgrade-bin@aur
     ubuntu-22.04: topgrade@cargo
+    debian-11: topgrade@cargo
     rocky-9: topgrade@cargo
 END
 

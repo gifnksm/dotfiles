@@ -3,6 +3,7 @@
 install_package_by_spec <<END
     arch: zsh
     ubuntu-22.04: zsh
+    debian-11: zsh
     rocky-9: zsh util-linux-user
 END
 
