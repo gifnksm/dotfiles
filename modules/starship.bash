@@ -3,6 +3,7 @@
 install_package_by_spec <<END
     arch: starship
     ubuntu-22.04: starship@cargo
+    debian-11: starship@cargo
     rocky-9: starship@cargo
 END
 

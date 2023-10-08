@@ -13,6 +13,7 @@ else
     install_package_by_spec <<END
         arch: fzf
         ubuntu-22.04: fzf
+        debian-11: fzf
 END
     assert_command fzf
 fi

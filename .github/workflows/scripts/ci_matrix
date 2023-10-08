@@ -7,8 +7,9 @@ cd "$(dirname "${BASH_SOURCE[0]}")/../../.."
 pretty_os() {
     case "${1}" in
     arch) echo "arch" ;;
-    rocky_9) echo "rocky-9" ;;
     ubuntu_22_04) echo "ubuntu-22.04" ;;
+    debian_11) echo "debian-11" ;;
+    rocky_9) echo "rocky-9" ;;
     *) echo "${1}" ;;
     esac
 }
