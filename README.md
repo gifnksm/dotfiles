@@ -14,7 +14,7 @@ My dotfiles.
   * a user account with sudo privilege
   * distribution-specific package manager command
     * Arch Linux: `pacman`
-    * Ubuntu: `apt`
+    * Ubuntu, Debian: `apt`
     * Rocky Linux: `dnf`
 
 ## Installation
@@ -47,6 +47,7 @@ All available modules can be listed by running the `install --list-modules`.
 
 * Arch Linux
 * Ubuntu 22.04 (Jammy Jellyfish)
+* Debian 12 (Bookworm)
 * Rocky Linux 9
 
 ## Move dotfiles to another directory
