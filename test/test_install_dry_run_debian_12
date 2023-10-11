@@ -9,4 +9,4 @@ if [[ "$(pwd)" != "$(realpath "$(dirname "${BASH_SOURCE[0]}")/..")" ]]; then
 fi
 source test/lib/test_common.bash
 
-test_bootstrap debian_11 "$@"
+test_install_dry_run debian_12 "$@"
