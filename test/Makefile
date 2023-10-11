@@ -11,6 +11,7 @@ SHELL := bash
 .PHONY: default
 default: help
 
+REPO_DIR = $(shell git rev-parse --show-toplevel)
 WORK_DIR = target
 ARCHIVE = $(WORK_DIR)/archive.tar.gz
 TREE_STAMP = $(WORK_DIR)/tree.txt
@@ -53,3 +54,37 @@ $(ARCHIVE): FORCE | $(WORK_DIR)/
 
 %/:
 	mkdir -p $@
+
+define docker_build
+	docker buildx build --pull --load \
+		-t dotfiles-test-$1 \
+		-f $2 \
+		--build-arg bootstrap=$3 \
+		--build-arg dry_run=$4 \
+		.
+endef
+
+$(WORK_DIR)/build-image-%-bootstrap.stamp: docker/Dockerfile.% | $(WORK_DIR)/
+	$(call docker_build,$(patsubst $(WORK_DIR)/build-image-%.stamp,%,$@),$<,true,false)
+	touch $@
+$(WORK_DIR)/build-image-%-install-normal.stamp: docker/Dockerfile.% | $(WORK_DIR)/
+	$(call docker_build,$(patsubst $(WORK_DIR)/build-image-%.stamp,%,$@),$<,false,false)
+	touch $@
+$(WORK_DIR)/build-image-%-install-dry_run.stamp: docker/Dockerfile.% | $(WORK_DIR)/
+	$(call docker_build,$(patsubst $(WORK_DIR)/build-image-%.stamp,%,$@),$<,false,true)
+	touch $@
+
+build-image-arch-bootstrap: $(WORK_DIR)/$$@.stamp
+build-image-debian_12-bootstrap: $(WORK_DIR)/$$@.stamp
+build-image-ubuntu_22_04-bootstrap: $(WORK_DIR)/$$@.stamp
+build-image-rocky_9-bootstrap: $(WORK_DIR)/$$@.stamp
+
+build-image-arch-install-normal: $(WORK_DIR)/$$@.stamp
+build-image-debian_12-install-normal: $(WORK_DIR)/$$@.stamp
+build-image-ubuntu_22_04-install-normal: $(WORK_DIR)/$$@.stamp
+build-image-rocky_9-install-normal: $(WORK_DIR)/$$@.stamp
+
+build-image-arch-install-dry_run: $(WORK_DIR)/$$@.stamp
+build-image-debian_12-install-dry_run: $(WORK_DIR)/$$@.stamp
+build-image-ubuntu_22_04-install-dry_run: $(WORK_DIR)/$$@.stamp
+build-image-rocky_9-install-dry_run: $(WORK_DIR)/$$@.stamp

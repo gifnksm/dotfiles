@@ -12,17 +12,11 @@ _archive_repo() {
 }
 
 _build_image() {
-    local -r image_name="${1}"
-    local -r dockerfile="${2}"
-    local -r bootstrap="${3:-false}"
+    local -r os_name="${1}"
+    local -r image_type="${2}"
 
-    info "Building docker image ${image_name}"
-    docker buildx build --pull --load \
-        --build-arg bootstrap="${bootstrap}" \
-        --build-arg dry_run="${dry_run}" \
-        -t "${image_name}" \
-        -f "${dockerfile}" \
-        .
+    info "Building docker image dotfiles-test-${os_name}-${image_type}"
+    make -C "${TEST_DIR}" "build-image-${os_name}-${image_type}"
 }
 
 _run_container() {
@@ -77,16 +71,14 @@ _exec_in_container_root() {
 }
 
 test_bootstrap() {
-    local -r bootstrap=true
-    local -r dry_run=false
-    local -r test_os_name="${1}"
+    local -r os_name="${1}"
     shift
 
-    local -r image_name="dotfiles-test-${test_os_name}-bootstrap"
-    local -r dockerfile="${TEST_DIR}/docker/Dockerfile.${test_os_name}"
+    local -r image_type=bootstrap
+    local -r image_name="dotfiles-test-${os_name}-${image_type}"
     local -r container_name="${image_name}-$$"
 
-    info "Running test for ${test_os_name}"
+    info "Running test for ${os_name}"
 
     group_start "Create source archive"
     {
@@ -96,7 +88,7 @@ test_bootstrap() {
 
     group_start "Setup container"
     {
-        _build_image "${image_name}" "${dockerfile}" "${bootstrap}" "${dry_run}"
+        _build_image "${os_name}" "${image_type}"
         _run_container "${image_name}" "${container_name}"
     }
     group_end
@@ -115,21 +107,25 @@ test_bootstrap() {
     }
     group_end
 
-    info "Test for ${test_os_name} succeeded"
+    info "Test for ${os_name} succeeded"
 }
 
 _test_install_common() {
-    local -r bootstrap=false
     local -r dry_run="${1}"
     shift
-    local -r test_os_name="${1}"
+    local -r os_name="${1}"
     shift
 
-    local -r image_name="dotfiles-test-${test_os_name}-install"
-    local -r dockerfile="${TEST_DIR}/docker/Dockerfile.${test_os_name}"
+    local image_type
+    if [[ "${dry_run}" = true ]]; then
+        image_type=install-dry_run
+    else
+        image_type=install-normal
+    fi
+    local -r image_name="dotfiles-test-${os_name}-${image_type}"
     local -r container_name="${image_name}-$$"
 
-    info "Running test for ${test_os_name}"
+    info "Running test for ${os_name}"
 
     group_start "Create source archive"
     {
@@ -139,7 +135,7 @@ _test_install_common() {
 
     group_start "Setup container"
     {
-        _build_image "${image_name}" "${dockerfile}" "${bootstrap}" "${dry_run}"
+        _build_image "${os_name}" "${image_type}"
         _run_container "${image_name}" "${container_name}"
     }
     group_end
@@ -180,7 +176,7 @@ _test_install_common() {
     }
     group_end
 
-    info "Test for ${test_os_name} succeeded"
+    info "Test for ${os_name} succeeded"
 }
 
 test_install_normal() {
