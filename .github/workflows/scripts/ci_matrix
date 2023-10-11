@@ -14,6 +14,36 @@ pretty_os() {
     esac
 }
 
+declare -a os_list=(arch ubuntu_22_04 debian_12 rocky_9)
+
+declare first_entry=true
+dump_entry() {
+    local -r name="$1"
+    local -r command="$2"
+    if [[ "${first_entry}" = true ]]; then
+        first_entry=false
+    else
+        echo ","
+    fi
+    jq --null-input --arg name "${name}" --arg command "${command}" '{ name: $name, command: $command }'
+}
+
+dump_os_entries() {
+    local -r base_name="${1}"
+    local -r test_file="${2}"
+    local -r rest_args="${3:-}"
+
+    local name command
+    for os in "${os_list[@]}"; do
+        command=("./${test_file}" "${os}")
+        if [[ -n "${rest_args}" ]]; then
+            command+=("${rest_args}")
+        fi
+
+        dump_entry "${base_name} - $(pretty_os "${os}")" "${command[*]}"
+    done
+}
+
 main() {
     local -a test_files
     readarray -t test_files < <(find test -type f -executable | sort)
@@ -37,63 +67,31 @@ main() {
         echo '['
         local test_file
         for test_file in "${test_files[@]}"; do
-            if [[ "${test_file}" != "${test_files[0]}" ]]; then
-                echo ","
-            fi
             local name
             name="$(basename "${test_file}")"
             name="${name##test_}"
-            if [[ "${name}" =~ ^install_normal ]]; then
-                local os="${name##install_normal_}"
-                os="$(pretty_os "${os}")"
+
+            case "${name}" in
+            install_normal)
                 local profile
                 for profile in "${profiles[@]}"; do
-                    if [[ "${profile}" != "${profiles[0]}" ]]; then
-                        echo ","
-                    fi
-                    cat <<END
-                        {
-                            "name": "install [normal] %${profile} - ${os}",
-                            "command": "./${test_file} --profile ${profile}"
-                        }
-END
+                    dump_os_entries "install [normal] %${profile}" "${test_file}" "--profile ${profile}"
                 done
                 local module
                 for module in "${modules[@]}"; do
-                    echo ","
-                    cat <<END
-                        {
-                            "name": "install [normal] ${module} - ${os}",
-                            "command": "./${test_file} ${module} --profile none"
-                        }
-END
+                    dump_os_entries "install [normal] ${module}" "${test_file}" "${module} --profile none"
                 done
-            elif [[ "${name}" =~ ^install_dry_run_ ]]; then
-                local os="${name##install_dry_run_}"
-                os="$(pretty_os "${os}")"
-                cat <<END
-                    {
-                        "name": "install [dry-run] %full - ${os}",
-                        "command": "./${test_file} --profile full"
-                    }
-END
-            elif [[ "${name}" =~ ^bootstrap_ ]]; then
-                local os="${name##bootstrap_}"
-                os="$(pretty_os "${os}")"
-                cat <<END
-                    {
-                        "name": "bootstrap - ${os}",
-                        "command": "./${test_file}"
-                    }
-END
-            else
-                cat <<END
-                    {
-                        "name": "${name}",
-                        "command": "./${test_file}"
-                    }
-END
-            fi
+                ;;
+            install_dry_run)
+                dump_os_entries "install [dry-run] %full" "${test_file}" "--profile full"
+                ;;
+            bootstrap)
+                dump_os_entries "bootstrap" "${test_file}"
+                ;;
+            *)
+                dump_entry "${name}" "./${test_file}"
+                ;;
+            esac
         done
         echo ']'
     } | jq --compact-output 'sort_by(.name)'
