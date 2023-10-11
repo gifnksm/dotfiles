@@ -3,7 +3,7 @@
 install_package_by_spec <<END
     arch: tmux
     ubuntu-22.04: tmux
-    debian-11: tmux
+    debian-12: tmux
     rocky-9: tmux
 END
 

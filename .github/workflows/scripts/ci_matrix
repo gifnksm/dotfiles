@@ -8,7 +8,7 @@ pretty_os() {
     case "${1}" in
     arch) echo "arch" ;;
     ubuntu_22_04) echo "ubuntu-22.04" ;;
-    debian_11) echo "debian-11" ;;
+    debian_12) echo "debian-12" ;;
     rocky_9) echo "rocky-9" ;;
     *) echo "${1}" ;;
     esac
