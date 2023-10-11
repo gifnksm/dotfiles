@@ -88,3 +88,60 @@ build-image-arch-install-dry_run: $(WORK_DIR)/$$@.stamp
 build-image-debian_12-install-dry_run: $(WORK_DIR)/$$@.stamp
 build-image-ubuntu_22_04-install-dry_run: $(WORK_DIR)/$$@.stamp
 build-image-rocky_9-install-dry_run: $(WORK_DIR)/$$@.stamp
+
+run-%-bootstrap: CONTAINER_NAME ?= dotfiles-test-$(patsubst run-%,%,$@)
+run-%-bootstrap: build-image-%-bootstrap $(ARCHIVE) FORCE
+	docker run \
+		-d --rm --init \
+		-v "$(REPO_DIR)/bootstrap.bash:/bootstrap.bash:ro" \
+		-v "$(CURDIR)/$(ARCHIVE):/archive.tar.gz:ro" \
+		--env ARCHIVE_URL=file:///archive.tar.gz \
+		--env NO_PROTO_CHECK=true \
+		--env NO_GIT_CLONE=true \
+		--env GITHUB_ACTIONS \
+		--env GROUP_PREFIX \
+		--name $(CONTAINER_NAME) \
+		$(patsubst run-%,dotfiles-test-%,$@) \
+		sleep infinity
+
+run-%-install-normal: CONTAINER_NAME ?= dotfiles-test-$(patsubst run-%,%,$@)
+run-%-install-normal: build-image-%-install-normal $(ARCHIVE) FORCE
+	docker run \
+		-d --rm --init \
+		-v "$(CURDIR)/$(ARCHIVE):/archive.tar.gz:ro" \
+		--env ARCHIVE_URL=file:///archive.tar.gz \
+		--env GITHUB_ACTIONS \
+		--env GROUP_PREFIX \
+		--name $(CONTAINER_NAME) \
+		$(patsubst run-%,dotfiles-test-%,$@) \
+		sleep infinity
+	docker exec --user root:root $(CONTAINER_NAME) mkdir /dotfiles
+	uid="$$(docker exec $(CONTAINER_NAME) id -u)"; \
+	gid="$$(docker exec $(CONTAINER_NAME) id -g)"; \
+	docker exec --user root:root $(CONTAINER_NAME) chown -R "$${uid}:$${gid}" /dotfiles
+	docker exec $(CONTAINER_NAME) tar -xzf /archive.tar.gz -C /
+
+run-%-install-dry_run: build-image-%-install-dry_run $(ARCHIVE) FORCE
+	docker run \
+		-d --rm --init \
+		-v $(REPO_DIR):/dotfiles:ro \
+		--env GITHUB_ACTIONS \
+		--env GROUP_PREFIX \
+		--name $(CONTAINER_NAME) \
+		$(patsubst run-%,dotfiles-test-%,$@) \
+		sleep infinity
+
+run-arch-bootstrap:
+run-debian_12-bootstrap:
+run-ubuntu_22_04-bootstrap:
+run-rocky_9-bootstrap:
+
+run-arch-install-normal:
+run-debian_12-install-normal:
+run-ubuntu_22_04-install-normal:
+run-rocky_9-install-normal:
+
+run-arch-install-dry_run:
+run-debian_12-install-dry_run:
+run-ubuntu_22_04-install-dry_run:
+run-rocky_9-install-dry_run:
