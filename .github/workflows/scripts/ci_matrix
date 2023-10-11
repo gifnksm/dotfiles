@@ -46,7 +46,7 @@ dump_os_entries() {
 
 main() {
     local -a test_files
-    readarray -t test_files < <(find test -type f -executable | sort)
+    readarray -t test_files < <(find test -type f -executable -name 'test_*' | sort)
 
     local -a profiles=()
     readarray -t profiles < <(./install --list-profiles)

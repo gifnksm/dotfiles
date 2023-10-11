@@ -3,12 +3,12 @@
 source lib/common.bash
 
 TEST_DIR="${REPO_DIR}/test"
+WORK_DIR="${TEST_DIR}/target"
+ARCHIVE_PATH="${WORK_DIR}/archive.tar.gz"
 
 _archive_repo() {
-    local archive_path="${1}"
-    local commit_hash
-    commit_hash="$(git stash create)"
-    git archive --prefix=dotfiles/ "${commit_hash:-HEAD}" -o "${archive_path}"
+    info "Creating source archive"
+    make -C "${TEST_DIR}" archive
 }
 
 _build_image() {
@@ -28,13 +28,12 @@ _build_image() {
 _run_container() {
     local -r image_name="${1}"
     local -r container_name="${2}"
-    local -r archive_path="${3}"
 
     info "Running docker container ${container_name}"
     docker run \
         -d --rm --init \
         -v "${REPO_DIR}/bootstrap.bash:/bootstrap.bash:ro" \
-        -v "${archive_path}:/archive.tar.gz:ro" \
+        -v "${ARCHIVE_PATH}:/archive.tar.gz:ro" \
         --env GITHUB_ACTIONS \
         --env ARCHIVE_URL="file:///archive.tar.gz" \
         --env NO_PROTO_CHECK=true \
@@ -89,20 +88,16 @@ test_bootstrap() {
 
     info "Running test for ${test_os_name}"
 
-    local work_dir archive_path
-    work_dir="$(mktemp -d)"
-    archive_path="${work_dir}/archive.tar.gz"
-
     group_start "Create source archive"
     {
-        _archive_repo "${archive_path}"
+        _archive_repo
     }
     group_end
 
     group_start "Setup container"
     {
         _build_image "${image_name}" "${dockerfile}" "${bootstrap}" "${dry_run}"
-        _run_container "${image_name}" "${container_name}" "${archive_path}"
+        _run_container "${image_name}" "${container_name}"
     }
     group_end
 
@@ -117,12 +112,6 @@ test_bootstrap() {
     group_start "Cleanup container"
     {
         _stop_container "${container_name}"
-    }
-    group_end
-
-    group_start "Cleanup working directory"
-    {
-        rm -rf "${work_dir}"
     }
     group_end
 
@@ -142,20 +131,16 @@ _test_install_common() {
 
     info "Running test for ${test_os_name}"
 
-    local work_dir archive_path
-    work_dir="$(mktemp -d)"
-    archive_path="${work_dir}/archive.tar.gz"
-
     group_start "Create source archive"
     {
-        _archive_repo "${archive_path}"
+        _archive_repo
     }
     group_end
 
     group_start "Setup container"
     {
         _build_image "${image_name}" "${dockerfile}" "${bootstrap}" "${dry_run}"
-        _run_container "${image_name}" "${container_name}" "${archive_path}"
+        _run_container "${image_name}" "${container_name}"
     }
     group_end
 
@@ -192,12 +177,6 @@ _test_install_common() {
     group_start "Cleanup container"
     {
         _stop_container "${container_name}"
-    }
-    group_end
-
-    group_start "Cleanup working directory"
-    {
-        rm -rf "${work_dir}"
     }
     group_end
 
