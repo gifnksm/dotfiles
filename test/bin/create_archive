@@ -1,0 +1,35 @@
+#!/bin/bash
+
+set -eu -o pipefail
+
+if [[ $# -ne 2 ]]; then
+    echo "Usage: $0 <archive_file> <tree_file>"
+    exit 1
+fi
+
+archive_file="${1}"
+tree_file="${2}"
+
+toplevel="$(git rev-parse --show-toplevel)"
+num_untracked="$(git ls-files --others --exclude-standard "${toplevel}" | wc -l)"
+
+if [ "${num_untracked}" -gt 0 ]; then
+    echo "Untracked files present, aborting" >&2
+    git ls-files --others --exclude-standard "${toplevel}" | sed 's/^/  /' >&2
+    exit 1
+fi
+
+stash_commit="$(git stash create)"
+commit="${stash_commit:-HEAD}"
+tree="$(git rev-parse --verify "${commit}^{tree}")"
+
+if [[ -e "${archive_file}" ]] && [[ -e "${tree_file}" ]]; then
+    if cmp -s "${tree_file}" <(echo "${tree}"); then
+        echo "Tree matches, skipping archive creation"
+        exit 0
+    fi
+fi
+
+git -C "${toplevel}" archive --prefix=dotfiles/ "${commit}" -o "$(git rev-parse --show-prefix)${archive_file}"
+echo "${tree}" >"${tree_file}"
+echo "Created archive ${archive_file}"
