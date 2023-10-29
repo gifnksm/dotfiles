@@ -119,6 +119,7 @@
   (prefer-coding-system 'utf-8-unix)
   (set-default-coding-systems 'utf-8-unix))
 
+
 (leaf font
   :config
   (set-face-attribute 'default nil :height 120)
@@ -144,10 +145,12 @@
                (set-fontset-font nil 'symbol spec))
              t))))
     (or
-     (funcall set-base-font "HackGenNerd Console")
+     (funcall set-base-font "UDEV Gothic")
+     (funcall set-base-font "HackGen")
      (funcall set-base-font "Ricty"))
     (or
-     (funcall set-jp-font "HackGenNerd Console")
+     (funcall set-jp-font "UDEV Gothic")
+     (funcall set-jp-font "HackGen")
      (funcall set-jp-font "Ricty"))
     (or
      (funcall set-symbol-font "Noto Color Emoji"))))
