@@ -1,8 +1,21 @@
 {
     "name": "dotfiles",
     "image": "mcr.microsoft.com/devcontainers/base:debian",
+    "mounts": [
+        {
+            "source": "devcontainer-cargo-cache-${devcontainerId}",
+            "target": "/usr/local/cargo",
+            "type": "volume"
+        },
+        {
+            "source": "devcontainer-rustup-cache-${devcontainerId}",
+            "target": "/usr/local/rustup",
+            "type": "volume"
+        }
+    ],
     "features": {
         "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+        "ghcr.io/devcontainers/features/rust:1": {},
         "ghcr.io/devcontainers-contrib/features/shfmt:1": {},
         "ghcr.io/dhoeric/features/hadolint:1": {},
         "ghcr.io/lukewiwa/features/shellcheck:0": {}
@@ -13,6 +26,7 @@
                 "exiasr.hadolint",
                 "foxundermoon.shell-format",
                 "mads-hartmann.bash-ide-vscode",
+                "rhaiscript.vscode-rhai",
                 "timonwong.shellcheck"
             ]
         }
