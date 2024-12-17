@@ -4,6 +4,7 @@ delta
 eza
 fzf
 git
+nushell
 ripgrep
 skim
 sheldon
