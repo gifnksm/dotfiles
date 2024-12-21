@@ -102,3 +102,19 @@ $env.NU_PLUGIN_DIRS = [
 
 use ($nu.default-config-dir | path join "starship.nu")
 use ($nu.default-config-dir | path join "jump.nu") *
+
+const nu_scripts_dir = ($nu.default-config-dir | path join "nu_scripts")
+use ($nu_scripts_dir | path join "custom-completions/bat/bat-completions.nu") *
+use ($nu_scripts_dir | path join "custom-completions/cargo-make/cargo-make-completions.nu") *
+use ($nu_scripts_dir | path join "custom-completions/cargo/cargo-completions.nu") *
+use ($nu_scripts_dir | path join "custom-completions/curl/curl-completions.nu") *
+use ($nu_scripts_dir | path join "custom-completions/docker/docker-completions.nu") *
+use ($nu_scripts_dir | path join "custom-completions/eza/eza-completions.nu") *
+use ($nu_scripts_dir | path join "custom-completions/gh/gh-completions.nu") *
+use ($nu_scripts_dir | path join "custom-completions/git/git-completions.nu") *
+use ($nu_scripts_dir | path join "custom-completions/less/less-completions.nu") *
+use ($nu_scripts_dir | path join "custom-completions/make/make-completions.nu") *
+use ($nu_scripts_dir | path join "custom-completions/rg/rg-completions.nu") *
+use ($nu_scripts_dir | path join "custom-completions/rustup/rustup-completions.nu") *
+use ($nu_scripts_dir | path join "custom-completions/ssh/ssh-completions.nu") *
+use ($nu_scripts_dir | path join "custom-completions/tar/tar-completions.nu") *
