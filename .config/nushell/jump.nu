@@ -1,4 +1,4 @@
-def fzf-cmd [] -> str {
+def fzf-cmd []: nothing -> string {
     if (which ^sk | length) > 0 {
         "sk"
     } else if (which ^fzf | length) > 0 {
