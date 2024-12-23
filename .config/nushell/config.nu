@@ -895,12 +895,15 @@ $env.config = {
             mode: emacs
             event: { edit: selectall }
         }
-        {
-            name: jump_repository
-            modifier: control
-            keycode: char_g
-            mode: emacs
-            event: { send: executehostcommand, cmd: "jump repository" }
-        }
     ]
 }
+
+$env.config.keybindings ++= [
+    {
+        name: jump_repository
+        modifier: control
+        keycode: char_g
+        mode: emacs
+        event: { send: executehostcommand, cmd: "jump repository" }
+    }
+]
