@@ -14,8 +14,7 @@ def "souko list" [] {
         get roots |
         rename --column {name: rootName} |
         select rootName repos |
-        flatten --all |
-        where relativePath != ""
+        flatten --all
 }
 
 def "fzf select" [
@@ -29,8 +28,11 @@ def "fzf select" [
 
 export def --env "jump repository" [] {
     let found_repos = souko list |
-        upsert display {|row| $"[($row.rootName)] ($row.relativePath)" } |
-        fzf select "--exit-0" "--prompt='CHANGE DIRECTORY> '" |
+        upsert display {|row|
+            let display_path = if ($row.relativePath | is-not-empty) { $row.relativePath } else { "." }
+            $"[($row.rootName)] ($display_path)"
+        } |
+        fzf select "--exit-0" "--prompt=CHANGE DIRECTORY> " |
         get realPath
     if ($found_repos | is-not-empty) {
         export-env { cd ($found_repos | first) }
