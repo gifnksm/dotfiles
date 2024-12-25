@@ -2,3 +2,6 @@
 
 [hostname]
 ssh_only = false
+
+[shell]
+disabled = false
