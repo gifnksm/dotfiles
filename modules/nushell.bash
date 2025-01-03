@@ -31,5 +31,5 @@ fi
 
 readarray -t plugins < <(find -L "${!plugin_dirs[@]}" -maxdepth 1 -name "nu_plugin_*" -type f -executable)
 for plugin in "${plugins[@]}"; do
-    execute nu -c "plugin add \"${plugin}\""
+    execute nu -c "do --ignore-errors { plugin add \"${plugin}\" }" # ignore plugin load error
 done
