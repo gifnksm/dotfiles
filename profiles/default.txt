@@ -8,3 +8,4 @@ rustup
 souko
 tmux
 topgrade
+zellij
