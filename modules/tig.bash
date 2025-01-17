@@ -2,7 +2,7 @@
 
 install_package_by_spec <<END
     arch: tig
-    ubuntu-22.04: tig
+    ubuntu-24.04: tig
     debian-12: tig
     rocky-9: tig@epel
 END

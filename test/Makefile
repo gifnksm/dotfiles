@@ -76,17 +76,17 @@ $(WORK_DIR)/build-image-%-install-dry_run.stamp: docker/Dockerfile.% | $(WORK_DI
 
 build-image-arch-bootstrap: $(WORK_DIR)/$$@.stamp
 build-image-debian_12-bootstrap: $(WORK_DIR)/$$@.stamp
-build-image-ubuntu_22_04-bootstrap: $(WORK_DIR)/$$@.stamp
+build-image-ubuntu_24_04-bootstrap: $(WORK_DIR)/$$@.stamp
 build-image-rocky_9-bootstrap: $(WORK_DIR)/$$@.stamp
 
 build-image-arch-install-normal: $(WORK_DIR)/$$@.stamp
 build-image-debian_12-install-normal: $(WORK_DIR)/$$@.stamp
-build-image-ubuntu_22_04-install-normal: $(WORK_DIR)/$$@.stamp
+build-image-ubuntu_24_04-install-normal: $(WORK_DIR)/$$@.stamp
 build-image-rocky_9-install-normal: $(WORK_DIR)/$$@.stamp
 
 build-image-arch-install-dry_run: $(WORK_DIR)/$$@.stamp
 build-image-debian_12-install-dry_run: $(WORK_DIR)/$$@.stamp
-build-image-ubuntu_22_04-install-dry_run: $(WORK_DIR)/$$@.stamp
+build-image-ubuntu_24_04-install-dry_run: $(WORK_DIR)/$$@.stamp
 build-image-rocky_9-install-dry_run: $(WORK_DIR)/$$@.stamp
 
 run-%-bootstrap: CONTAINER_NAME ?= dotfiles-test-$(patsubst run-%,%,$@)
@@ -133,15 +133,15 @@ run-%-install-dry_run: build-image-%-install-dry_run $(ARCHIVE) FORCE
 
 run-arch-bootstrap:
 run-debian_12-bootstrap:
-run-ubuntu_22_04-bootstrap:
+run-ubuntu_24_04-bootstrap:
 run-rocky_9-bootstrap:
 
 run-arch-install-normal:
 run-debian_12-install-normal:
-run-ubuntu_22_04-install-normal:
+run-ubuntu_24_04-install-normal:
 run-rocky_9-install-normal:
 
 run-arch-install-dry_run:
 run-debian_12-install-dry_run:
-run-ubuntu_22_04-install-dry_run:
+run-ubuntu_24_04-install-dry_run:
 run-rocky_9-install-dry_run:

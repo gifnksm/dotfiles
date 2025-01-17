@@ -12,7 +12,7 @@ if [[ "${OS_ID}" == "${OS_ROCKY_9}" ]]; then
 else
     install_package_by_spec <<END
         arch: fzf
-        ubuntu-22.04: fzf
+        ubuntu-24.04: fzf
         debian-12: fzf
 END
     assert_command fzf

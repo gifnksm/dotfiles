@@ -2,7 +2,7 @@
 
 install_package_by_spec <<END
     arch: emacs
-    ubuntu-22.04: emacs
+    ubuntu-24.04: emacs
     debian-12: emacs
     rocky-9: emacs
 END

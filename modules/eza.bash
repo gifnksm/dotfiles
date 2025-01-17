@@ -2,7 +2,7 @@
 
 install_package_by_spec <<END
     arch: eza
-    ubuntu-22.04: eza@cargo
+    ubuntu-24.04: eza@cargo
     debian-12: eza@cargo
     rocky-9: eza@cargo
 END

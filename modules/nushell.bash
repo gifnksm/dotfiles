@@ -5,7 +5,7 @@ install_module git
 
 install_package_by_spec <<END
     arch: nushell
-    ubuntu-22.04: nu@cargo
+    ubuntu-24.04: nu@cargo
     debian-12: nu@cargo
     rocky-9: nu@epel
 END
