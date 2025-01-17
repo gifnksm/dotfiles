@@ -2,7 +2,7 @@
 
 install_package_by_spec <<END
     arch: git
-    ubuntu-22.04: git ca-certificates
+    ubuntu-24.04: git ca-certificates
     debian-12: git ca-certificates
     rocky-9: git
 END

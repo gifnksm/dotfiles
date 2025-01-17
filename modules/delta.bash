@@ -2,7 +2,7 @@
 
 install_package_by_spec <<END
     arch: git-delta
-    ubuntu-22.04: git-delta@cargo
+    ubuntu-24.04: git-delta@cargo
     debian-12: git-delta@cargo
     rocky-9: git-delta@cargo
 END

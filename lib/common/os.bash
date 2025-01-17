@@ -1,7 +1,7 @@
 is_supported_os() {
     local os_id="${1}"
     case "${os_id}" in
-    "${OS_ARCH}" | "${OS_UBUNTU_22_04}" | "${OS_DEBIAN_12}" | "${OS_ROCKY_9}") return 0 ;;
+    "${OS_ARCH}" | "${OS_UBUNTU_24_04}" | "${OS_DEBIAN_12}" | "${OS_ROCKY_9}") return 0 ;;
     *) return 1 ;;
     esac
 }
@@ -41,7 +41,7 @@ _init_os() {
 }
 
 readonly OS_ARCH="arch"
-readonly OS_UBUNTU_22_04="ubuntu-22.04"
+readonly OS_UBUNTU_24_04="ubuntu-24.04"
 readonly OS_DEBIAN_12="debian-12"
 readonly OS_ROCKY_9="rocky-9"
 OS_ID="$(_print_os_id)"

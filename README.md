@@ -46,7 +46,7 @@ All available modules can be listed by running the `install --list-modules`.
 ## Supported OS
 
 * Arch Linux
-* Ubuntu 22.04 (Jammy Jellyfish)
+* Ubuntu 24.04 (Noble Numbat)
 * Debian 12 (Bookworm)
 * Rocky Linux 9
 

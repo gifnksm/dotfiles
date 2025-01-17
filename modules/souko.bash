@@ -2,7 +2,7 @@
 
 install_package_by_spec <<END
     arch: souko-bin@aur
-    ubuntu-22.04: souko@cargo
+    ubuntu-24.04: souko@cargo
     debian-12: souko@cargo
     rocky-9: souko@cargo
 END

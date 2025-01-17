@@ -313,7 +313,7 @@ install_package_by_spec() {
         "${OS_ARCH}")
             install_package_arch "${package_and_sources[@]}"
             ;;
-        "${OS_UBUNTU_22_04}" | "${OS_DEBIAN_12}")
+        "${OS_UBUNTU_24_04}" | "${OS_DEBIAN_12}")
             install_package_debian "${package_and_sources[@]}"
             ;;
         "${OS_ROCKY_9}")
