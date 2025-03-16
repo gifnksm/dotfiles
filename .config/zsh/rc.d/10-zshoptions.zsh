@@ -95,7 +95,7 @@ setopt SHARE_HISTORY
 # setopt CLOBBER # <D>
 # unsetopt CLOBBER_EMPTY
 setopt CORRECT
-setopt CORRECT_ALL
+# setopt CORRECT_ALL
 # unsetopt DVORAK
 unsetopt FLOW_CONTROL # <D>
 # unsetopt IGNORE_EOF
