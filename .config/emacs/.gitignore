@@ -3,6 +3,7 @@ el-get/*
 elpa/*
 transient/*
 var/*
+eln-cache/*
 *.elc
 .emacs.desktop
 .emacs.desktop.lock
