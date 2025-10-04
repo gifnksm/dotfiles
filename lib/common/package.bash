@@ -191,7 +191,7 @@ install_package_arch() {
             cargo_packages+=("${package}")
             ;;
         dotfiles)
-            dotfiles_modules+=("${packages}")
+            dotfiles_modules+=("${package}")
             ;;
         *)
             abort "invalid source '${source}' for package '${package}'"
@@ -228,7 +228,7 @@ install_package_debian() {
             cargo_packages+=("${package}")
             ;;
         dotfiles)
-            dotfiles_modules+=("${packages}")
+            dotfiles_modules+=("${package}")
             ;;
         *)
             abort "invalid source '${source}' for package '${package}'"
@@ -268,7 +268,7 @@ install_package_rhel() {
             cargo_packages+=("${package}")
             ;;
         dotfiles)
-            dotfiles_modules+=("${packages}")
+            dotfiles_modules+=("${package}")
             ;;
         *)
             abort "invalid source '${source}' for package '${package}'"
