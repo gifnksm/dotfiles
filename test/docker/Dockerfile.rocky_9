@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM rockylinux:9
+FROM rockylinux/rockylinux:9
 
 ARG bootstrap=false
 ARG dry_run=false
