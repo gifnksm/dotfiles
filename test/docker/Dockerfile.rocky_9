@@ -14,7 +14,7 @@ RUN \
     <<END
 
     # system update
-    dnf -y update
+    dnf -y update --refresh
 
     if [ "${bootstrap}" = "true" ]; then
         dnf install -y \
