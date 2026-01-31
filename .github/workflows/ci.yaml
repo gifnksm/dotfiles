@@ -28,6 +28,7 @@ jobs:
     name: ${{ matrix.tests.name }}
     needs: set-matrix
     strategy:
+      fail-fast: false
       matrix:
         tests: ${{ fromJSON(needs.set-matrix.outputs.tests) }}
     runs-on: ubuntu-24.04
