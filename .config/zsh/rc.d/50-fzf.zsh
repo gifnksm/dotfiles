@@ -34,7 +34,7 @@ function __fzf-is-in-git-repo() {
 }
 
 function __fzf-cd-repository() {
-  local selected=$(__repocmd list | __fzfcmd --query="$LBUFFER" --exit-0 --prompt='CHANGE DIRECTORY> ')
+  local selected=$(__repocmd list | __fzfcmd --query="$LBUFFER" --prompt='CHANGE DIRECTORY> ')
   if [[ -n $selected ]]; then
     BUFFER="cd \"${selected}\""
     zle accept-line
