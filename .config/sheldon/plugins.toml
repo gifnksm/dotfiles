@@ -30,5 +30,5 @@ github = 'marlonrichert/zsh-autocomplete'
 [plugins.zsh-autocomplete.hooks]
 post = "source ~/.config/sheldon/hooks/zsh-autocomplete-post.zsh"
 
-[plugins.fzf-history-search]
-local = "~/.config/zsh/plugins/fzf-history-search"
+[plugins.skim]
+github = 'skim-rs/skim'
