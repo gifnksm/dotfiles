@@ -32,3 +32,8 @@ post = "source ~/.config/sheldon/hooks/zsh-autocomplete-post.zsh"
 
 [plugins.skim]
 github = 'skim-rs/skim'
+[plugins.skim.hooks]
+post = """
+export SKIM_TMUX=1
+export SKIM_TMUX_OPTS="center,80%"
+"""
