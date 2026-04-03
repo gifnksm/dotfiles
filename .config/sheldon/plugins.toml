@@ -37,3 +37,6 @@ post = """
 export SKIM_TMUX=1
 export SKIM_TMUX_OPTS="center,80%"
 """
+
+[plugins.souko]
+github = "gifnksm/souko"

@@ -4,10 +4,6 @@ elif command -v fzf >/dev/null 2>&1; then
   alias __fzfcmd=fzf
 fi
 
-if command -v souko >/dev/null 2>&1; then
-  alias __repocmd=souko
-fi
-
 function __fzf-exec() {
   if zle; then
     BUFFER="$@"
@@ -31,15 +27,6 @@ function __fzf-is-in-git-repo() {
     return 1
   fi
   return 0
-}
-
-function __fzf-cd-repository() {
-  local selected=$(__repocmd list | __fzfcmd --query="$LBUFFER" --prompt='CHANGE DIRECTORY> ')
-  if [[ -n $selected ]]; then
-    BUFFER="cd \"${selected}\""
-    zle accept-line
-  fi
-  zle clear-screen
 }
 
 function __fzf-select-git-ref() {
@@ -104,8 +91,6 @@ while read key fn; do
   zle -N "${fn}"
   bindkey "${key}" "${fn}"
 done <<END
-^g      __fzf-cd-repository
-^g^g    __fzf-cd-repository
 ^g^r    __fzf-input-git-ref
 ^g^b    __fzf-input-git-branch
 ^g^t    __fzf-input-git-tag
