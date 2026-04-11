@@ -12,6 +12,7 @@ assert_command git
 ensure_git_config_added include.path ~/.config/git/config.d/index
 
 ensure_git_config_included base.conf
+ensure_git_config_included alias.conf
 
 # detect virtual environment
 if command -v systemd-detect-virt >/dev/null; then
