@@ -40,3 +40,6 @@ export SKIM_TMUX_OPTS="center,80%"
 
 [plugins.souko]
 github = "gifnksm/souko"
+
+[plugins.zsh-autosuggestions]
+github = "zsh-users/zsh-autosuggestions"
