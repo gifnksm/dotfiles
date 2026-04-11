@@ -10,3 +10,4 @@ END
 assert_command sheldon
 
 ensure_symlink_to_config_exists .config/sheldon
+ensure_symlink_to_config_exists .config/zsh-abbr
