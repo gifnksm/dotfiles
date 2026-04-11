@@ -18,6 +18,9 @@ github = 'marlonrichert/zsh-autocomplete'
 [plugins.zsh-autocomplete.hooks]
 post = "source ~/.config/sheldon/hooks/zsh-autocomplete-post.zsh"
 
+[plugins.zsh-abbr]
+github = "olets/zsh-abbr"
+
 [plugins.zsh-autosuggestions]
 github = "zsh-users/zsh-autosuggestions"
 
@@ -51,6 +54,4 @@ export SKIM_TMUX_OPTS="center,80%"
 [plugins.souko]
 github = "gifnksm/souko"
 
-[plugins.zsh-abbr]
-github = "olets/zsh-abbr"
 

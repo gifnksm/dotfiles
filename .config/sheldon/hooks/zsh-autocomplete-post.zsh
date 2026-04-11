@@ -10,3 +10,8 @@ zle -A {.,}history-incremental-search-backward
 zle -A {.,}vi-history-search-backward
 bindkey -M emacs '^S' history-incremental-search-forward
 bindkey -M vicmd '/' vi-history-search-forward
+
+# Disable zsh-autocomplete's behavior of adding a semicolon ';' to the end of history items.
+# This prevents conflicts with zsh-abbr and zsh-autosuggestions.
+zstyle ':autocomplete:*' add-semicolon no
+
