@@ -1,4 +1,6 @@
 abbr "gfd"="git fetch-default-branch"
+abbr "gfm"="git fetch-default-branch"
 abbr "gsd"="git switch-default-branch"
+abbr "gsm"="git switch-default-branch"
 abbr "ll"="ls -l"
 abbr "ta"="tmux new-session -A -s default"
