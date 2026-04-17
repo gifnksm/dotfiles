@@ -1,5 +1,3 @@
-abbr "gfd"="git fetch-default-branch"
-abbr "gfm"="git fetch-default-branch"
 abbr "gfp"="git fetch --prune"
 abbr "gpd"="git pull-default-branch"
 abbr "gpm"="git pull-default-branch"
