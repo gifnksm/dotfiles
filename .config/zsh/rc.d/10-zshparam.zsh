@@ -26,9 +26,6 @@ zstyle ':completion:*:warnings' format \
     "%F{red}No matches for: %F{yellow}%d%f"
 zstyle ':completion:*:options' desctiption 'yes'
 
-autoload -Uz compinit && compinit
-
-
 ## Prompt
 # Use starship for prompt
 if command -v starship >/dev/null; then

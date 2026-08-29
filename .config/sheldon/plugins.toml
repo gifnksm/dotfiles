@@ -13,6 +13,9 @@ shell = "zsh"
 
 [plugins]
 
+# zsh-autocomplete must be loaded before any calls to `compdef`.
+# It initializes the completion system, so remove any calls to `compinit`.
+# See: https://github.com/marlonrichert/zsh-autocomplete#installation--setup
 [plugins.zsh-autocomplete]
 github = 'marlonrichert/zsh-autocomplete'
 [plugins.zsh-autocomplete.hooks]
