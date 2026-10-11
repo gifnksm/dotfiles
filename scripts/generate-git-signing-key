@@ -1,0 +1,70 @@
+#!/bin/bash
+
+set -euo pipefail
+
+declare PRIV_KEY=~/.ssh/git_signing
+declare PUB_KEY=~/.ssh/git_signing.pub
+
+print_default_key_comment() {
+  local default_key_comment=""
+  default_key_comment="$(uname -n)"
+  local virt=""
+  if command -v systemd-detect-virt >/dev/null; then
+    virt="$(systemd-detect-virt || true)"
+  elif [[ -e ~/.dockerenv ]]; then
+    virt=docker
+  elif [[ -r /proc/version ]] && grep -qEi '(Microsoft|WSL)' /proc/version; then
+    virt=wsl
+  fi
+  if [[ -n "${virt}" ]]; then
+    default_key_comment+="-${virt}"
+  fi
+  default_key_comment+="-$(whoami)"
+  default_key_comment+="-$(date +%Y-%m-%d)"
+
+  echo "${default_key_comment}"
+}
+
+generate_key() {
+  if [[ -e "${PRIV_KEY}" ]] && [[ -e "${PUB_KEY}" ]]; then
+    echo "Use existing signing key." >&2
+    return 0
+  fi
+
+  if [[ -e "${PRIV_KEY}" ]] || [[ -e "${PUB_KEY}" ]]; then
+    echo "Incomplete signing key pair exists. Please remove it first." >&2
+    [[ -e "${PRIV_KEY}" ]] && echo "- ${PRIV_KEY}" >&2
+    [[ -e "${PUB_KEY}" ]] && echo "- ${PUB_KEY}" >&2
+    return 1
+  fi
+
+  local default_key_comment=""
+  default_key_comment="$(print_default_key_comment)"
+
+  local key_comment
+  read -r -p "signing key comment [default:${default_key_comment}]: " key_comment
+  key_comment="${key_comment:-$default_key_comment}"
+
+  set -x
+  ssh-keygen -t ed25519 -C "${key_comment}" -f "${PRIV_KEY}"
+  set +x
+}
+
+register_key() {
+  set -x
+
+  git config --global gpg.format ssh
+  git config --global user.signingkey "${PRIV_KEY}"
+  git config --global commit.gpgsign true
+  git config --global tag.gpgsign true
+
+  gh ssh-key add "${PUB_KEY}" --type signing
+  set +x
+}
+
+main() {
+  generate_key
+  register_key
+}
+
+main
